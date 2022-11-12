@@ -1,5 +1,5 @@
 import { FC, ReactElement } from 'react';
-import StyledMain from './styled-main';
+import StyledMain from './StyledMain';
 
 const Main: FC = (): ReactElement => <StyledMain></StyledMain>;
 

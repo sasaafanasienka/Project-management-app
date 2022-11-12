@@ -1,10 +1,10 @@
 import Head from 'next/head';
 import { FC, ReactElement } from 'react';
-import Header from '../../components/header/header';
-import Footer from '../../components/footer/footer';
-import Aside from '../../components/aside/aside';
-import Main from '../../components/main/main';
-import MainContent from '../../components/main-content/main-content';
+import Header from '../../components/header/Header';
+import Footer from '../../components/footer/Footer';
+import Aside from '../../components/aside/Aside';
+import Main from '../../components/main/Main';
+import MainContent from '../../components/main-content/MainСontent';
 
 const Board: FC = (): ReactElement => (
 	<>

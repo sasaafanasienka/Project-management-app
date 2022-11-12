@@ -1,6 +1,7 @@
-import ContentPasteOutlinedIcon from '@mui/icons-material/ContentPasteOutlined'; import { Button } from '@mui/material';
+import ContentPasteOutlinedIcon from '@mui/icons-material/ContentPasteOutlined';
+import { Button } from '@mui/material';
 import { FC, ReactElement } from 'react';
-import StyledAside from './styled-aside';
+import StyledAside from './StyledAside';
 
 const Aside: FC = ():ReactElement => <StyledAside>
 	<Button
