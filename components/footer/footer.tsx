@@ -1,6 +1,7 @@
+import { FC, ReactElement } from 'react';
 import StyledFooter from './styled-footer';
 
-const Footer = () => (
+const Footer: FC = (): ReactElement => (
 	<StyledFooter> </StyledFooter>
 );
 
