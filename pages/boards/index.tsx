@@ -1,12 +1,12 @@
 import Head from 'next/head';
 import { FC, ReactElement } from 'react';
-import Aside from '../components/aside/Aside';
-import Header from '../components/header/Header';
-import MainContent from '../components/main-content/MainСontent';
-import Main from '../components/main/Main';
-import Footer from '../components/footer/Footer';
+import Header from '../../components/header/Header';
+import Footer from '../../components/footer/Footer';
+import Aside from '../../components/aside/Aside';
+import Main from '../../components/main/Main';
+import MainContent from '../../components/main-content/MainСontent';
 
-const Home: FC = (): ReactElement => (
+const Boards: FC = (): ReactElement => (
 	<>
 		<Head>
 			<title>Home page</title>
@@ -22,4 +22,4 @@ const Home: FC = (): ReactElement => (
 	</>
 );
 
-export default Home;
+export default Boards;
