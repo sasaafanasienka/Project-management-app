@@ -2,11 +2,11 @@ html,
 body {
   padding: 0;
   margin: 0;
-  font-family: Roboto, Oxygen,
-    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
   width: 100%;
   height: 100vh;
   overflow: hidden;
+  font-family: Roboto;
+  letter-spacing: -0.03em;
 }
 
 #__next {
@@ -30,6 +30,5 @@ a {
 }
 
 .MuiButton-fullWidth {
-  padding-inline: 15px;
-  justify-content: flex-start;
+
 }

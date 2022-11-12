@@ -1,8 +1,10 @@
 import ContentPasteOutlinedIcon from '@mui/icons-material/ContentPasteOutlined';
-import { Button, IconButton } from '@mui/material';
+import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
+import { IconButton } from '@mui/material';
 import { FC, ReactElement } from 'react';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import StyledAside from './StyledAside';
+import AsideButton from '../buttons/aside-button/AsideButton';
 
 
 const Aside: FC = (): ReactElement => {
@@ -12,17 +14,18 @@ const Aside: FC = (): ReactElement => {
 		<StyledAside>
 			{
 				isDesktop && <>
-					<Button
-						startIcon={<ContentPasteOutlinedIcon />}
-						color="secondary"
-						href="/boards"
-						fullWidth >
-						Boards
-					</Button>
+					<AsideButton href="/" startIcon={<HomeOutlinedIcon />}>Home</AsideButton>
+					<AsideButton href="/boards" startIcon={<ContentPasteOutlinedIcon />}>Boards</AsideButton>
 				</>
 			}
 			{
 				!isDesktop && <>
+					<IconButton
+						color="secondary"
+						href="/"
+					>
+						<HomeOutlinedIcon />
+					</IconButton>
 					<IconButton
 						color="secondary"
 						href="/boards"

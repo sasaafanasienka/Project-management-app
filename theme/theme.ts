@@ -1,7 +1,4 @@
 import { createTheme } from '@mui/material/styles';
-import RobotoRegular from './fonts/Roboto-Regular.ttf';
-import RobotoBold from './fonts/Roboto-Bold.ttf';
-import RobotoMedium from './fonts/Roboto-Medium.ttf';
 
 const theme = createTheme({
 	palette: {
@@ -18,12 +15,7 @@ const theme = createTheme({
 			contrastText: '#ffffff',
 		},
 	},
-	typography: {
-		fontFamily: [
-			'Roboto',
-			'sans-serif',
-		].join(','),
-	},
+
 });
 
 export default theme;
