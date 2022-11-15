@@ -1,11 +1,7 @@
-export enum LangOption  {
+// eslint-disable-next-line no-shadow
+export enum LangOption {
   EN = 'EN',
   RU = 'RU',
-};
-
-export interface InitialStateModel {
-  currentLang: LangOption;
-  text:LangLayoutModel; 
 }
 
 export interface LangLayoutModel {
@@ -43,4 +39,10 @@ export interface LangLayoutModel {
   deleteBoard: string;
   successCreated: string;
   successDeleted: string;
+  editProfile: string,
+}
+
+export interface InitialStateModel {
+  currentLang: LangOption;
+  text: LangLayoutModel;
 }
