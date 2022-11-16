@@ -13,6 +13,7 @@ const ValidationForm: FC<ValidationFormProps> = ({
 	submitBtnTxt,
 	children,
 	resetForm,
+	isSigningIn,
 }): ReactElement => {
 	const {
 		register, handleSubmit, reset, formState: {
@@ -54,15 +55,17 @@ const ValidationForm: FC<ValidationFormProps> = ({
 					},
 				})} error={!!errors.name} helperText={errors?.name ? errors?.name.message : null}
 				/>
-				<TextField label="Login" variant="outlined" {...register('login', {
-					required: 'This field is required',
-					minLength: {
-						value: 2,
-						message: 'Login should consist of at least 2 chars',
-					},
-				})}
-				error={!!errors.login} helperText={errors?.login ? errors?.login.message : null}
-				/>
+				{!isSigningIn
+					&& <TextField label="Login" variant="outlined" {...register('login', {
+						required: 'This field is required',
+						minLength: {
+							value: 2,
+							message: 'Login should consist of at least 2 chars',
+						},
+					})}
+					error={!!errors.login} helperText={errors?.login ? errors?.login.message : null}
+					/>
+				}
 				<TextField label="Password" variant="outlined" type={'password'} {...register('password', {
 					required: 'This field is required',
 					pattern: {
