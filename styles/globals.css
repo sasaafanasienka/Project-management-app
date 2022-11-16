@@ -9,6 +9,28 @@ body {
   letter-spacing: -0.03em;
 }
 
+html {
+	scrollbar-color: #e15342 #f5f5f5;
+	scrollbar-width: thin;
+}
+
+body {
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #e15342;
+}
+
+::-webkit-scrollbar-track {
+  background: #f5f5f5;
+}
+
 #__next {
   position: absolute;
   top: 0;
@@ -27,8 +49,4 @@ a {
 
 * {
   box-sizing: border-box;
-}
-
-.MuiButton-fullWidth {
-
 }

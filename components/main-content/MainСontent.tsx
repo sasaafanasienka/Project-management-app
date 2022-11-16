@@ -5,6 +5,7 @@ const MainContent = styled.div`
   display: flex;
   align-items: stretch;
   justify-content: flex-start;
+  height: calc(100vh - 100px);
 `;
 
 export default MainContent;

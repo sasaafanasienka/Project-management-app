@@ -1,14 +1,17 @@
 import Head from 'next/head';
 import { FC, ReactElement } from 'react';
+import Home from '../components/home/Home';
 import Layout from '../components/layout/Layout';
 
-const Home: FC = (): ReactElement => (
+const HomePage: FC = (): ReactElement => (
 	<>
 		<Head>
 			<title>Home page</title>
 		</Head>
-		<Layout></Layout>
+		<Layout>
+			<Home></Home>
+		</Layout>
 	</>
 );
 
-export default Home;
+export default HomePage;

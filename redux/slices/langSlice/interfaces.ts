@@ -6,8 +6,12 @@ export enum LangOption {
 
 export interface LangLayoutModel {
   lang: string;
+  author1: string;
+  author2: string;
   homeTitle: string;
   homeDescription: string;
+  teamTitle: string;
+  technologiesTitle: string;
   homeBtn: string;
   navProfile: string;
   navBoards: string;

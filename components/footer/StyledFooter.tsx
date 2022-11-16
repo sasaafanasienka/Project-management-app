@@ -11,29 +11,21 @@ const StyledFooter = styled.footer`
   display: flex; 
   align-items: center;
   justify-content: space-between;
-  & div {
-    display: flex;
-    column-gap: 10px;
-    &:nth-child(1) {
-      & a {
-        color: black;
-        &:hover {
-          color: ${theme.palette.primary.main};
-        }
-      }
-      & svg {
-        width: 70px;
-        height: auto;
-        transition: all 0.3s ease;
-      }
+  & a {
+    color: black;
+    &:hover {
+      color: ${theme.palette.primary.main};
     }
-    &:nth-child(2) {
-      & img {
-        width: 30px;
-        height: 30px;
-        border-radius: 50%;
-      }
-    }
+  }
+  & svg {
+    width: 70px;
+    height: auto;
+    transition: all 0.3s ease;
+  }
+  & img {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
   }
 `;
 

@@ -1,7 +1,13 @@
-export const engLayout = {
+import { LangLayoutModel } from './interfaces';
+
+export const engLayout: LangLayoutModel = {
 	lang: 'RU',
+	author1: 'Anton Romanovich',
+	author2: 'Sasha Afanasienka',
 	homeTitle: 'Kanban board for teams to organize their work',
 	homeDescription: 'Collaborate, manage projects, and reach new productivity peaks. Accomplish it all with RS Project Management App',
+	teamTitle: 'Our team',
+	technologiesTitle: 'Our technologies',
 	homeBtn: 'Get Started',
 	navProfile: 'Profile',
 	navBoards: 'Boards',
@@ -36,10 +42,14 @@ export const engLayout = {
 	editProfile: 'Edit Profile',
 };
 
-export const rusLayout = {
+export const rusLayout: LangLayoutModel = {
 	lang: 'EN',
+	author1: 'Антон Романович',
+	author2: 'Саша Афанасенко',
 	homeTitle: 'Бесконечные Канбан-доски для организации командной работы',
 	homeDescription: 'Управляйте проектами и командами и достигайте новых вершин продуктивности с помощью RS Project Management App',
+	teamTitle: 'Наша команда',
+	technologiesTitle: 'Наши технологии',
 	homeBtn: 'Начать',
 	navProfile: 'Профиль',
 	navBoards: 'Доски',
