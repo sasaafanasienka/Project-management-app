@@ -1,24 +1,30 @@
-import { FC, ReactElement } from 'react';
+import {
+	FC, ReactElement, useEffect,
+} from 'react';
 import { TextField, Button } from '@mui/material';
-import { useForm, SubmitHandler } from 'react-hook-form';
-import { useAppSelector } from '../../../redux/store';
-import { StyledUserUpdateForm, StyledForm } from './StyledUserUpdateForm';
-import FlexBox from '../../styled/FlexBox';
-import { UserUpdateFormDataModel } from '../interfaces';
+import { useForm } from 'react-hook-form';
+import { StyledValidationForm, StyledForm } from './StyledValidationForm';
+import FlexBox from '../styled/FlexBox';
+import { UserUpdateFormDataModel, ValidationFormProps } from './interfaces';
 
-const UserUpdateForm: FC = (): ReactElement => {
+const ValidationForm: FC<ValidationFormProps> = ({
+	header,
+	onSubmit,
+	submitBtnTxt,
+	children,
+	resetForm,
+}): ReactElement => {
 	const {
-		register, handleSubmit, formState: {
-			errors, isValid, isDirty,
+		register, handleSubmit, reset, formState: {
+			errors, isValid, isDirty, isSubmitted,
 		},
 	} = useForm<UserUpdateFormDataModel>();
 
-	const onSubmit: SubmitHandler<UserUpdateFormDataModel> = (data) => {
-		console.log(data);
-	};
-
-	const headerLang = useAppSelector((state) => state.lang.text.editProfile);
-	const deleteLang = useAppSelector((state) => state.lang.text.deleteBtn);
+	useEffect(() => {
+		if (isSubmitted && resetForm) {
+			reset();
+		}
+	}, [isSubmitted, reset, resetForm]);
 
 	// eslint-disable-next-line consistent-return
 	const disableSubmitBtn = () => {
@@ -33,9 +39,9 @@ const UserUpdateForm: FC = (): ReactElement => {
 	};
 
 	return (
-		<StyledUserUpdateForm>
-			<h2>{headerLang.toUpperCase()}</h2>
-			<StyledForm onSubmit={handleSubmit(onSubmit)} onChange={() => console.log(errors)}>
+		<StyledValidationForm>
+			<h2>{header}</h2>
+			<StyledForm onSubmit={handleSubmit(onSubmit)} >
 				<TextField label="Name" variant="outlined" {...register('name', {
 					required: 'This field is required',
 					minLength: {
@@ -67,17 +73,15 @@ const UserUpdateForm: FC = (): ReactElement => {
 				error={!!errors.password}
 				helperText={errors?.password ? errors?.password.message : null}
 				/>
-				<FlexBox justifyContent='end'>
-					<Button color="warning" size="large" variant='outlined'>
-						{deleteLang}
-					</Button>
+				<FlexBox justifyContent={children ? 'end' : 'center'}>
+					{ children }
 					<Button color="info" type="submit" size="large" variant='outlined' disabled={disableSubmitBtn()}>
-						{headerLang}
+						{submitBtnTxt}
 					</Button>
 				</FlexBox>
 			</StyledForm>
-		</StyledUserUpdateForm>
+		</StyledValidationForm>
 	);
 };
 
-export default UserUpdateForm;
+export default ValidationForm;
