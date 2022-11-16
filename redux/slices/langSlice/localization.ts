@@ -14,8 +14,8 @@ export const engLayout: LangLayoutModel = {
 	singIn: 'Sign In',
 	singUp: 'Sign Up',
 	register: 'Register',
-	noAccount: "Don't have an account yet?",
-	hasAccount: 'Already have an account?',
+	noAccount: "Don't have an account yet? ",
+	hasAccount: 'Already have an account? ',
 	name: 'Name',
 	login: 'Login',
 	password: 'Password',
@@ -40,6 +40,10 @@ export const engLayout: LangLayoutModel = {
 	successCreated: 'Successfully Created',
 	successDeleted: 'Successfully Deleted',
 	editProfile: 'Edit Profile',
+	singUpGreet: 'Hello',
+	singUpMessage: 'Please create an account and we are set to go',
+	singInGreet: 'Welcome back',
+	singInMessage: 'Please sign in to go back to work',
 };
 
 export const rusLayout: LangLayoutModel = {
@@ -82,4 +86,8 @@ export const rusLayout: LangLayoutModel = {
 	successCreated: 'Создано',
 	successDeleted: 'Удалено',
 	editProfile: 'Редактировать профиль',
+	singUpGreet: 'Здравствуйте',
+	singUpMessage: 'Создать аккаунт - все что требуется для старта',
+	singInGreet: 'С возвращением',
+	singInMessage: 'Пожалуйста, авторизируйтесь, чтобы вернуться к работе',
 };
