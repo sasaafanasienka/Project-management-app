@@ -9,7 +9,7 @@ import ValidationForm from '../validationForm/ValidationForm';
 const SignUp: FC = (): ReactElement => {
 	const formActionText = useAppSelector((state) => state.lang.text.singUp);
 	const bottomLinkTxt = useAppSelector((state) => state.lang.text.hasAccount);
-	const linkTo = useAppSelector((state) => state.lang.text.singIn);
+	const linkTo = useAppSelector((state) => state.lang.text.singIn).split(' ').join('');
 	const headerText = useAppSelector((state) => state.lang.text.singUpGreet);
 	const headerMessage = useAppSelector((state) => state.lang.text.singUpMessage);
 
