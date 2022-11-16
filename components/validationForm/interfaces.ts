@@ -14,3 +14,7 @@ export interface ValidationFormProps {
   children?: ReactNode;
   resetForm?: boolean;
 }
+
+export interface ValidationFormWrapperProps {
+  children: ReactNode;
+}

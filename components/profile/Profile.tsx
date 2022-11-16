@@ -1,9 +1,9 @@
 import { Button } from '@mui/material';
 import { FC, ReactElement } from 'react';
 import { useAppSelector } from '../../redux/store';
+import FormWrapper from '../validationForm/formWrapper/FormWrapper';
 import { UserUpdateFormDataModel } from '../validationForm/interfaces';
 import ValidationForm from '../validationForm/ValidationForm';
-import ProfileLayout from './layout/ProfileLayout';
 import UserInfo from './userInfo/UserInfo';
 
 
@@ -17,14 +17,14 @@ const Profile: FC = (): ReactElement => {
 	};
 
 	return (
-		<ProfileLayout>
+		<FormWrapper>
 			<UserInfo />
 			<ValidationForm header={title} submitBtnTxt={submitBtnTxt} onSubmit={updateUser} >
 				<Button color="warning" size="large" variant='outlined'>
 					{deleteBtn}
 				</Button>
 			</ValidationForm>
-		</ProfileLayout>
+		</FormWrapper>
 	);
 };
 
