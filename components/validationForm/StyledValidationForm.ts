@@ -1,7 +1,10 @@
 import styled from 'styled-components';
-import StyledUserInfo from '../userInfo/StyledUserInfo';
 
-export const StyledUserUpdateForm = styled(StyledUserInfo)`
+export const StyledValidationForm = styled.div`
+  padding: 12px 18px;
+  width: 100%;
+  background-color: #fff;
+  display: flex;
   flex: 2;
   flex-direction: column;
   justify-content: flex-start;

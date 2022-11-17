@@ -1,6 +1,8 @@
 import ContentPasteOutlinedIcon from '@mui/icons-material/ContentPasteOutlined';
 import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import GroupAddIcon from '@mui/icons-material/GroupAdd';
+import LoginIcon from '@mui/icons-material/Login';
 import { IconButton } from '@mui/material';
 import { FC, ReactElement } from 'react';
 import useMediaQuery from '@mui/material/useMediaQuery';
@@ -18,6 +20,8 @@ const Aside: FC = (): ReactElement => {
 					<AsideButton href="/" startIcon={<HomeOutlinedIcon />}>Home</AsideButton>
 					<AsideButton href="/boards" startIcon={<ContentPasteOutlinedIcon />}>Boards</AsideButton>
 					<AsideButton href="/profile" startIcon={<AccountCircleIcon />}>Profile</AsideButton>
+					<AsideButton href="/signin" startIcon={<LoginIcon />}>Sign In</AsideButton>
+					<AsideButton href="/signup" startIcon={<GroupAddIcon />}>Sign Up</AsideButton>
 				</>
 			}
 			{
@@ -39,6 +43,18 @@ const Aside: FC = (): ReactElement => {
 						href="/profile"
 					>
 						<AccountCircleIcon />
+					</IconButton>
+					<IconButton
+						color="secondary"
+						href="/signin"
+					>
+						<LoginIcon />
+					</IconButton>
+					<IconButton
+						color="secondary"
+						href="/signup"
+					>
+						<GroupAddIcon />
 					</IconButton>
 				</>
 			}

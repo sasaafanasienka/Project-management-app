@@ -1,0 +1,8 @@
+import styled from 'styled-components';
+
+const StyledBottomLink = styled.div`
+  width: 100%;
+  text-align: center;
+  color: #5A5A5A;
+`;
+export default StyledBottomLink;
