@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 // eslint-disable-next-line no-shadow
 export enum LangOption {
   EN = 'EN',
@@ -44,6 +45,10 @@ export interface LangLayoutModel {
   successCreated: string;
   successDeleted: string;
   editProfile: string,
+  singUpGreet: string,
+	singUpMessage: string,
+	singInGreet: string,
+	singInMessage: string,
 }
 
 export interface InitialStateModel {
