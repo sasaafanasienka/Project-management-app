@@ -3,7 +3,7 @@ import Header from '../header/Header';
 import Footer from '../footer/Footer';
 import Aside from '../aside/Aside';
 import Main from '../main/Main';
-import MainContent from '../main-content/MainСontent';
+import MainContent from '../mainСontent/MainСontent';
 import { LayoutPropsModel } from './interfaces';
 
 const Layout: FC<LayoutPropsModel> = (props): ReactElement => {
