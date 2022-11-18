@@ -3,19 +3,17 @@ import '../styles/globals.css';
 import type { AppProps } from 'next/app';
 import Head from 'next/head';
 import { ThemeProvider } from '@emotion/react';
-import { Provider } from 'react-redux';
-import getStore from '../redux/store';
 import theme from '../theme/theme';
 import '@fontsource/roboto/400.css';
 import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
+import { wrapper } from '../redux/store';
+import Layout from '../components/layout/Layout';
 
-export default function App({ Component, pageProps }: AppProps) {
-	const store = getStore(pageProps.initialState);
-
+function App({ Component, pageProps }: AppProps) {
 	return (
-		<Provider store={store}>
-			<ThemeProvider theme={theme}>
+		<ThemeProvider theme={theme}>
+			<Layout>
 				<Component {...pageProps}>
 					<Head>
 						<link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -23,7 +21,9 @@ export default function App({ Component, pageProps }: AppProps) {
 						<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
 					</Head>
 				</Component>
-			</ThemeProvider>
-		</Provider >
+			</Layout>
+		</ThemeProvider>
 	);
 }
+
+export default wrapper.withRedux(App);
