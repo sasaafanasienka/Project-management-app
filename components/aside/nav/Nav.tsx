@@ -4,14 +4,23 @@ import { FC, ReactElement } from 'react';
 import ContentPasteOutlinedIcon from '@mui/icons-material/ContentPasteOutlined';
 import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined';
 import GroupAddIcon from '@mui/icons-material/GroupAdd';
 import LoginIcon from '@mui/icons-material/Login';
 import StyledNav from './StyledNav';
 import AsideButton from '../../buttons/aside-button/AsideButton';
 import Divider from '../../divider/Divider';
+import { useAppSelector } from '../../../redux/store';
 
 const Nav: FC = (): ReactElement => {
 	const isDesktop = useMediaQuery('(min-width:1024px)');
+	const homeLang = useAppSelector((state) => state.lang.text.navHome);
+	const profileLang = useAppSelector((state) => state.lang.text.navProfile);
+	const boardsLang = useAppSelector((state) => state.lang.text.navBoards);
+	const signInLang = useAppSelector((state) => state.lang.text.singIn);
+	const signUpLang = useAppSelector((state) => state.lang.text.singUp);
+	const signOutLang = useAppSelector((state) => state.lang.text.singOut);
+
 
 	return (
 		<StyledNav>
@@ -19,28 +28,33 @@ const Nav: FC = (): ReactElement => {
 				isDesktop && <>
 					<AsideButton startIcon={<HomeOutlinedIcon />}>
 						<Link href='/' >
-							Home
+							{homeLang}
 						</Link>
 					</AsideButton>
 					<AsideButton startIcon={<ContentPasteOutlinedIcon />}>
 						<Link href='/boards' >
-							Boards
+							{boardsLang}
 						</Link>
 					</AsideButton>
 					<AsideButton startIcon={<AccountCircleIcon />}>
 						<Link href='/profile' >
-							Profile
+							{profileLang}
 						</Link>
 					</AsideButton>
 					<Divider />
 					<AsideButton startIcon={<LoginIcon />}>
 						<Link href='/signin' >
-							Sign In
+							{signInLang}
 						</Link>
 					</AsideButton>
 					<AsideButton startIcon={<GroupAddIcon />}>
 						<Link href='/signup' >
-							Sign Un
+							{signUpLang}
+						</Link>
+					</AsideButton>
+					<AsideButton startIcon={<LogoutOutlinedIcon />}>
+						<Link href='/' >
+							{signOutLang}
 						</Link>
 					</AsideButton>
 				</>
@@ -80,6 +94,13 @@ const Nav: FC = (): ReactElement => {
 					>
 						<Link href='/signup' >
 							<GroupAddIcon />
+						</Link>
+					</IconButton>
+					<IconButton
+						color="secondary"
+					>
+						<Link href='/' >
+							<LogoutOutlinedIcon />
 						</Link>
 					</IconButton>
 				</>

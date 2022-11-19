@@ -16,8 +16,10 @@ export interface LangLayoutModel {
   homeBtn: string;
   navProfile: string;
   navBoards: string;
+  navHome: string;
   singIn: string;
   singUp: string;
+  singOut: string;
   register: string;
   noAccount: string;
   hasAccount: string;
