@@ -2,7 +2,7 @@ import { ReactNode } from 'react';
 import { SubmitHandler } from 'react-hook-form';
 
 export interface UserUpdateFormDataModel {
-	name?: string;
+	name: string;
 	login: string;
 	password: string;
 }
