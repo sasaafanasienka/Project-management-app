@@ -7,22 +7,8 @@ const Board: FC = (): ReactElement => (
 	<>
 		<PageHeading text='Boards > Board name'></PageHeading>
 		<FlexBox justifyContent='flex-start' alignItems='stretch' wrap='nowrap'>
-			<Column></Column>
-			<Column></Column>
-			<Column></Column>
-			<Column></Column>
-			<Column></Column>
-			<Column></Column>
-			<Column></Column>
-			<Column></Column>
-			<Column></Column>
-			{/* {temporaryBoardsMock.map((el) => (
-				<BoardLink
-					key={el.id}
-					title={el.title}
-					description={el.description}
-				/>
-			))} */}
+			<Column title="first column"></Column>
+			<Column title="second column"></Column>
 		</FlexBox>
 	</>
 );
