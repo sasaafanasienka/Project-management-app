@@ -6,6 +6,7 @@ import LoginIcon from '@mui/icons-material/Login';
 import { IconButton } from '@mui/material';
 import { FC, ReactElement } from 'react';
 import useMediaQuery from '@mui/material/useMediaQuery';
+import Link from 'next/link';
 import StyledAside from './StyledAside';
 import AsideButton from '../buttons/aside-button/AsideButton';
 
@@ -17,44 +18,69 @@ const Aside: FC = (): ReactElement => {
 		<StyledAside>
 			{
 				isDesktop && <>
-					<AsideButton href="/" startIcon={<HomeOutlinedIcon />}>Home</AsideButton>
-					<AsideButton href="/boards" startIcon={<ContentPasteOutlinedIcon />}>Boards</AsideButton>
-					<AsideButton href="/profile" startIcon={<AccountCircleIcon />}>Profile</AsideButton>
-					<AsideButton href="/signin" startIcon={<LoginIcon />}>Sign In</AsideButton>
-					<AsideButton href="/signup" startIcon={<GroupAddIcon />}>Sign Up</AsideButton>
+					<AsideButton startIcon={<HomeOutlinedIcon />}>
+						<Link href='/' >
+							Home
+						</Link>
+					</AsideButton>
+					<AsideButton startIcon={<ContentPasteOutlinedIcon />}>
+						<Link href='/boards' >
+							Boards
+						</Link>
+					</AsideButton>
+					<AsideButton startIcon={<AccountCircleIcon />}>
+						<Link href='/profile' >
+							Profile
+						</Link>
+					</AsideButton>
+					<AsideButton startIcon={<LoginIcon />}>
+						<Link href='/signin' >
+							Sign In
+						</Link>
+					</AsideButton>
+					<AsideButton startIcon={<GroupAddIcon />}>
+						<Link href='/signup' >
+							Sign Un
+						</Link>
+					</AsideButton>
 				</>
 			}
 			{
 				!isDesktop && <>
 					<IconButton
 						color="secondary"
-						href="/"
 					>
-						<HomeOutlinedIcon />
+						<Link href='/' >
+							<HomeOutlinedIcon />
+						</Link>
 					</IconButton>
 					<IconButton
 						color="secondary"
-						href="/boards"
 					>
-						<ContentPasteOutlinedIcon />
+						<Link href='/boards' >
+							<ContentPasteOutlinedIcon />
+						</Link>
 					</IconButton>
 					<IconButton
 						color="secondary"
-						href="/profile"
 					>
-						<AccountCircleIcon />
+						<Link href='/profile' >
+							<AccountCircleIcon />
+						</Link>
 					</IconButton>
 					<IconButton
 						color="secondary"
-						href="/signin"
 					>
-						<LoginIcon />
+						<Link href='/signin' >
+							<LoginIcon />
+						</Link>
 					</IconButton>
 					<IconButton
 						color="secondary"
-						href="/signup"
 					>
-						<GroupAddIcon />
+						<Link href='/signup' >
+							<GroupAddIcon />
+						</Link>
 					</IconButton>
 				</>
 			}
