@@ -4,7 +4,7 @@ export interface InitialStateUserModel {
   isCreated: boolean;
   error: string;
 	user: {
-		_id: string;
+		id: string;
 		name: string;
 		login: string;
 		token: string;
@@ -12,7 +12,7 @@ export interface InitialStateUserModel {
 }
 
 export interface NewUserResponseModel {
-  _id: string;
+  id: string;
   name: string;
   login: string;
 }
