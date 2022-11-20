@@ -1,18 +1,24 @@
 import { Button } from '@mui/material';
 import { FC, ReactElement } from 'react';
+import { useAppSelector } from '../../../redux/store';
 import { StyledHomeSection } from '../layout/StyledHomeLayout';
 
-const HomeTitle: FC = (): ReactElement => (
-	<StyledHomeSection>
-		<h1>
-      Kanban board for teams to organize their work
-		</h1>
-		<p>
-      Collaborate, manage projects, and reach new productivity peaks.
-      Accomplish it all with RS Project Management App.
-		</p>
-		<Button color="primary" size="large" variant="contained">Get started</Button>
-	</StyledHomeSection>
-);
+const HomeTitle: FC = (): ReactElement => {
+	const titleLang = useAppSelector((state) => state.lang.text.homeTitle);
+	const descrLang = useAppSelector((state) => state.lang.text.homeDescription);
+	const btnLang = useAppSelector((state) => state.lang.text.homeBtn);
+
+	return (
+		<StyledHomeSection>
+			<h1>
+				{titleLang}
+			</h1>
+			<p>
+				{descrLang}
+			</p>
+			<Button color="primary" size="large" variant="contained">{btnLang}</Button>
+		</StyledHomeSection>
+	);
+};
 
 export default HomeTitle;
