@@ -7,10 +7,12 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined';
 import GroupAddIcon from '@mui/icons-material/GroupAdd';
 import LoginIcon from '@mui/icons-material/Login';
+import { useRouter } from 'next/router';
 import StyledNav from './StyledNav';
 import AsideButton from '../../buttons/aside-button/AsideButton';
 import Divider from '../../divider/Divider';
-import { useAppSelector } from '../../../redux/store';
+import { useAppDispatch, useAppSelector } from '../../../redux/store';
+import { logOut } from '../../../redux/slices/userSlice';
 
 const Nav: FC = (): ReactElement => {
 	const isDesktop = useMediaQuery('(min-width:1024px)');
@@ -22,6 +24,14 @@ const Nav: FC = (): ReactElement => {
 	const signOutLang = useAppSelector((state) => state.lang.text.singOut);
 	const isAuth = useAppSelector((state) => state.user.isAuth);
 
+	const router = useRouter();
+
+	const dispatch = useAppDispatch();
+
+	const handleLogOut = () => {
+		dispatch(logOut());
+		router.push('/', undefined, { shallow: true });
+	};
 
 	return (
 		<StyledNav>
@@ -57,10 +67,8 @@ const Nav: FC = (): ReactElement => {
 							</AsideButton>
 
 						</>
-						: <AsideButton startIcon={<LogoutOutlinedIcon />}>
-							<Link href='/' >
-								{signOutLang}
-							</Link>
+						: <AsideButton onClick={handleLogOut} startIcon={<LogoutOutlinedIcon />}>
+							{signOutLang}
 						</AsideButton>
 					}
 				</>
