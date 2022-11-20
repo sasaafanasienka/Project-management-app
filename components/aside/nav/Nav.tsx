@@ -20,6 +20,7 @@ const Nav: FC = (): ReactElement => {
 	const signInLang = useAppSelector((state) => state.lang.text.singIn);
 	const signUpLang = useAppSelector((state) => state.lang.text.singUp);
 	const signOutLang = useAppSelector((state) => state.lang.text.singOut);
+	const isAuth = useAppSelector((state) => state.user.isAuth);
 
 
 	return (
@@ -42,21 +43,26 @@ const Nav: FC = (): ReactElement => {
 						</Link>
 					</AsideButton>
 					<Divider />
-					<AsideButton startIcon={<LoginIcon />}>
-						<Link href='/signin' >
-							{signInLang}
-						</Link>
-					</AsideButton>
-					<AsideButton startIcon={<GroupAddIcon />}>
-						<Link href='/signup' >
-							{signUpLang}
-						</Link>
-					</AsideButton>
-					<AsideButton startIcon={<LogoutOutlinedIcon />}>
-						<Link href='/' >
-							{signOutLang}
-						</Link>
-					</AsideButton>
+					{!isAuth
+						? <>
+							<AsideButton startIcon={<LoginIcon />}>
+								<Link href='/signin' >
+									{signInLang}
+								</Link>
+							</AsideButton>
+							<AsideButton startIcon={<GroupAddIcon />}>
+								<Link href='/signup' >
+									{signUpLang}
+								</Link>
+							</AsideButton>
+
+						</>
+						: <AsideButton startIcon={<LogoutOutlinedIcon />}>
+							<Link href='/' >
+								{signOutLang}
+							</Link>
+						</AsideButton>
+					}
 				</>
 			}
 			{
@@ -82,27 +88,31 @@ const Nav: FC = (): ReactElement => {
 							<AccountCircleIcon />
 						</Link>
 					</IconButton>
-					<IconButton
-						color="secondary"
-					>
-						<Link href='/signin' >
-							<LoginIcon />
-						</Link>
-					</IconButton>
-					<IconButton
-						color="secondary"
-					>
-						<Link href='/signup' >
-							<GroupAddIcon />
-						</Link>
-					</IconButton>
-					<IconButton
-						color="secondary"
-					>
-						<Link href='/' >
-							<LogoutOutlinedIcon />
-						</Link>
-					</IconButton>
+					{!isAuth
+						? <>
+							<IconButton
+								color="secondary"
+							>
+								<Link href='/signin' >
+									<LoginIcon />
+								</Link>
+							</IconButton>
+							<IconButton
+								color="secondary"
+							>
+								<Link href='/signup' >
+									<GroupAddIcon />
+								</Link>
+							</IconButton>
+						</>
+						: <IconButton
+							color="secondary"
+						>
+							<Link href='/' >
+								<LogoutOutlinedIcon />
+							</Link>
+						</IconButton>
+					}
 				</>
 			}
 		</StyledNav>
