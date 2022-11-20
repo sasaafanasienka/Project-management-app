@@ -1,6 +1,8 @@
 /* eslint-disable no-mixed-spaces-and-tabs */
 /* eslint-disable no-param-reassign */
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
+// eslint-disable-next-line camelcase
+import jwt_decode from 'jwt-decode';
 import { InitialStateUserModel, NewUserRequestPropsModel, NewUserResponseModel } from './interfaces';
 
 const BASE_URL = 'https://final-task-backend-production-287c.up.railway.app/';
@@ -11,7 +13,7 @@ const initialState: InitialStateUserModel = {
 	isLoading: false,
 	error: '',
 	user: {
-		_id: '',
+		id: '',
 		name: '',
 		login: '',
 		token: '',
@@ -105,6 +107,10 @@ export const userSlice = createSlice({
 			(state, action: PayloadAction<{token: string}>) => {
 				state.isLoading = false;
 				state.user.token = action.payload.token;
+				localStorage.setItem('appToken', JSON.stringify(action.payload.token));
+				const { id, login } = jwt_decode<{id: string; login: string}>(action.payload.token);
+				state.user.id = id;
+				state.user.login = login;
 				state.isAuth = true;
 			},
 		);
