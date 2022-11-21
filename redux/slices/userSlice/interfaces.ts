@@ -2,6 +2,7 @@ export interface InitialStateUserModel {
 	isAuth: boolean;
   isLoading: boolean;
   isCreated: boolean;
+  isDeleted: boolean;
   error: string;
 	user: {
 		id: string;
@@ -24,6 +25,11 @@ export interface NewUserRequestPropsModel {
 }
 
 export interface GetUserByIdProps {
+  id: string;
+  token: string;
+}
+
+export interface DeleteUserProps {
   id: string;
   token: string;
 }

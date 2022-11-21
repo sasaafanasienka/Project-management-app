@@ -3,6 +3,7 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import decodeToken from '../../../utils/decodeToken';
 import {
+	DeleteUserProps,
 	GetUserByIdProps,
 	GetUserByIdResponceModel,
 	InitialStateUserModel,
@@ -16,6 +17,7 @@ const initialState: InitialStateUserModel = {
 	isAuth: false,
 	isCreated: false,
 	isLoading: false,
+	isDeleted: false,
 	error: '',
 	user: {
 		id: '',
@@ -103,15 +105,40 @@ export const getUserById = createAsyncThunk<
 		}
 	});
 
+export const deleteUser = createAsyncThunk<
+		GetUserByIdResponceModel,
+		DeleteUserProps,
+		{ rejectValue: string }
+	>('user/deleteUser', async (props, { rejectWithValue }) => {
+		try {
+			const response = await fetch(`${BASE_URL}users/${props.id}`, {
+				method: 'DELETE',
+				headers: {
+					'Content-Type': 'application/json',
+					Authorization: `Bearer ${props.token}`,
+				},
+			});
+			if (!response.ok) {
+				const { statusCode, message } = await response.json();
+  			throw new Error(`${statusCode} ${message}`);
+			}
+			return await response.json();
+		} catch (err) {
+			if (err instanceof Error) {
+  			return rejectWithValue(`${err.message}`);
+  		}
+  		return rejectWithValue('Unknown Error! Try to refresh the page');
+		}
+	});
+
 export const userSlice = createSlice({
 	name: 'user',
 	initialState,
 	reducers: {
-		logOut: (state) => {
-			state.user = initialState.user;
-			state.isAuth = false;
+		logOut: () => {
 			const expiped = Date.now() - 1000;
 			document.cookie = `token=; expires${expiped}`;
+			return initialState;
 		},
 		restoreUserToken: (state, action: PayloadAction<{
 				id: string;
@@ -175,6 +202,21 @@ export const userSlice = createSlice({
 			},
 		);
 		builder.addCase(getUserById.rejected, (state, action) => {
+			state.isLoading = false;
+			state.error = action.payload as string;
+		});
+		builder.addCase(deleteUser.pending, (state) => {
+			state.isLoading = true;
+			state.error = '';
+		});
+		builder.addCase(
+			deleteUser.fulfilled,
+			(state) => {
+				state.isLoading = false;
+				state.isDeleted = true;
+			},
+		);
+		builder.addCase(deleteUser.rejected, (state, action) => {
 			state.isLoading = false;
 			state.error = action.payload as string;
 		});
