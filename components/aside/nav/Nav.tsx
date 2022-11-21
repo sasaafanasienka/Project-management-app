@@ -37,22 +37,24 @@ const Nav: FC = (): ReactElement => {
 		<StyledNav>
 			{
 				isDesktop && <>
-					<AsideButton startIcon={<HomeOutlinedIcon />}>
-						<Link href='/' >
-							{homeLang}
-						</Link>
-					</AsideButton>
-					<AsideButton startIcon={<ContentPasteOutlinedIcon />}>
-						<Link href='/boards' >
-							{boardsLang}
-						</Link>
-					</AsideButton>
-					<AsideButton startIcon={<AccountCircleIcon />}>
-						<Link href='/profile' >
-							{profileLang}
-						</Link>
-					</AsideButton>
-					<Divider />
+					{isAuth && <>
+						<AsideButton startIcon={<HomeOutlinedIcon />}>
+							<Link href='/' >
+								{homeLang}
+							</Link>
+						</AsideButton>
+						<AsideButton startIcon={<ContentPasteOutlinedIcon />}>
+							<Link href='/boards' >
+								{boardsLang}
+							</Link>
+						</AsideButton>
+						<AsideButton startIcon={<AccountCircleIcon />}>
+							<Link href='/profile' >
+								{profileLang}
+							</Link>
+						</AsideButton>
+						<Divider />
+					</>}
 					{!isAuth
 						? <>
 							<AsideButton startIcon={<LoginIcon />}>
@@ -65,7 +67,6 @@ const Nav: FC = (): ReactElement => {
 									{signUpLang}
 								</Link>
 							</AsideButton>
-
 						</>
 						: <AsideButton onClick={handleLogOut} startIcon={<LogoutOutlinedIcon />}>
 							{signOutLang}
@@ -75,27 +76,30 @@ const Nav: FC = (): ReactElement => {
 			}
 			{
 				!isDesktop && <>
-					<IconButton
-						color="secondary"
-					>
-						<Link href='/' >
-							<HomeOutlinedIcon />
-						</Link>
-					</IconButton>
-					<IconButton
-						color="secondary"
-					>
-						<Link href='/boards' >
-							<ContentPasteOutlinedIcon />
-						</Link>
-					</IconButton>
-					<IconButton
-						color="secondary"
-					>
-						<Link href='/profile' >
-							<AccountCircleIcon />
-						</Link>
-					</IconButton>
+					{isAuth && <>
+
+						<IconButton
+							color="secondary"
+						>
+							<Link href='/' >
+								<HomeOutlinedIcon />
+							</Link>
+						</IconButton>
+						<IconButton
+							color="secondary"
+						>
+							<Link href='/boards' >
+								<ContentPasteOutlinedIcon />
+							</Link>
+						</IconButton>
+						<IconButton
+							color="secondary"
+						>
+							<Link href='/profile' >
+								<AccountCircleIcon />
+							</Link>
+						</IconButton>
+					</>}
 					{!isAuth
 						? <>
 							<IconButton
