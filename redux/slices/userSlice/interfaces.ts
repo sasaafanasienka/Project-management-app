@@ -22,3 +22,14 @@ export interface NewUserRequestPropsModel {
   login: string;
   password: string;
 }
+
+export interface GetUserByIdProps {
+  id: string;
+  token: string;
+}
+
+export interface GetUserByIdResponceModel {
+  _id: string;
+  name: string;
+  login: string;
+}

@@ -1,6 +1,6 @@
 import { useRouter } from 'next/router';
 import { FC, ReactElement, useEffect } from 'react';
-import { logInUser } from '../../redux/slices/userSlice';
+import { getUserById, logInUser } from '../../redux/slices/userSlice';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import BottomLink from '../validationForm/bottomLink/BottomLink';
 import FormHeader from '../validationForm/formHeader/FormHeader';
@@ -17,6 +17,8 @@ const SignIn: FC = (): ReactElement => {
 	const dispatch = useAppDispatch();
 	const isAuth = useAppSelector((state) => state.user.isAuth);
 	const router = useRouter();
+	const id = useAppSelector((state) => state.user.user.id);
+	const token = useAppSelector((state) => state.user.user.token);
 
 	const onSubmit = (data: UserUpdateFormDataModel) => {
 		dispatch(logInUser(data));
@@ -24,9 +26,10 @@ const SignIn: FC = (): ReactElement => {
 
 	useEffect(() => {
 		if (isAuth) {
+			dispatch(getUserById({ id, token }));
 			router.push('/boards', undefined, { shallow: true });
 		}
-	}, [isAuth, router]);
+	}, [dispatch, id, isAuth, router, token]);
 
 
 	return (
