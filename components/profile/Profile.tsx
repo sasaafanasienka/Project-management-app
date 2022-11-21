@@ -1,11 +1,15 @@
 import { Button } from '@mui/material';
-import { FC, ReactElement, useState } from 'react';
-import { useAppSelector } from '../../redux/store';
+import {
+	FC, ReactElement, useEffect, useState,
+} from 'react';
+import { useRouter } from 'next/router';
+import { useAppDispatch, useAppSelector } from '../../redux/store';
 import ModalWindow from '../modal/ModalWindow';
 import FormWrapper from '../validationForm/formWrapper/FormWrapper';
 import { UserUpdateFormDataModel } from '../validationForm/interfaces';
 import ValidationForm from '../validationForm/ValidationForm';
 import UserInfo from './userInfo/UserInfo';
+import { deleteUser, logOut } from '../../redux/slices/userSlice';
 
 
 const Profile: FC = (): ReactElement => {
@@ -17,14 +21,29 @@ const Profile: FC = (): ReactElement => {
 	const modalDescrLang = useAppSelector((state) => state.lang.text.confirmation);
 	const cancelBtnLang = useAppSelector((state) => state.lang.text.cancelBtn);
 
+	const id = useAppSelector((state) => state.user.user.id);
+	const token = useAppSelector((state) => state.user.user.token);
+	const isDeleted = useAppSelector((state) => state.user.isDeleted);
+
+	const dispatch = useAppDispatch();
+	const router = useRouter();
+
 	const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+
+	useEffect(() => {
+		if (isDeleted) {
+			setIsModalOpen(false);
+			dispatch(logOut());
+			router.push('/', undefined, { shallow: true });
+		}
+	}, [dispatch, isDeleted, router]);
 
 	const updateUser = (data: UserUpdateFormDataModel) => {
 		console.log(data);
 	};
 
-	const deleteUser = () => {
-		setIsModalOpen(false);
+	const handleDeleteUser = () => {
+		dispatch(deleteUser({ id, token }));
 	};
 
 	const handleModal = isModalOpen
@@ -44,10 +63,10 @@ const Profile: FC = (): ReactElement => {
 			<ModalWindow
 				title={modalTitleLang}
 				description={modalDescrLang}
-				closeFunc={deleteUser}
+				closeFunc={handleModal}
 				isOpened={isModalOpen}>
 				<Button onClick={handleModal}>{cancelBtnLang}</Button>
-				<Button variant='contained' autoFocus>
+				<Button onClick={handleDeleteUser} variant='contained' autoFocus>
 					{deleteBtn}
 				</Button>
 			</ModalWindow>
