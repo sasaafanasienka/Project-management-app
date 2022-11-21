@@ -5,10 +5,11 @@ import decodeToken from '../../../utils/decodeToken';
 import {
 	DeleteUserProps,
 	GetUserByIdProps,
-	GetUserByIdResponceModel,
+	UserResponceModel,
 	InitialStateUserModel,
 	NewUserRequestPropsModel,
 	NewUserResponseModel,
+	UpdateUserProps,
 } from './interfaces';
 
 const BASE_URL = 'https://final-task-backend-production-287c.up.railway.app/';
@@ -18,6 +19,7 @@ const initialState: InitialStateUserModel = {
 	isCreated: false,
 	isLoading: false,
 	isDeleted: false,
+	isUpdated: false,
 	error: '',
 	user: {
 		id: '',
@@ -80,7 +82,7 @@ export const logInUser = createAsyncThunk<
   });
 
 export const getUserById = createAsyncThunk<
-		GetUserByIdResponceModel,
+		UserResponceModel,
 		GetUserByIdProps,
 		{ rejectValue: string }
 	>('user/getUserById', async (props, { rejectWithValue }) => {
@@ -106,7 +108,7 @@ export const getUserById = createAsyncThunk<
 	});
 
 export const deleteUser = createAsyncThunk<
-		GetUserByIdResponceModel,
+		UserResponceModel,
 		DeleteUserProps,
 		{ rejectValue: string }
 	>('user/deleteUser', async (props, { rejectWithValue }) => {
@@ -117,6 +119,33 @@ export const deleteUser = createAsyncThunk<
 					'Content-Type': 'application/json',
 					Authorization: `Bearer ${props.token}`,
 				},
+			});
+			if (!response.ok) {
+				const { statusCode, message } = await response.json();
+  			throw new Error(`${statusCode} ${message}`);
+			}
+			return await response.json();
+		} catch (err) {
+			if (err instanceof Error) {
+  			return rejectWithValue(`${err.message}`);
+  		}
+  		return rejectWithValue('Unknown Error! Try to refresh the page');
+		}
+	});
+
+export const updateUser = createAsyncThunk<
+		UserResponceModel,
+		UpdateUserProps,
+		{ rejectValue: string }
+	>('user/updateUser', async (props, { rejectWithValue }) => {
+		try {
+			const response = await fetch(`${BASE_URL}users/${props.id}`, {
+				method: 'PUT',
+				headers: {
+					'Content-Type': 'application/json',
+					Authorization: `Bearer ${props.token}`,
+				},
+				body: JSON.stringify(props.body),
 			});
 			if (!response.ok) {
 				const { statusCode, message } = await response.json();
@@ -195,7 +224,7 @@ export const userSlice = createSlice({
 		});
 		builder.addCase(
 			getUserById.fulfilled,
-			(state, action: PayloadAction<GetUserByIdResponceModel>) => {
+			(state, action: PayloadAction<UserResponceModel>) => {
 				state.isLoading = false;
 				state.user.login = action.payload.login;
 				state.user.name = action.payload.name;
@@ -217,6 +246,21 @@ export const userSlice = createSlice({
 			},
 		);
 		builder.addCase(deleteUser.rejected, (state, action) => {
+			state.isLoading = false;
+			state.error = action.payload as string;
+		});
+		builder.addCase(updateUser.pending, (state) => {
+			state.isLoading = true;
+			state.error = '';
+		});
+		builder.addCase(
+			updateUser.fulfilled,
+			(state) => {
+				state.isLoading = false;
+				state.isUpdated = true;
+			},
+		);
+		builder.addCase(updateUser.rejected, (state, action) => {
 			state.isLoading = false;
 			state.error = action.payload as string;
 		});
