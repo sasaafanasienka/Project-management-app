@@ -9,7 +9,7 @@ import FormWrapper from '../validationForm/formWrapper/FormWrapper';
 import { UserUpdateFormDataModel } from '../validationForm/interfaces';
 import ValidationForm from '../validationForm/ValidationForm';
 import UserInfo from './userInfo/UserInfo';
-import { deleteUser, logOut } from '../../redux/slices/userSlice';
+import { deleteUser, logOut, updateUser } from '../../redux/slices/userSlice';
 
 
 const Profile: FC = (): ReactElement => {
@@ -24,6 +24,7 @@ const Profile: FC = (): ReactElement => {
 	const id = useAppSelector((state) => state.user.user.id);
 	const token = useAppSelector((state) => state.user.user.token);
 	const isDeleted = useAppSelector((state) => state.user.isDeleted);
+	const isUpdated = useAppSelector((state) => state.user.isUpdated);
 
 	const dispatch = useAppDispatch();
 	const router = useRouter();
@@ -38,8 +39,16 @@ const Profile: FC = (): ReactElement => {
 		}
 	}, [dispatch, isDeleted, router]);
 
-	const updateUser = (data: UserUpdateFormDataModel) => {
-		console.log(data);
+	useEffect(() => {
+		if (isUpdated) {
+			setIsModalOpen(false);
+			dispatch(logOut());
+			router.push('/signin', undefined, { shallow: true });
+		}
+	}, [dispatch, isUpdated, router]);
+
+	const handleUpdateUser = (data: UserUpdateFormDataModel) => {
+		dispatch(updateUser({ id, token, body: { ...data } }));
 	};
 
 	const handleDeleteUser = () => {
@@ -54,7 +63,7 @@ const Profile: FC = (): ReactElement => {
 		<>
 			<FormWrapper>
 				<UserInfo />
-				<ValidationForm header={title} submitBtnTxt={submitBtnTxt} onSubmit={updateUser} >
+				<ValidationForm header={title} submitBtnTxt={submitBtnTxt} onSubmit={handleUpdateUser} >
 					<Button onClick={handleModal} color="warning" size="large" variant='outlined'>
 						{deleteBtn}
 					</Button>
