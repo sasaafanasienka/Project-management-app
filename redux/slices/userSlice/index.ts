@@ -2,7 +2,15 @@
 /* eslint-disable no-param-reassign */
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import decodeToken from '../../../utils/decodeToken';
-import { InitialStateUserModel, NewUserRequestPropsModel, NewUserResponseModel } from './interfaces';
+import {
+	DeleteUserProps,
+	GetUserByIdProps,
+	UserResponceModel,
+	InitialStateUserModel,
+	NewUserRequestPropsModel,
+	NewUserResponseModel,
+	UpdateUserProps,
+} from './interfaces';
 
 const BASE_URL = 'https://final-task-backend-production-287c.up.railway.app/';
 
@@ -10,6 +18,8 @@ const initialState: InitialStateUserModel = {
 	isAuth: false,
 	isCreated: false,
 	isLoading: false,
+	isDeleted: false,
+	isUpdated: false,
 	error: '',
 	user: {
 		id: '',
@@ -71,13 +81,103 @@ export const logInUser = createAsyncThunk<
     	}
   });
 
+export const getUserById = createAsyncThunk<
+		UserResponceModel,
+		GetUserByIdProps,
+		{ rejectValue: string }
+	>('user/getUserById', async (props, { rejectWithValue }) => {
+		try {
+			const response = await fetch(`${BASE_URL}users/${props.id}`, {
+				method: 'GET',
+				headers: {
+					'Content-Type': 'application/json',
+					Authorization: `Bearer ${props.token}`,
+				},
+			});
+			if (!response.ok) {
+				const { statusCode, message } = await response.json();
+  			throw new Error(`${statusCode} ${message}`);
+			}
+			return await response.json();
+		} catch (err) {
+			if (err instanceof Error) {
+  			return rejectWithValue(`${err.message}`);
+  		}
+  		return rejectWithValue('Unknown Error! Try to refresh the page');
+		}
+	});
+
+export const deleteUser = createAsyncThunk<
+		UserResponceModel,
+		DeleteUserProps,
+		{ rejectValue: string }
+	>('user/deleteUser', async (props, { rejectWithValue }) => {
+		try {
+			const response = await fetch(`${BASE_URL}users/${props.id}`, {
+				method: 'DELETE',
+				headers: {
+					'Content-Type': 'application/json',
+					Authorization: `Bearer ${props.token}`,
+				},
+			});
+			if (!response.ok) {
+				const { statusCode, message } = await response.json();
+  			throw new Error(`${statusCode} ${message}`);
+			}
+			return await response.json();
+		} catch (err) {
+			if (err instanceof Error) {
+  			return rejectWithValue(`${err.message}`);
+  		}
+  		return rejectWithValue('Unknown Error! Try to refresh the page');
+		}
+	});
+
+export const updateUser = createAsyncThunk<
+		UserResponceModel,
+		UpdateUserProps,
+		{ rejectValue: string }
+	>('user/updateUser', async (props, { rejectWithValue }) => {
+		try {
+			const response = await fetch(`${BASE_URL}users/${props.id}`, {
+				method: 'PUT',
+				headers: {
+					'Content-Type': 'application/json',
+					Authorization: `Bearer ${props.token}`,
+				},
+				body: JSON.stringify(props.body),
+			});
+			if (!response.ok) {
+				const { statusCode, message } = await response.json();
+  			throw new Error(`${statusCode} ${message}`);
+			}
+			return await response.json();
+		} catch (err) {
+			if (err instanceof Error) {
+  			return rejectWithValue(`${err.message}`);
+  		}
+  		return rejectWithValue('Unknown Error! Try to refresh the page');
+		}
+	});
 
 export const userSlice = createSlice({
 	name: 'user',
 	initialState,
 	reducers: {
-		logOut: (state) => {
-			state.isAuth = false;
+		logOut: () => {
+			const expiped = Date.now() - 1000;
+			document.cookie = `token=; expires${expiped}`;
+			return initialState;
+		},
+		restoreUserToken: (state, action: PayloadAction<{
+				id: string;
+				login: string;
+				token: string
+			}>) => {
+			state.user.id = action.payload.id;
+			state.user.login = action.payload.login;
+			state.user.token = action.payload.token;
+			state.isAuth = true;
 		},
 	},
 	extraReducers: (builder) => {
@@ -106,8 +206,9 @@ export const userSlice = createSlice({
 			(state, action: PayloadAction<{token: string}>) => {
 				state.isLoading = false;
 				state.user.token = action.payload.token;
-				localStorage.setItem('appToken', JSON.stringify(action.payload.token));
-				const { id, login } = decodeToken(action.payload.token);
+				const { id, login, exp } = decodeToken(action.payload.token);
+				const expired = new Date(exp * 1000);
+				document.cookie = `token=${action.payload.token}; path=/; expires=${expired}`;
 				state.user.id = id;
 				state.user.login = login;
 				state.isAuth = true;
@@ -117,7 +218,53 @@ export const userSlice = createSlice({
 			state.isLoading = false;
 			state.error = action.payload as string;
 		});
+		builder.addCase(getUserById.pending, (state) => {
+			state.isLoading = true;
+			state.error = '';
+		});
+		builder.addCase(
+			getUserById.fulfilled,
+			(state, action: PayloadAction<UserResponceModel>) => {
+				state.isLoading = false;
+				state.user.login = action.payload.login;
+				state.user.name = action.payload.name;
+			},
+		);
+		builder.addCase(getUserById.rejected, (state, action) => {
+			state.isLoading = false;
+			state.error = action.payload as string;
+		});
+		builder.addCase(deleteUser.pending, (state) => {
+			state.isLoading = true;
+			state.error = '';
+		});
+		builder.addCase(
+			deleteUser.fulfilled,
+			(state) => {
+				state.isLoading = false;
+				state.isDeleted = true;
+			},
+		);
+		builder.addCase(deleteUser.rejected, (state, action) => {
+			state.isLoading = false;
+			state.error = action.payload as string;
+		});
+		builder.addCase(updateUser.pending, (state) => {
+			state.isLoading = true;
+			state.error = '';
+		});
+		builder.addCase(
+			updateUser.fulfilled,
+			(state) => {
+				state.isLoading = false;
+				state.isUpdated = true;
+			},
+		);
+		builder.addCase(updateUser.rejected, (state, action) => {
+			state.isLoading = false;
+			state.error = action.payload as string;
+		});
 	},
 });
 
-export const { logOut } = userSlice.actions;
+export const { logOut, restoreUserToken } = userSlice.actions;

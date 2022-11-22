@@ -6,6 +6,7 @@ import { useForm } from 'react-hook-form';
 import { StyledValidationForm, StyledForm } from './StyledValidationForm';
 import FlexBox from '../styled/FlexBox';
 import { UserUpdateFormDataModel, ValidationFormProps } from './interfaces';
+import { useAppSelector } from '../../redux/store';
 
 const ValidationForm: FC<ValidationFormProps> = ({
 	header,
@@ -20,6 +21,9 @@ const ValidationForm: FC<ValidationFormProps> = ({
 			errors, isValid, isDirty, isSubmitted,
 		},
 	} = useForm<UserUpdateFormDataModel>();
+
+	const name = useAppSelector((state) => state.user.user.name);
+	const login = useAppSelector((state) => state.user.user.login);
 
 	useEffect(() => {
 		if (isSubmitted && resetForm) {
@@ -44,7 +48,7 @@ const ValidationForm: FC<ValidationFormProps> = ({
 			<h2>{header}</h2>
 			<StyledForm onSubmit={handleSubmit(onSubmit)} >
 				{!isSigningIn
-				&& <TextField label="Name" variant="outlined" {...register('name', {
+				&& <TextField label="Name" variant="outlined" defaultValue={name} {...register('name', {
 					required: 'This field is required',
 					minLength: {
 						value: 2,
@@ -57,7 +61,7 @@ const ValidationForm: FC<ValidationFormProps> = ({
 				})} error={!!errors.name} helperText={errors?.name ? errors?.name.message : null}
 				/>
 				}
-				<TextField label="Login" variant="outlined" {...register('login', {
+				<TextField label="Login" variant="outlined" defaultValue={login} {...register('login', {
 					required: 'This field is required',
 					minLength: {
 						value: 2,
