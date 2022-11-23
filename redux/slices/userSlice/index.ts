@@ -1,25 +1,21 @@
 /* eslint-disable no-mixed-spaces-and-tabs */
 /* eslint-disable no-param-reassign */
-import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import {
+	createAsyncThunk, createSlice, PayloadAction, Store,
+} from '@reduxjs/toolkit';
 import decodeToken from '../../../utils/decodeToken';
 import {
-	DeleteUserProps,
-	GetUserByIdProps,
 	UserResponceModel,
 	InitialStateUserModel,
 	NewUserRequestPropsModel,
 	NewUserResponseModel,
-	UpdateUserProps,
 } from './interfaces';
 
 const BASE_URL = 'https://final-task-backend-production-287c.up.railway.app/';
 
 const initialState: InitialStateUserModel = {
 	isAuth: false,
-	isCreated: false,
 	isLoading: false,
-	isDeleted: false,
-	isUpdated: false,
 	error: '',
 	user: {
 		id: '',
@@ -81,84 +77,79 @@ export const logInUser = createAsyncThunk<
     	}
   });
 
-export const getUserById = createAsyncThunk<
-		UserResponceModel,
-		GetUserByIdProps,
-		{ rejectValue: string }
-	>('user/getUserById', async (props, { rejectWithValue }) => {
-		try {
-			const response = await fetch(`${BASE_URL}users/${props.id}`, {
-				method: 'GET',
-				headers: {
-					'Content-Type': 'application/json',
-					Authorization: `Bearer ${props.token}`,
-				},
-			});
-			if (!response.ok) {
-				const { statusCode, message } = await response.json();
+export const getUserById = createAsyncThunk('user/getUserById', async (_, { rejectWithValue, getState }) => {
+	const state = getState() as ReturnType<Store['getState']>;
+	const { id, token } = state.user.user;
+	try {
+		const response = await fetch(`${BASE_URL}users/${id}`, {
+			method: 'GET',
+			headers: {
+				'Content-Type': 'application/json',
+				Authorization: `Bearer ${token}`,
+			},
+		});
+		if (!response.ok) {
+			const { statusCode, message } = await response.json();
   			throw new Error(`${statusCode} ${message}`);
-			}
-			return await response.json();
-		} catch (err) {
-			if (err instanceof Error) {
+		}
+		return await response.json();
+	} catch (err) {
+		if (err instanceof Error) {
   			return rejectWithValue(`${err.message}`);
   		}
   		return rejectWithValue('Unknown Error! Try to refresh the page');
-		}
-	});
+	}
+});
 
-export const deleteUser = createAsyncThunk<
-		UserResponceModel,
-		DeleteUserProps,
-		{ rejectValue: string }
-	>('user/deleteUser', async (props, { rejectWithValue }) => {
-		try {
-			const response = await fetch(`${BASE_URL}users/${props.id}`, {
-				method: 'DELETE',
-				headers: {
-					'Content-Type': 'application/json',
-					Authorization: `Bearer ${props.token}`,
-				},
-			});
-			if (!response.ok) {
-				const { statusCode, message } = await response.json();
+export const deleteUser = createAsyncThunk('user/deleteUser', async (_, { rejectWithValue, getState }) => {
+	const state = getState() as ReturnType<Store['getState']>;
+	const { id, token } = state.user.user;
+	console.log(id);
+	try {
+		const response = await fetch(`${BASE_URL}users/${id}`, {
+			method: 'DELETE',
+			headers: {
+				'Content-Type': 'application/json',
+				Authorization: `Bearer ${token}`,
+			},
+		});
+		if (!response.ok) {
+			const { statusCode, message } = await response.json();
   			throw new Error(`${statusCode} ${message}`);
-			}
-			return await response.json();
-		} catch (err) {
-			if (err instanceof Error) {
+		}
+		return await response.json();
+	} catch (err) {
+		if (err instanceof Error) {
   			return rejectWithValue(`${err.message}`);
   		}
   		return rejectWithValue('Unknown Error! Try to refresh the page');
-		}
-	});
+	}
+});
 
-export const updateUser = createAsyncThunk<
-		UserResponceModel,
-		UpdateUserProps,
-		{ rejectValue: string }
-	>('user/updateUser', async (props, { rejectWithValue }) => {
-		try {
-			const response = await fetch(`${BASE_URL}users/${props.id}`, {
-				method: 'PUT',
-				headers: {
-					'Content-Type': 'application/json',
-					Authorization: `Bearer ${props.token}`,
-				},
-				body: JSON.stringify(props.body),
-			});
-			if (!response.ok) {
-				const { statusCode, message } = await response.json();
+export const updateUser = createAsyncThunk('user/updateUser', async (body: NewUserRequestPropsModel, { rejectWithValue, getState }) => {
+	const state = getState() as ReturnType<Store['getState']>;
+	const { id, token } = state.user.user;
+	try {
+		const response = await fetch(`${BASE_URL}users/${id}`, {
+			method: 'PUT',
+			headers: {
+				'Content-Type': 'application/json',
+				Authorization: `Bearer ${token}`,
+			},
+			body: JSON.stringify(body),
+		});
+		if (!response.ok) {
+			const { statusCode, message } = await response.json();
   			throw new Error(`${statusCode} ${message}`);
-			}
-			return await response.json();
-		} catch (err) {
-			if (err instanceof Error) {
+		}
+		return await response.json();
+	} catch (err) {
+		if (err instanceof Error) {
   			return rejectWithValue(`${err.message}`);
   		}
   		return rejectWithValue('Unknown Error! Try to refresh the page');
-		}
-	});
+	}
+});
 
 export const userSlice = createSlice({
 	name: 'user',
@@ -190,7 +181,6 @@ export const userSlice = createSlice({
 			(state, action: PayloadAction<NewUserResponseModel>) => {
 				state.isLoading = false;
 				state.user = { ...state.user, ...action.payload };
-				state.isCreated = true;
 			},
 		);
 		builder.addCase(createUser.rejected, (state, action) => {
@@ -242,7 +232,6 @@ export const userSlice = createSlice({
 			deleteUser.fulfilled,
 			(state) => {
 				state.isLoading = false;
-				state.isDeleted = true;
 			},
 		);
 		builder.addCase(deleteUser.rejected, (state, action) => {
@@ -257,7 +246,6 @@ export const userSlice = createSlice({
 			updateUser.fulfilled,
 			(state) => {
 				state.isLoading = false;
-				state.isUpdated = true;
 			},
 		);
 		builder.addCase(updateUser.rejected, (state, action) => {

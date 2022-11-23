@@ -18,18 +18,17 @@ function App({ Component, pageProps }: AppProps) {
 	const interval = useRef<ReturnType<typeof setTimeout>>();
 
 	useEffect(() => {
-		// const LS = JSON.parse(localStorage.getItem('appToken') as string);
-		// console.log(LS);
 		if (document.cookie.replace(/(?:(?:^|.*;\s*)token\s*=\s*([^;]*).*$)|^.*$/, '$1')) {
 			const token = document.cookie.split('token=')[1].split(';')[0];
 			const { id, login, exp } = decodeToken(token);
 			dispatch(restoreUserToken({ id, login, token }));
-			dispatch(getUserById({ id, token }));
+			dispatch(getUserById());
 			interval.current = setTimeout(() => {
 				dispatch(logOut());
 			}, exp * 1000 - Date.now());
 			return () => clearTimeout(interval.current);
 		}
+		return () => {};
 	}, [dispatch]);
 
 	return (
