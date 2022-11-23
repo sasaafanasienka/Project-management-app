@@ -1,5 +1,5 @@
 import {
-	FC, ReactElement, useEffect,
+	FC, ReactElement,
 } from 'react';
 import { TextField, Button } from '@mui/material';
 import { useForm } from 'react-hook-form';
@@ -13,23 +13,17 @@ const ValidationForm: FC<ValidationFormProps> = ({
 	onSubmit,
 	submitBtnTxt,
 	children,
-	resetForm,
 	isSigningIn,
 }): ReactElement => {
 	const {
-		register, handleSubmit, reset, formState: {
-			errors, isValid, isDirty, isSubmitted,
+		register, handleSubmit, formState: {
+			errors, isValid, isDirty,
 		},
 	} = useForm<UserUpdateFormDataModel>();
 
 	const name = useAppSelector((state) => state.user.user.name);
 	const login = useAppSelector((state) => state.user.user.login);
 
-	useEffect(() => {
-		if (isSubmitted && resetForm) {
-			reset();
-		}
-	}, [isSubmitted, reset, resetForm]);
 
 	// eslint-disable-next-line consistent-return
 	const disableSubmitBtn = () => {
