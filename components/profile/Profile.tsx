@@ -15,10 +15,7 @@ import { deleteUser, logOut, updateUser } from '../../redux/slices/userSlice';
 
 const Profile: FC = (): ReactElement => {
 	const router = useRouter();
-	const isAuth = useAppSelector((state) => state.user.isAuth);
-	if (!isAuth) {
-		router.push('/signin', undefined, { shallow: true });
-	}
+
 	const title = useAppSelector((state) => state.lang.text.editProfile);
 	const submitBtnTxt = useAppSelector((state) => state.lang.text.editProfile);
 	const deleteBtn = useAppSelector((state) => state.lang.text.deleteBtn);

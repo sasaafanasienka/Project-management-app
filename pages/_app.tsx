@@ -12,6 +12,7 @@ import { useAppDispatch, wrapper } from '../redux/store';
 import Layout from '../components/layout/Layout';
 import decodeToken from '../utils/decodeToken';
 import { getUserById, logOut, restoreUserToken } from '../redux/slices/userSlice';
+import ErrorBoundary from '../components/errorBoundary/ErrorBoundary';
 
 function App({ Component, pageProps }: AppProps) {
 	const dispatch = useAppDispatch();
@@ -32,17 +33,19 @@ function App({ Component, pageProps }: AppProps) {
 	}, [dispatch]);
 
 	return (
-		<ThemeProvider theme={theme}>
-			<Layout>
-				<Component {...pageProps}>
-					<Head>
-						<link rel="preconnect" href="https://fonts.googleapis.com" />
-						<link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
-						<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
-					</Head>
-				</Component>
-			</Layout>
-		</ThemeProvider>
+		<ErrorBoundary>
+			<ThemeProvider theme={theme}>
+				<Layout>
+					<Component {...pageProps}>
+						<Head>
+							<link rel="preconnect" href="https://fonts.googleapis.com" />
+							<link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
+							<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
+						</Head>
+					</Component>
+				</Layout>
+			</ThemeProvider>
+		</ErrorBoundary>
 	);
 }
 
