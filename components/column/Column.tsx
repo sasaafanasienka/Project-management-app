@@ -2,13 +2,13 @@ import { FC, ReactElement, useState } from 'react';
 import DeleteIcon from '@mui/icons-material/Delete';
 import IconButton from '@mui/material/IconButton';
 import { Button } from '@mui/material';
+import { Draggable } from 'react-beautiful-dnd';
 import FlexBox from '../styled/FlexBox';
 import StyledColumn from './StyledColumn';
 import Task from '../task/Task';
 import ModalWindow from '../modal/ModalWindow';
 import { ColumnPropsModel } from './interfaces';
 import { ModalWindowStateModel } from '../modal/interfaces';
-
 
 const Column: FC<ColumnPropsModel> = (props): ReactElement => {
 	const { title, tasks } = { ...props };

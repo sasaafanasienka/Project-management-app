@@ -1,7 +1,9 @@
 import { FC, ReactElement, useState } from 'react';
+import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
 import Column from '../column/Column';
 import PageHeading from '../pageHeading/PageHeading';
 import FlexBox from '../styled/FlexBox';
+
 
 const Board: FC = (): ReactElement => {
 	const [columns, setColumns] = useState([
@@ -50,18 +52,34 @@ const Board: FC = (): ReactElement => {
 
 
 	return (
-		<>
+		<DragDropContext>
 			<PageHeading text='Boards > Board name'></PageHeading>
 			<FlexBox justifyContent='flex-start' alignItems='stretch' wrap='nowrap'>
-				{columns.map((column) => (
-					<Column
+				{columns.map((column, index) => (
+					<Droppable
+						draggableId={`draggable${index}`}
+						index={index}
 						key={column.title}
-						title={column.title}
-						tasks={column.tasks}
-					/>
+					>
+						<Draggable
+							draggableId={`draggable${index}`}
+							index={index}
+							key={column.title}
+						>
+							{(provided, snapshot) => (
+								<Column
+									ref={provided.innerRef}
+									{...provided.draggableProps}
+									{...provided.dragHandleProps}
+									title={column.title}
+									tasks={column.tasks}
+								/>
+							)}
+						</Draggable>
+					</Droppable>
 				))}
 			</FlexBox>
-		</>
+		</DragDropContext>
 	);
 };
 
