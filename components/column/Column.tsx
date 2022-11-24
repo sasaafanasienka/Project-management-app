@@ -11,7 +11,7 @@ import { ModalWindowStateModel } from '../modal/interfaces';
 
 
 const Column: FC<ColumnPropsModel> = (props): ReactElement => {
-	const { title } = { ...props };
+	const { title, tasks } = { ...props };
 
 	const [isModalOpened, setOpened] = useState<ModalWindowStateModel>(false);
 
@@ -36,18 +36,13 @@ const Column: FC<ColumnPropsModel> = (props): ReactElement => {
 						<DeleteIcon fontSize='small'/>
 					</IconButton>
 				</FlexBox>
-				<Task
-					title='First task'
-					description='Description'
-				/>
-				<Task
-					title='Second task'
-					description='Description'
-				/>
-				<Task
-					title='Second task'
-					description='Description'
-				/>
+				{tasks.map((task) => (
+					<Task
+						key={task.title}
+						title={task.title}
+						description={task.description}
+					/>
+				))}
 			</StyledColumn>
 			<ModalWindow
 				title={`Are you sure to delete the column "${title}"?`}
