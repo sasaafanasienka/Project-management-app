@@ -12,10 +12,47 @@ import FlexBox from '../styled/FlexBox';
 
 const Board: FC = (): ReactElement => {
 	const [columns, setColumns] = useState([
-		{ title: 'first', index: 1, id: 1 },
-		{ title: 'second', index: 2, id: 2 },
-		{ title: 'third', index: 3, id: 3 },
-		{ title: 'foutrh', index: 4, id: 4 },
+		{
+			title: 'first',
+			index: 1,
+			id: 1,
+			tasks: [
+				{
+					title: 'First task',
+					description: 'des',
+					id: 10,
+				},
+				{
+					title: 'Second task',
+					description: 'des',
+					id: 20,
+				},
+			],
+		},
+		{
+			title: 'second',
+			index: 2,
+			id: 2,
+			tasks: [
+				{
+					title: 'Third task',
+					description: 'des',
+					id: 30,
+				},
+			],
+		},
+		{
+			title: 'third',
+			index: 3,
+			id: 3,
+			tasks: [
+				{
+					title: 'Fourth task',
+					description: 'des',
+					id: 40,
+				},
+			],
+		},
 	]);
 
 	const moveColumn = (dragIndex: number, hoverIndex: number):void => {
@@ -27,12 +64,19 @@ const Board: FC = (): ReactElement => {
 		}));
 	};
 
+	const moveTask = () => {
+
+	};
+
 	const renderColumn = (column: ColumnPropsModel, index: number) => (
 		<Column
+			id={column.id}
 			index={index}
 			key={column.title}
 			title={column.title}
 			moveColumn={moveColumn}
+			moveTask={moveTask}
+			tasks={column.tasks}
 		/>
 	);
 

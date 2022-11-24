@@ -15,7 +15,7 @@ import { ModalWindowStateModel } from '../modal/interfaces';
 
 const Column: FC<ColumnPropsModel> = (props): ReactElement => {
 	const {
-		title, index, moveColumn, id,
+		title, index, id, tasks, moveColumn, moveTask,
 	} = { ...props };
 
 	const columnRef = useRef<HTMLDivElement>(null);
@@ -27,11 +27,11 @@ const Column: FC<ColumnPropsModel> = (props): ReactElement => {
 	}
 
 	const ItemTypes = {
-		CARD: 'card',
+		COLUMN: 'column',
 	};
 
 	const [{ handlerId }, drop] = useDrop<DragItem, void, { handlerId: Identifier | null }>({
-		accept: ItemTypes.CARD,
+		accept: ItemTypes.COLUMN,
 		collect(monitor) {
 			return {
 				handlerId: monitor.getHandlerId(),
@@ -43,42 +43,35 @@ const Column: FC<ColumnPropsModel> = (props): ReactElement => {
 			}
 			const dragIndex = item.index;
 			const hoverIndex = index;
-
 			if (dragIndex === hoverIndex) {
 				return;
 			}
 
 			const hoverBoundingRect = columnRef.current?.getBoundingClientRect();
-			// console.log(hoverBoundingRect.bottom);
-			// console.log(hoverBoundingRect.top);
-
-			// const hoverMiddleY = (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
-			const hoverMiddleX = (hoverBoundingRect.right - hoverBoundingRect.left) / 2;
-			// console.log(hoverMiddleX);
-
-			const clientOffset = monitor.getClientOffset();
-
-			// const hoverClientY = (clientOffset as XYCoord).y - hoverBoundingRect.top;
-			const hoverClientX = (clientOffset as XYCoord).x - hoverBoundingRect.left;
-
-			console.log(hoverClientX, hoverMiddleX);
-
-			if (dragIndex < hoverIndex && hoverClientX < hoverMiddleX) {
-				return;
+			const {
+				top, left, right, bottom,
+			} = hoverBoundingRect;
+			const initCursor = monitor.getInitialClientOffset();
+			const diffCursor = monitor.getDifferenceFromInitialOffset();
+			const cursor = {
+				x: (initCursor ? initCursor.x : 0) + (diffCursor ? diffCursor.x : 0),
+				y: (initCursor ? initCursor.y : 0) + (diffCursor ? diffCursor.y : 0),
+			};
+			if (
+				cursor.x > left + 50
+				&& cursor.x < right - 50
+				&& cursor.y > top + 50
+				&& cursor.y < bottom - 50
+			) {
+				console.log(true);
+				item.index = hoverIndex;
+				moveColumn(dragIndex, hoverIndex);
 			}
-
-			if (dragIndex > hoverIndex && hoverClientX > hoverMiddleX) {
-				return;
-			}
-
-			moveColumn(dragIndex, hoverIndex);
-
-			item.index = hoverIndex;
 		},
 	});
 
 	const [{ isDragging }, drag] = useDrag({
-		type: ItemTypes.CARD,
+		type: ItemTypes.COLUMN,
 		item: () => ({ id, index }),
 		collect: (monitor: any) => ({
 			isDragging: monitor.isDragging(),
@@ -112,18 +105,15 @@ const Column: FC<ColumnPropsModel> = (props): ReactElement => {
 						<DeleteIcon fontSize='small'/>
 					</IconButton>
 				</FlexBox>
-				<Task
-					title='First task'
-					description='Description'
-				/>
-				<Task
-					title='Second task'
-					description='Description'
-				/>
-				<Task
-					title='Second task'
-					description='Description'
-				/>
+				{tasks.map((task, idx) => <Task
+					key={idx}
+					title={task.title}
+					description={task.description}
+					moveTask={moveTask}
+					index={idx}
+					columnId={id}
+					columnIndex={index}
+				/>)}
 			</StyledColumn>
 			<ModalWindow
 				title={`Are you sure to delete the column "${title}"?`}
@@ -137,9 +127,7 @@ const Column: FC<ColumnPropsModel> = (props): ReactElement => {
 				</Button>
 			</ModalWindow>
 		</>
-
 	);
 };
-
 
 export default Column;
