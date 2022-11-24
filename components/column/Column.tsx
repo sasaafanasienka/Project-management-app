@@ -98,7 +98,11 @@ const Column: FC<ColumnPropsModel> = (props): ReactElement => {
 
 	return (
 		<>
-			<StyledColumn ref={columnRef} data-handler-id={handlerId} opacity={opacity}>
+			<StyledColumn
+				ref={columnRef}
+				data-handler-id={handlerId}
+				opacity={opacity}
+			>
 				<FlexBox justifyContent='space-between'>
 					<h3>{title}</h3>
 					<IconButton aria-label="delete" size="small" onClick={openModal}>
@@ -111,7 +115,7 @@ const Column: FC<ColumnPropsModel> = (props): ReactElement => {
 					description={task.description}
 					moveTask={moveTask}
 					index={idx}
-					columnId={id}
+					columnId={+id}
 					columnIndex={index}
 				/>)}
 			</StyledColumn>

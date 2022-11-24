@@ -44,10 +44,8 @@ const Task: FC<TaskPropsModel> = (props): ReactElement => {
 				return;
 			}
 
-			console.log(item);
-
-			const dragIndex = item.index;
-			// const dragColumnIndex = item.columnIndex;
+ 			const dragIndex = item.index;
+			const dragColumnIndex = item.columnIndex;
 			const hoverIndex = index;
 			const hoverColumnIndex = columnIndex;
 			const hoverColumnId = columnId;
@@ -56,7 +54,7 @@ const Task: FC<TaskPropsModel> = (props): ReactElement => {
 
 			}
 
-			console.log(monitor.getItem());
+			console.log(dragIndex, dragColumnIndex, '→', hoverIndex, hoverColumnIndex);
 
 
 			// const hoverBoundingRect = taskRef.current?.getBoundingClientRect();
