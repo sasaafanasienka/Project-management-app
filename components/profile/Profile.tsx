@@ -1,8 +1,9 @@
 import { Button } from '@mui/material';
 import {
-	FC, ReactElement, useEffect, useState,
+	FC, ReactElement, useState,
 } from 'react';
 import { useRouter } from 'next/router';
+import { toast } from 'react-toastify';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import ModalWindow from '../modal/ModalWindow';
 import FormWrapper from '../validationForm/formWrapper/FormWrapper';
@@ -13,6 +14,11 @@ import { deleteUser, logOut, updateUser } from '../../redux/slices/userSlice';
 
 
 const Profile: FC = (): ReactElement => {
+	const router = useRouter();
+	const isAuth = useAppSelector((state) => state.user.isAuth);
+	if (!isAuth) {
+		router.push('/signin', undefined, { shallow: true });
+	}
 	const title = useAppSelector((state) => state.lang.text.editProfile);
 	const submitBtnTxt = useAppSelector((state) => state.lang.text.editProfile);
 	const deleteBtn = useAppSelector((state) => state.lang.text.deleteBtn);
@@ -21,38 +27,35 @@ const Profile: FC = (): ReactElement => {
 	const modalDescrLang = useAppSelector((state) => state.lang.text.confirmation);
 	const cancelBtnLang = useAppSelector((state) => state.lang.text.cancelBtn);
 
-	const id = useAppSelector((state) => state.user.user.id);
-	const token = useAppSelector((state) => state.user.user.token);
-	const isDeleted = useAppSelector((state) => state.user.isDeleted);
-	const isUpdated = useAppSelector((state) => state.user.isUpdated);
-
 	const dispatch = useAppDispatch();
-	const router = useRouter();
 
 	const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
-	useEffect(() => {
-		if (isDeleted) {
-			setIsModalOpen(false);
-			dispatch(logOut());
-			router.push('/', undefined, { shallow: true });
-		}
-	}, [dispatch, isDeleted, router]);
-
-	useEffect(() => {
-		if (isUpdated) {
-			setIsModalOpen(false);
-			dispatch(logOut());
-			router.push('/signin', undefined, { shallow: true });
-		}
-	}, [dispatch, isUpdated, router]);
-
 	const handleUpdateUser = (data: UserUpdateFormDataModel) => {
-		dispatch(updateUser({ id, token, body: { ...data } }));
+		dispatch(updateUser(data))
+			.unwrap()
+			.then((responseData) => {
+				setIsModalOpen(false);
+				toast.success(`${responseData.name}, your account is updated`);
+				dispatch(logOut());
+			})
+			.catch((err) => toast.error(`An error has occured: ${err}`))
+			.finally(() => router.push('/signin', undefined, { shallow: true }));
 	};
 
 	const handleDeleteUser = () => {
-		dispatch(deleteUser({ id, token }));
+		dispatch(deleteUser())
+			.unwrap()
+			.then((responseData) => {
+				setIsModalOpen(false);
+				toast.success(`${responseData.name}, your account has been deleted`);
+				dispatch(logOut());
+				router.push('/', undefined, { shallow: true });
+			})
+			.catch((err) => {
+				toast.error(`An error has occured: ${err.message}`);
+				setIsModalOpen(false);
+			});
 	};
 
 	const handleModal = isModalOpen
