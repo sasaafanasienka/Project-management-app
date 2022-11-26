@@ -2,6 +2,7 @@ import { FC, ReactElement, useState } from 'react';
 import DeleteIcon from '@mui/icons-material/Delete';
 import IconButton from '@mui/material/IconButton';
 import { Button } from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
 import FlexBox from '../styled/FlexBox';
 import StyledColumn from './StyledColumn';
 import Task from '../task/Task';
@@ -9,6 +10,8 @@ import ModalWindow from '../modal/ModalWindow';
 import { ColumnPropsModel } from './interfaces';
 import { ModalWindowStateModel } from '../modal/interfaces';
 import { TaskModel } from '../task/interfaces';
+import StyledTaskList from './StyledTaskList';
+import StyledColumnTitle from './StyledColumnTitle';
 
 const tasksMck: TaskModel[] = [
 	{
@@ -41,6 +44,16 @@ const tasksMck: TaskModel[] = [
 		userId: 234236543,
 		users: ['1465151', '184151', '16556616'],
 	},
+	{
+		_id: '3',
+		title: 'Learn React',
+		order: 0,
+		boardId: '156541',
+		columnId: '165849',
+		description: 'However, many hooks are initialized with null-ish default values, and you may wonder how to provide types. Explicitly declare the type, and use a union type:',
+		userId: 234236543,
+		users: ['1465151', '184151', '16556616'],
+	},
 ];
 
 
@@ -65,12 +78,25 @@ const Column: FC<ColumnPropsModel> = (props): ReactElement => {
 		<>
 			<StyledColumn>
 				<FlexBox justifyContent='space-between'>
-					<h3>{title}</h3>
+					<StyledColumnTitle>
+						<h3>
+							{title.toUpperCase()}
+							<span>{tasksMck.length}</span>
+						</h3>
+					</StyledColumnTitle>
 					<IconButton aria-label="delete" size="small" onClick={openModal}>
 						<DeleteIcon fontSize='small'/>
 					</IconButton>
 				</FlexBox>
-				{tasksMck.map((item) => <Task key={item._id} task={item} />)}
+				<Button color='info'>
+					<FlexBox alignItems='center' justifyContent='center' gap='0'>
+						<AddIcon fontSize='small' />
+						Add new task
+					</FlexBox>
+				</Button>
+				<StyledTaskList>
+					{tasksMck.map((item) => <Task key={item._id} task={item} />)}
+				</StyledTaskList>
 			</StyledColumn>
 			<ModalWindow
 				title={`Are you sure to delete the column "${title}"?`}
