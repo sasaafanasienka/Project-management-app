@@ -55,39 +55,69 @@ const Board: FC = (): ReactElement => {
 		},
 	]);
 
-	const moveColumn = (dragIndex: number, hoverIndex: number):void => {
-		setColumns((prevColumns: ColumnPropsModel[]) => update(prevColumns, {
-			$splice: [
-				[dragIndex, 1],
-				[hoverIndex, 0, prevColumns[dragIndex] as ColumnPropsModel],
-			],
-		}));
+	const [currentColumn, setCurrenColumn] = useState(null);
+
+	const onDragOver = (e, column) => {
+		e.preventDefault();
+		const state1 = columns;
+		const deleted = state1.splice(currentColumn, 1);
+		const empty = {
+			empty: true,
+		};
+		const targetIndex = state1.indexOf(column);
+		state1.splice(targetIndex, 0, empty);
+		setColumns(state1);
+	};
+	const onDragLeave = (e) => {
+		// console.log(e);
+	};
+	const onDragStart = (e) => {
+		const { currentTarget } = e;
+		currentTarget.style.opacity = 0;
+		const targetIndex = +currentTarget.getAttribute('data-column-index');
+		setCurrenColumn(targetIndex);
+	};
+	const onDragEnd = (e) => {
+		const { currentTarget } = e;
+		currentTarget.style.opacity = 1;
+	};
+	const onDrop = (e, column) => {
+		e.preventDefault();
+		const state1 = columns;
+		const deleted = state1.splice(currentColumn, 1);
+		const targetIndex = state1.indexOf(column);
+		state1.splice(targetIndex, 0, deleted[0]);
+		console.log(state1.map((el) => el.title));
+		setColumns(state1);
 	};
 
-	const moveTask = () => {
-
+	const renderColumn = (column: ColumnPropsModel, index: number) => {
+		if (column.empty) {
+			return <div></div>;
+		}
+		return (
+			<Column
+				id={column.id}
+				index={index}
+				key={column.title}
+				title={column.title}
+				tasks={column.tasks}
+				onDragOver={(event) => { onDragOver(event, column); }}
+				onDragLeave={onDragLeave}
+				onDragStart={(event) => { onDragStart(event, column, index); }}
+				onDragEnd={onDragEnd}
+				onDrop={(event) => { onDrop(event, column); }}
+			/>
+		);
 	};
-
-	const renderColumn = (column: ColumnPropsModel, index: number) => (
-		<Column
-			id={column.id}
-			index={index}
-			key={column.title}
-			title={column.title}
-			moveColumn={moveColumn}
-			moveTask={moveTask}
-			tasks={column.tasks}
-		/>
-	);
 
 	return (
-		<DndProvider backend={HTML5Backend}>
+		<>
 			<PageHeading text='Boards > Board name'></PageHeading>
 			<FlexBox justifyContent='flex-start' alignItems='stretch' wrap='nowrap'>
 				{columns.map((column, index) => renderColumn(column, index))}
 			</FlexBox>
-		</DndProvider>
-
+		</>
 	);
 };
 

@@ -9,6 +9,11 @@ export interface ColumnPropsModel {
   moveTask?: any;
   id: string;
   tasks: TaskPropsModel;
+  onDragOver: any;
+  onDragLeave: any;
+  onDragStart: any;
+  onDragEnd: any;
+  onDrop: any;
 }
 
 
