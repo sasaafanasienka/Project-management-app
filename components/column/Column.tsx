@@ -121,7 +121,7 @@ const Column: FC<ColumnPropsModel> = (props): ReactElement => {
 							<EditIcon color='secondary' />
 							<h3>
 								{title.toUpperCase()}
-								<span>{tasksMck.length}</span>
+								<span>{tasks.length}</span>
 							</h3>
 						</StyledColumnTitle>
 					}
@@ -146,6 +146,8 @@ const Column: FC<ColumnPropsModel> = (props): ReactElement => {
 						columnId={id}
 						columnIndex={index}
 						id={task._id}
+						userId={task.userId}
+						users={task.users}
 					/>)}
 				</StyledTaskList>
 			</StyledColumn>

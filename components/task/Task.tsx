@@ -1,9 +1,8 @@
 import {
-	FC, ReactElement, useState, useRef, SyntheticEvent
+	FC, ReactElement, useState, useRef, SyntheticEvent,
 } from 'react';
 import DeleteIcon from '@mui/icons-material/Delete';
 import IconButton from '@mui/material/IconButton';
-import type { Identifier, XYCoord } from 'dnd-core';
 import { Button } from '@mui/material';
 import { useDrag, useDrop } from 'react-dnd';
 import FlexBox from '../styled/FlexBox';
@@ -17,7 +16,7 @@ import ModalTitleNode from '../modal/modalTitleNode/ModalTitleNode';
 
 const Task: FC<TaskPropsModel> = (props): ReactElement => {
 	const {
-		title, description, id, index, columnIndex, moveTask, columnId,
+		title, description, id, index, columnIndex, moveTask, columnId, userId, users,
 	} = { ...props };
 
 	const [isOpened, setOpened] = useState<ModalWindowStateModel>(false);
@@ -32,7 +31,7 @@ const Task: FC<TaskPropsModel> = (props): ReactElement => {
 		type: string
 	}
 
-	const [{}, drop] = useDrop<DragItem, void, { handlerId: Identifier | null }>({
+	const [{}, drop] = useDrop<DragItem, void>({
 		accept: ItemTypes.TASK,
 		collect(monitor) {
 			return {
@@ -40,7 +39,7 @@ const Task: FC<TaskPropsModel> = (props): ReactElement => {
 				isOver: monitor.isOver(),
 			};
 		},
-		hover(item: DragItem, monitor) {
+		hover(item: DragItem) {
 			if (!taskRef.current) {
 				return;
 			}
@@ -66,7 +65,6 @@ const Task: FC<TaskPropsModel> = (props): ReactElement => {
 
 	drag(drop(taskRef));
 
-	const openModal = () => {
 	const openModal = (event: SyntheticEvent) => {
 		event.stopPropagation();
 		setOpened(true);
@@ -112,13 +110,17 @@ const Task: FC<TaskPropsModel> = (props): ReactElement => {
 			<ModalWindow
 				title={<ModalTitleNode
 					closeFn={() => setIsUpdateModalOpened(false)}
-					firstRow={`Task ID: ${task._id}`}
-					secondRow={`Owner: ${task.userId}`}
+					firstRow={`Task ID: ${id}`}
+					secondRow={`Owner: ${userId}`}
 				/>}
 				isOpened={isUpdateModalOpened}
 				closeFunc={closeModal}
 			>
-				<TaskDetails task={task}>
+				<TaskDetails
+					title={title}
+					description={description}
+					users={users}
+				>
 					<FlexBox justifyContent='right'>
 						<Button onClick={() => setIsUpdateModalOpened(false)} variant='outlined' autoFocus>
 								Delete
