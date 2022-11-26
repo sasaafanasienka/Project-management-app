@@ -1,9 +1,6 @@
 import {
-	FC, ReactElement, SyntheticEvent, useState,
-
-	FC, ReactElement, useState, useRef,
+	FC, ReactElement, SyntheticEvent, useState, useRef,
 } from 'react';
-
 import DeleteIcon from '@mui/icons-material/Delete';
 import IconButton from '@mui/material/IconButton';
 import type { Identifier, XYCoord } from 'dnd-core';
