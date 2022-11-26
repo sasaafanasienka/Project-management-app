@@ -13,7 +13,8 @@ const StyledUpdateTitleInputs = styled.div`
     font-size: inherit;
     font-family: inherit;
     padding: 5px;
-    border: none;
+    border: 1px dashed #CDCDCD;
+    border-radius: 5px;
     outline: #4153AF;
   }
 `;
