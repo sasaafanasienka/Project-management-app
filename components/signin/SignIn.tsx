@@ -1,6 +1,7 @@
 import { useRouter } from 'next/router';
-import { FC, ReactElement, useEffect } from 'react';
-import { logInUser } from '../../redux/slices/userSlice';
+import { FC, ReactElement } from 'react';
+import { toast } from 'react-toastify';
+import { getUserById, logInUser } from '../../redux/slices/userSlice';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import BottomLink from '../validationForm/bottomLink/BottomLink';
 import FormHeader from '../validationForm/formHeader/FormHeader';
@@ -15,19 +16,18 @@ const SignIn: FC = (): ReactElement => {
 	const headerText = useAppSelector((state) => state.lang.text.singInGreet);
 	const headerMessage = useAppSelector((state) => state.lang.text.singInMessage);
 	const dispatch = useAppDispatch();
-	const isAuth = useAppSelector((state) => state.user.isAuth);
 	const router = useRouter();
 
 	const onSubmit = (data: UserUpdateFormDataModel) => {
-		dispatch(logInUser(data));
+		dispatch(logInUser(data))
+			.unwrap()
+			.then(() => {
+				toast.success('Successfully Logged In');
+				dispatch(getUserById());
+				router.push('/boards', undefined, { shallow: true });
+			})
+			.catch((err) => toast.error(`An error has occured: ${err}`));
 	};
-
-	useEffect(() => {
-		if (isAuth) {
-			router.push('/boards', undefined, { shallow: true });
-		}
-	}, [isAuth, router]);
-
 
 	return (
 		<FormWrapper>

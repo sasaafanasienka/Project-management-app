@@ -1,5 +1,6 @@
-import { FC, ReactElement, useEffect } from 'react';
+import { FC, ReactElement } from 'react';
 import { useRouter } from 'next/router';
+import { toast } from 'react-toastify';
 import { createUser } from '../../redux/slices/userSlice';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import BottomLink from '../validationForm/bottomLink/BottomLink';
@@ -17,19 +18,19 @@ const SignUp: FC = (): ReactElement => {
 
 	const dispatch = useAppDispatch();
 
-	const isCreated = useAppSelector((state) => state.user.isCreated);
-
-	const onSubmit = (data: UserUpdateFormDataModel) => {
-		dispatch(createUser(data));
-	};
-
 	const router = useRouter();
 
-	useEffect(() => {
-		if (isCreated) {
-			router.push('/signin', undefined, { shallow: true });
-		}
-	}, [isCreated]);
+	const onSubmit = (data: UserUpdateFormDataModel) => {
+		dispatch(createUser(data))
+			.unwrap()
+			.then((resolveRes) => {
+				toast.success(`${resolveRes.name.toUpperCase()}, welcome! Please Log In to proceed!`);
+				new Promise((resolve) => {
+					setTimeout(() => resolve('resolved'), 500);
+				}).then(() => router.push('/signin', undefined, { shallow: true }));
+			})
+			.catch((err) => toast.error(`An error has occured: ${err}`));
+	};
 
 	return (
 		<FormWrapper>

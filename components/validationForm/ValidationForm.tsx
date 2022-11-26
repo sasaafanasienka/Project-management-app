@@ -1,31 +1,29 @@
 import {
-	FC, ReactElement, useEffect,
+	FC, ReactElement,
 } from 'react';
 import { TextField, Button } from '@mui/material';
 import { useForm } from 'react-hook-form';
 import { StyledValidationForm, StyledForm } from './StyledValidationForm';
 import FlexBox from '../styled/FlexBox';
 import { UserUpdateFormDataModel, ValidationFormProps } from './interfaces';
+import { useAppSelector } from '../../redux/store';
 
 const ValidationForm: FC<ValidationFormProps> = ({
 	header,
 	onSubmit,
 	submitBtnTxt,
 	children,
-	resetForm,
 	isSigningIn,
 }): ReactElement => {
 	const {
-		register, handleSubmit, reset, formState: {
-			errors, isValid, isDirty, isSubmitted,
+		register, handleSubmit, formState: {
+			errors, isValid, isDirty,
 		},
 	} = useForm<UserUpdateFormDataModel>();
 
-	useEffect(() => {
-		if (isSubmitted && resetForm) {
-			reset();
-		}
-	}, [isSubmitted, reset, resetForm]);
+	const name = useAppSelector((state) => state.user.user.name);
+	const login = useAppSelector((state) => state.user.user.login);
+
 
 	// eslint-disable-next-line consistent-return
 	const disableSubmitBtn = () => {
@@ -43,7 +41,8 @@ const ValidationForm: FC<ValidationFormProps> = ({
 		<StyledValidationForm>
 			<h2>{header}</h2>
 			<StyledForm onSubmit={handleSubmit(onSubmit)} >
-				<TextField label="Name" variant="outlined" {...register('name', {
+				{!isSigningIn
+				&& <TextField label="Name" variant="outlined" defaultValue={name} {...register('name', {
 					required: 'This field is required',
 					minLength: {
 						value: 2,
@@ -55,17 +54,16 @@ const ValidationForm: FC<ValidationFormProps> = ({
 					},
 				})} error={!!errors.name} helperText={errors?.name ? errors?.name.message : null}
 				/>
-				{!isSigningIn
-					&& <TextField label="Login" variant="outlined" {...register('login', {
-						required: 'This field is required',
-						minLength: {
-							value: 2,
-							message: 'Login should consist of at least 2 chars',
-						},
-					})}
-					error={!!errors.login} helperText={errors?.login ? errors?.login.message : null}
-					/>
 				}
+				<TextField label="Login" variant="outlined" defaultValue={login} {...register('login', {
+					required: 'This field is required',
+					minLength: {
+						value: 2,
+						message: 'Login should consist of at least 2 chars',
+					},
+				})}
+				error={!!errors.login} helperText={errors?.login ? errors?.login.message : null}
+				/>
 				<TextField label="Password" variant="outlined" type={'password'} {...register('password', {
 					required: 'This field is required',
 					pattern: {

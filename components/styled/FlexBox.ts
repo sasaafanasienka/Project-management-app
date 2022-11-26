@@ -6,10 +6,11 @@ interface FlexBoxModel {
   alignItems?: string;
   gap?: string;
   wrap?: string;
+  noFullWidth?: boolean
 }
 
 const FlexBox = styled.div<FlexBoxModel>`
-  width: 100%;
+  width: ${(props) => (props.noFullWidth ? 'auto' : '100%')};
   display: flex;
   justify-content: ${(props) => (props.justifyContent ?? 'center')};
   align-items: ${(props) => (props.alignItems ?? 'center')};
