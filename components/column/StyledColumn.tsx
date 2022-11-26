@@ -3,7 +3,8 @@ import styled from 'styled-components';
 import theme from '../../theme/theme';
 
 export interface StyledColumnPropsModel {
-  opacity: number;
+  opacity?: number;
+  display?: string;
 }
 
 const StyledColumn = styled.div<StyledColumnPropsModel>`
@@ -13,7 +14,7 @@ const StyledColumn = styled.div<StyledColumnPropsModel>`
   border: 1px dashed ${theme.palette.secondary.light};
   border-radius: 5px;
   padding: 12px;
-  display: flex;
+  display: ${(props) => (props.display ?? 'flex')};
   flex-flow: column;
   gap: 10px;
   opacity: ${(props) => (props.opacity ?? 1)};

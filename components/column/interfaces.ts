@@ -7,6 +7,7 @@ export interface ColumnPropsModel {
   index: number;
   moveColumn?: any;
   moveTask?: any;
+  moveIntoEmptyColumn?: any;
   id: string;
   tasks: TaskPropsModel;
 }

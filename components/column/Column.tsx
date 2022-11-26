@@ -12,10 +12,11 @@ import Task from '../task/Task';
 import ModalWindow from '../modal/ModalWindow';
 import { ColumnPropsModel } from './interfaces';
 import { ModalWindowStateModel } from '../modal/interfaces';
+import { ItemTypes } from '../board/interfaces';
 
 const Column: FC<ColumnPropsModel> = (props): ReactElement => {
 	const {
-		title, index, id, tasks, moveColumn, moveTask,
+		title, index, id, tasks, moveColumn, moveTask, moveIntoEmptyColumn,
 	} = { ...props };
 
 	const columnRef = useRef<HTMLDivElement>(null);
@@ -26,59 +27,44 @@ const Column: FC<ColumnPropsModel> = (props): ReactElement => {
 		type: string
 	}
 
-	const ItemTypes = {
-		COLUMN: 'column',
-	};
+	const [collected, drag] = useDrag({
+		type: ItemTypes.COLUMN,
+		item: () => ({ id, index }),
+	});
 
-	const [{ handlerId }, drop] = useDrop<DragItem, void, { handlerId: Identifier | null }>({
-		accept: ItemTypes.COLUMN,
+	const [{ handlerId }, drop] = useDrop<DragItem, void, >({
+		accept: [ItemTypes.COLUMN, ItemTypes.TASK],
 		collect(monitor) {
 			return {
 				handlerId: monitor.getHandlerId(),
 			};
 		},
 		hover(item: DragItem, monitor) {
-			if (!columnRef.current) {
-				return;
-			}
-			const dragIndex = item.index;
-			const hoverIndex = index;
-			if (dragIndex === hoverIndex) {
-				return;
-			}
+			if (monitor.getItemType() === ItemTypes.COLUMN) {
+				if (!columnRef.current) {
+					return;
+				}
+				const dragIndex = item.index;
+				const hoverIndex = index;
+				if (dragIndex === hoverIndex) {
+					return;
+				}
 
-			const hoverBoundingRect = columnRef.current?.getBoundingClientRect();
-			const {
-				top, left, right, bottom,
-			} = hoverBoundingRect;
-			const initCursor = monitor.getInitialClientOffset();
-			const diffCursor = monitor.getDifferenceFromInitialOffset();
-			const cursor = {
-				x: (initCursor ? initCursor.x : 0) + (diffCursor ? diffCursor.x : 0),
-				y: (initCursor ? initCursor.y : 0) + (diffCursor ? diffCursor.y : 0),
-			};
-			if (
-				cursor.x > left + 50
-				&& cursor.x < right - 50
-				&& cursor.y > top + 50
-				&& cursor.y < bottom - 50
-			) {
-				console.log(true);
-				item.index = hoverIndex;
 				moveColumn(dragIndex, hoverIndex);
+				item.index = hoverIndex;
+			}
+			if (monitor.getItemType() === ItemTypes.TASK) {
+				const dragIndex = item.index;
+				const dragColumnIndex = item.columnIndex;
+				const hoverColumnIndex = index;
+
+				if (dragColumnIndex === hoverColumnIndex) {
+					return;
+				}
+				moveIntoEmptyColumn(dragIndex, dragColumnIndex, hoverColumnIndex);
 			}
 		},
 	});
-
-	const [{ isDragging }, drag] = useDrag({
-		type: ItemTypes.COLUMN,
-		item: () => ({ id, index }),
-		collect: (monitor: any) => ({
-			isDragging: monitor.isDragging(),
-		}),
-	});
-
-	const opacity = isDragging ? 0 : 1;
 
 	drag(drop(columnRef));
 
@@ -96,12 +82,12 @@ const Column: FC<ColumnPropsModel> = (props): ReactElement => {
 		closeModal();
 	};
 
+
 	return (
 		<>
 			<StyledColumn
 				ref={columnRef}
 				data-handler-id={handlerId}
-				opacity={opacity}
 			>
 				<FlexBox justifyContent='space-between'>
 					<h3>{title}</h3>
@@ -117,6 +103,7 @@ const Column: FC<ColumnPropsModel> = (props): ReactElement => {
 					index={idx}
 					columnId={+id}
 					columnIndex={index}
+					id={task.id}
 				/>)}
 			</StyledColumn>
 			<ModalWindow

@@ -11,10 +11,11 @@ import { TaskPropsModel } from './interfaces';
 import StyledTask from './StyledTask';
 import ModalWindow from '../modal/ModalWindow';
 import { ModalWindowStateModel } from '../modal/interfaces';
+import { ItemTypes } from '../board/interfaces';
 
 const Task: FC<TaskPropsModel> = (props): ReactElement => {
 	const {
-		title, description, id, index, columnId, columnIndex,
+		title, description, id, index, columnIndex, moveTask,
 	} = { ...props };
 
 	const [isOpened, setOpened] = useState<ModalWindowStateModel>(false);
@@ -28,73 +29,41 @@ const Task: FC<TaskPropsModel> = (props): ReactElement => {
 		type: string
 	}
 
-	const ItemTypes = {
-		TASK: 'task',
-	};
-
-	const [collectedProps, drop] = useDrop<DragItem, void, { handlerId: Identifier | null }>({
+	const [{ isOver, handlerId }, drop] = useDrop<DragItem, void, { handlerId: Identifier | null }>({
 		accept: ItemTypes.TASK,
 		collect(monitor) {
 			return {
 				handlerId: monitor.getHandlerId(),
+				isOver: monitor.isOver(),
 			};
 		},
 		hover(item: DragItem, monitor) {
 			if (!taskRef.current) {
 				return;
 			}
-
  			const dragIndex = item.index;
 			const dragColumnIndex = item.columnIndex;
 			const hoverIndex = index;
 			const hoverColumnIndex = columnIndex;
-			const hoverColumnId = columnId;
 
-			if (dragIndex === hoverIndex) {
-
+			if (dragIndex === hoverIndex && dragColumnIndex === hoverColumnIndex) {
+				return;
 			}
 
-			console.log(dragIndex, dragColumnIndex, '→', hoverIndex, hoverColumnIndex);
+			moveTask(dragIndex, dragColumnIndex, hoverIndex, hoverColumnIndex);
 
-
-			// const hoverBoundingRect = taskRef.current?.getBoundingClientRect();
-			// // console.log(hoverBoundingRect.bottom);
-			// // console.log(hoverBoundingRect.top);
-
-			// // const hoverMiddleY = (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
-			// const hoverMiddleX = (hoverBoundingRect.right - hoverBoundingRect.left) / 2;
-			// // console.log(hoverMiddleX);
-
-			// const clientOffset = monitor.getClientOffset();
-
-			// // const hoverClientY = (clientOffset as XYCoord).y - hoverBoundingRect.top;
-			// const hoverClientX = (clientOffset as XYCoord).x - hoverBoundingRect.left;
-
-			// console.log(hoverClientX, hoverMiddleX);
-
-			// if (dragIndex < hoverIndex && hoverClientX < hoverMiddleX) {
-			// 	return;
-			// }
-
-			// if (dragIndex > hoverIndex && hoverClientX > hoverMiddleX) {
-			// 	return;
-			// }
-
-			// moveTask(dragIndex, hoverIndex);
-
-			// item.index = hoverIndex;
+			item.index = hoverIndex;
+			item.columnIndex = hoverColumnIndex;
 		},
 	});
 
 	const [{ isDragging }, drag] = useDrag({
 		type: ItemTypes.TASK,
-		item: () => ({ id, index }),
+		item: () => ({ id, index, columnIndex }),
 		collect: (monitor: any) => ({
 			isDragging: monitor.isDragging(),
 		}),
 	});
-
-	const opacity = isDragging ? 0 : 1;
 
 	drag(drop(taskRef));
 
@@ -114,8 +83,7 @@ const Task: FC<TaskPropsModel> = (props): ReactElement => {
 		<>
 			<StyledTask
 				ref={taskRef}
-				data-handler-id={collectedProps.handlerId}
-				opacity={opacity}
+				data-handler-id={handlerId}
 			>
 				<h3>{ title }</h3>
 				<p>{description}</p>
