@@ -1,6 +1,14 @@
 import styled from 'styled-components';
 
 const StyledColumnTitle = styled.div`
+  display: flex;
+  cursor: pointer;
+  align-items: center;
+
+  svg {
+    font-size: 16px;
+  }
+
   h3 {
     position: relative;
 

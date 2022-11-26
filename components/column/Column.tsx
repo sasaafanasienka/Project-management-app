@@ -1,8 +1,11 @@
-import { FC, ReactElement, useState } from 'react';
+import {
+	ChangeEvent, FC, ReactElement, useState,
+} from 'react';
 import DeleteIcon from '@mui/icons-material/Delete';
 import IconButton from '@mui/material/IconButton';
 import { Button } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
+import EditIcon from '@mui/icons-material/Edit';
 import FlexBox from '../styled/FlexBox';
 import StyledColumn from './StyledColumn';
 import Task from '../task/Task';
@@ -12,6 +15,7 @@ import { ModalWindowStateModel } from '../modal/interfaces';
 import { TaskModel } from '../task/interfaces';
 import StyledTaskList from './StyledTaskList';
 import StyledColumnTitle from './StyledColumnTitle';
+import UpdateTitleInput from './updateTitleInput/UpdateTitleInput';
 
 const tasksMck: TaskModel[] = [
 	{
@@ -61,6 +65,21 @@ const Column: FC<ColumnPropsModel> = (props): ReactElement => {
 	const { title } = { ...props };
 
 	const [isModalOpened, setOpened] = useState<ModalWindowStateModel>(false);
+	const [isTitleUpdate, setIsTitleUpdate] = useState<boolean>(false);
+	const [titleCurrent, setTitleCurrent] = useState<string>(title);
+
+	const handleTitleUpdateConfirm = () => {
+		setIsTitleUpdate(false);
+	};
+
+	const handleTitleUpdateCancel = () => {
+		setIsTitleUpdate(false);
+	};
+
+	const handleTitleUpdateChange = (e: ChangeEvent) => {
+		const target = e.target as HTMLTextAreaElement;
+		setTitleCurrent(target.value);
+	};
 
 	const openModal = () => {
 		setOpened(true);
@@ -77,13 +96,22 @@ const Column: FC<ColumnPropsModel> = (props): ReactElement => {
 	return (
 		<>
 			<StyledColumn>
-				<FlexBox justifyContent='space-between'>
-					<StyledColumnTitle>
-						<h3>
-							{title.toUpperCase()}
-							<span>{tasksMck.length}</span>
-						</h3>
-					</StyledColumnTitle>
+				<FlexBox justifyContent='space-between' wrap='no-wrap'>
+					{isTitleUpdate
+						? <UpdateTitleInput
+							value={titleCurrent}
+							onChange={handleTitleUpdateChange}
+							onConfirm={handleTitleUpdateConfirm}
+							onCancel={handleTitleUpdateCancel}
+						/>
+						: <StyledColumnTitle onClick={() => setIsTitleUpdate(true)}>
+							<EditIcon color='secondary' />
+							<h3>
+								{title.toUpperCase()}
+								<span>{tasksMck.length}</span>
+							</h3>
+						</StyledColumnTitle>
+					}
 					<IconButton aria-label="delete" size="small" onClick={openModal}>
 						<DeleteIcon fontSize='small'/>
 					</IconButton>
