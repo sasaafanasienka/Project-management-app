@@ -1,7 +1,7 @@
 import { ReactNode } from 'react';
 
 export interface ModalWindowPropsModel {
-  title: string;
+  title: string | ReactNode;
   description?: string;
   children: ReactNode;
   isOpened: boolean;
