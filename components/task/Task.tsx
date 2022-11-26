@@ -15,7 +15,7 @@ import { ItemTypes } from '../board/interfaces';
 
 const Task: FC<TaskPropsModel> = (props): ReactElement => {
 	const {
-		title, description, id, index, columnIndex, moveTask,
+		title, description, id, index, columnIndex, moveTask, columnId,
 	} = { ...props };
 
 	const [isOpened, setOpened] = useState<ModalWindowStateModel>(false);
@@ -25,11 +25,11 @@ const Task: FC<TaskPropsModel> = (props): ReactElement => {
 	interface DragItem {
 		index: number
 		id: string
-		columnIndex: number
+		columnId: string
 		type: string
 	}
 
-	const [{ isOver, handlerId }, drop] = useDrop<DragItem, void, { handlerId: Identifier | null }>({
+	const [{}, drop] = useDrop<DragItem, void, { handlerId: Identifier | null }>({
 		accept: ItemTypes.TASK,
 		collect(monitor) {
 			return {
@@ -41,28 +41,24 @@ const Task: FC<TaskPropsModel> = (props): ReactElement => {
 			if (!taskRef.current) {
 				return;
 			}
- 			const dragIndex = item.index;
-			const dragColumnIndex = item.columnIndex;
-			const hoverIndex = index;
-			const hoverColumnIndex = columnIndex;
+			const dragId = item.id;
+			const hoverId = id;
+			const dragColumnId = item.columnId;
+			const hoverColumnId = columnId;
 
-			if (dragIndex === hoverIndex && dragColumnIndex === hoverColumnIndex) {
-				return;
+			if (dragId !== hoverId) {
+				moveTask(dragId, hoverId, dragColumnId, hoverColumnId);
+				if (dragColumnId !== hoverColumnId) {
+					item.id = hoverId;
+				}
+				item.columnId = hoverColumnId;
 			}
-
-			moveTask(dragIndex, dragColumnIndex, hoverIndex, hoverColumnIndex);
-
-			item.index = hoverIndex;
-			item.columnIndex = hoverColumnIndex;
 		},
 	});
 
-	const [{ isDragging }, drag] = useDrag({
+	const [{}, drag] = useDrag({
 		type: ItemTypes.TASK,
-		item: () => ({ id, index, columnIndex }),
-		collect: (monitor: any) => ({
-			isDragging: monitor.isDragging(),
-		}),
+		item: () => ({ id, index, columnId }),
 	});
 
 	drag(drop(taskRef));
@@ -83,7 +79,6 @@ const Task: FC<TaskPropsModel> = (props): ReactElement => {
 		<>
 			<StyledTask
 				ref={taskRef}
-				data-handler-id={handlerId}
 			>
 				<h3>{ title }</h3>
 				<p>{description}</p>

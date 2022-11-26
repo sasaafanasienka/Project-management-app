@@ -25,6 +25,7 @@ const Column: FC<ColumnPropsModel> = (props): ReactElement => {
 		index: number
 		id: string
 		type: string
+		columnId: string
 	}
 
 	const [collected, drag] = useDrag({
@@ -44,24 +45,23 @@ const Column: FC<ColumnPropsModel> = (props): ReactElement => {
 				if (!columnRef.current) {
 					return;
 				}
-				const dragIndex = item.index;
-				const hoverIndex = index;
-				if (dragIndex === hoverIndex) {
+				const dragId = item.id;
+				const hoverId = id;
+				if (dragId === hoverId) {
 					return;
 				}
 
-				moveColumn(dragIndex, hoverIndex);
-				item.index = hoverIndex;
+				moveColumn(dragId, hoverId);
+				item.id = hoverId;
 			}
 			if (monitor.getItemType() === ItemTypes.TASK) {
-				const dragIndex = item.index;
-				const dragColumnIndex = item.columnIndex;
-				const hoverColumnIndex = index;
+				const dragId = item.id;
+				const dragColumnId = item.columnId;
+				const hoverColumnId = id;
 
-				if (dragColumnIndex === hoverColumnIndex) {
-					return;
+				if (dragColumnId !== hoverColumnId) {
+					moveIntoEmptyColumn(dragId, dragColumnId, hoverColumnId);
 				}
-				moveIntoEmptyColumn(dragIndex, dragColumnIndex, hoverColumnIndex);
 			}
 		},
 	});
@@ -101,9 +101,9 @@ const Column: FC<ColumnPropsModel> = (props): ReactElement => {
 					description={task.description}
 					moveTask={moveTask}
 					index={idx}
-					columnId={+id}
+					columnId={id}
 					columnIndex={index}
-					id={task.id}
+					id={task._id}
 				/>)}
 			</StyledColumn>
 			<ModalWindow

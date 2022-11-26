@@ -2,8 +2,8 @@ export interface TaskPropsModel {
   title: string;
   description: string;
   moveTask: any;
-  id: number;
+  id: string;
   index: number;
-  columnId: number;
+  columnId: string;
   columnIndex: number;
 }

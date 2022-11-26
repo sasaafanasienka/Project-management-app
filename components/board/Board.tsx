@@ -8,110 +8,93 @@ import Column from '../column/Column';
 import { ColumnPropsModel } from '../column/interfaces';
 import PageHeading from '../pageHeading/PageHeading';
 import FlexBox from '../styled/FlexBox';
+import mockData from './mockData';
 
 const Board: FC = (): ReactElement => {
-	const [columns, setColumns] = useState([
-		{
-			title: 'first',
-			index: 1,
-			id: 1,
-			tasks: [
-				{
-					title: 'First task',
-					description: 'des',
-					id: 10,
-				},
-				{
-					title: 'Second task',
-					description: 'des',
-					id: 20,
-				},
-			],
-		},
-		{
-			title: 'second',
-			index: 2,
-			id: 2,
-			tasks: [
-				{
-					title: 'Third task',
-					description: 'des',
-					id: 30,
-				},
-			],
-		},
-		{
-			title: 'third',
-			index: 3,
-			id: 3,
-			tasks: [
-				{
-					title: 'Fourth task',
-					description: 'des',
-					id: 40,
-				},
-			],
-		},
-	]);
+	const [columns, setColumns] = useState(mockData);
 
-	const moveColumn = (dragIndex: number, hoverIndex: number): void => {
+	const moveColumn = (dragId: number, hoverId: number): void => {
+		const dragIndex = columns.findIndex((el) => el.id === dragId);
+		const hoverIndex = columns.findIndex((el) => el.id === hoverId);
 		const columnsCopy = deepCopy(columns);
 		const removedColumn = columnsCopy.splice(dragIndex, 1)[0];
-		columnsCopy.splice(hoverIndex, 0, removedColumn);
+		if (removedColumn) {
+			columnsCopy.splice(hoverIndex, 0, removedColumn);
+		}
 		setColumns(columnsCopy);
 	};
 
 	const moveTaskInColumn = (
-		dragIndex: number,
-		hoverIndex: number,
-		dragColumnIndex: number,
+		dragId: string,
+		hoverId: string,
+		dragColumnId: string,
 	): void => {
+		const dragColumnIndex = columns.findIndex((column) => column.id === dragColumnId);
+		const dragIndex = columns[dragColumnIndex].tasks.findIndex((task) => task._id === dragId);
+		const hoverIndex = columns[dragColumnIndex].tasks.findIndex((task) => task._id === hoverId);
 		const columnsCopy = deepCopy(columns);
 		const targetColumn = columnsCopy[dragColumnIndex];
 		const tasksCopy = deepCopy(targetColumn.tasks);
 		const removedTask = tasksCopy.splice(dragIndex, 1)[0];
-		tasksCopy.splice(hoverIndex, 0, removedTask);
-		columnsCopy.splice(dragColumnIndex, 1, { ...targetColumn, tasks: tasksCopy });
+		if (removedTask) {
+			tasksCopy.splice(hoverIndex, 0, removedTask);
+			columnsCopy.splice(dragColumnIndex, 1, { ...targetColumn, tasks: tasksCopy });
+		}
 		setColumns(columnsCopy);
 	};
 
 	const moveTaskBetweenColumns = (
-		dragIndex: number,
-		dragColumnIndex: number,
-		hoverIndex: number,
-		hoverColumnIndex: number,
+		dragId: string,
+		hoverId: string,
+		dragColumnId: string,
+		hoverColumnId: string,
 	): void => {
+		const dragColumnIndex = columns.findIndex((column) => column.id === dragColumnId);
+		const hoverColumnIndex = columns.findIndex((column) => column.id === hoverColumnId);
+		const dragIndex = columns[dragColumnIndex].tasks.findIndex((task) => task._id === dragId);
+		const hoverIndex = columns[dragColumnIndex].tasks.findIndex((task) => task._id === hoverId);
 		const columnsCopy = deepCopy(columns);
 		const dragColumn = columnsCopy[dragColumnIndex];
 		const targetColumn = columnsCopy[hoverColumnIndex];
 		const dragTasksCopy = deepCopy(dragColumn.tasks);
 		const targetTasksCopy = deepCopy(targetColumn.tasks);
 		const removedTask = dragTasksCopy.splice(dragIndex, 1)[0];
-		targetTasksCopy.splice(hoverIndex, 0, removedTask);
-		columnsCopy.splice(dragColumnIndex, 1, { ...dragColumn, tasks: dragTasksCopy });
-		columnsCopy.splice(hoverColumnIndex, 1, { ...targetColumn, tasks: targetTasksCopy });
-		console.log(columnsCopy);
+		if (removedTask) {
+			targetTasksCopy.splice(hoverIndex, 0, removedTask);
+			columnsCopy.splice(dragColumnIndex, 1, { ...dragColumn, tasks: dragTasksCopy });
+			columnsCopy.splice(hoverColumnIndex, 1, { ...targetColumn, tasks: targetTasksCopy });
+		}
 		setColumns(columnsCopy);
 	};
 
-	const moveTask = (dragIndex, dragColumnIndex, hoverIndex, hoverColumnIndex): void => {
-		if (dragColumnIndex === hoverColumnIndex) {
-			moveTaskInColumn(dragIndex, hoverIndex, dragColumnIndex);
+	const moveTask = (
+		dragId: string,
+		hoverId: string,
+		dragColumnId: string,
+		hoverColumnId: string,
+	): void => {
+		if (dragColumnId === hoverColumnId) {
+			moveTaskInColumn(dragId, hoverId, dragColumnId);
 		} else {
-			moveTaskBetweenColumns(dragIndex, dragColumnIndex, hoverIndex, hoverColumnIndex);
+			moveTaskBetweenColumns(dragId, hoverId, dragColumnId, hoverColumnId);
 		}
 	};
 
-	const moveIntoEmptyColumn = (dragIndex, dragColumnIndex, hoverColumnIndex) => {
+	const moveIntoEmptyColumn = (dragId: string, dragColumnId: string, hoverColumnId: string) => {
+		const dragColumnIndex = columns.findIndex((column) => column.id === dragColumnId);
+		const hoverColumnIndex = columns.findIndex((column) => column.id === hoverColumnId);
+		const dragIndex = columns[dragColumnIndex].tasks.findIndex((task) => task._id === dragId);
 		if (!columns[hoverColumnIndex].tasks.length) {
 			const columnsCopy = deepCopy(columns);
 			const dragColumn = columnsCopy[dragColumnIndex];
 			const targetColumn = columnsCopy[hoverColumnIndex];
 			const dragTasksCopy = deepCopy(dragColumn.tasks);
 			const removedTask = dragTasksCopy.splice(dragIndex, 1)[0];
-			targetColumn.tasks.push(removedTask);
-			columnsCopy.splice(dragColumnIndex, 1, { ...dragColumn, tasks: dragTasksCopy });
-			columnsCopy.splice(hoverColumnIndex, 1, targetColumn);
+			if (removedTask) {
+				targetColumn.tasks.push(removedTask);
+				columnsCopy.splice(dragColumnIndex, 1, { ...dragColumn, tasks: dragTasksCopy });
+				columnsCopy.splice(hoverColumnIndex, 1, targetColumn);
+			}
 			setColumns(columnsCopy);
 		}
 	};
