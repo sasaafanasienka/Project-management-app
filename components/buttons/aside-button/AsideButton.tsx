@@ -3,10 +3,10 @@ import { Button } from '@mui/material';
 import { AsideButtonPropsModel } from './interfaces';
 
 const AsideButton: FC<AsideButtonPropsModel> = (props): ReactElement => {
-	const { startIcon, children } = { ...props };
+	const { startIcon, children, onClick } = { ...props };
 
 	return (
-		<Button
+		<Button onClick={onClick}
 			startIcon={startIcon}
 			color="secondary"
 			sx={{

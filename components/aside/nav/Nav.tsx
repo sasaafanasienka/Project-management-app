@@ -7,10 +7,12 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined';
 import GroupAddIcon from '@mui/icons-material/GroupAdd';
 import LoginIcon from '@mui/icons-material/Login';
+import { useRouter } from 'next/router';
 import StyledNav from './StyledNav';
 import AsideButton from '../../buttons/aside-button/AsideButton';
 import Divider from '../../divider/Divider';
-import { useAppSelector } from '../../../redux/store';
+import { useAppDispatch, useAppSelector } from '../../../redux/store';
+import { logOut } from '../../../redux/slices/userSlice';
 
 const Nav: FC = (): ReactElement => {
 	const isDesktop = useMediaQuery('(min-width:1024px)');
@@ -20,89 +22,109 @@ const Nav: FC = (): ReactElement => {
 	const signInLang = useAppSelector((state) => state.lang.text.singIn);
 	const signUpLang = useAppSelector((state) => state.lang.text.singUp);
 	const signOutLang = useAppSelector((state) => state.lang.text.singOut);
+	const isAuth = useAppSelector((state) => state.user.isAuth);
 
+	const router = useRouter();
+
+	const dispatch = useAppDispatch();
+
+	const handleLogOut = () => {
+		dispatch(logOut());
+		router.push('/', undefined, { shallow: true });
+	};
 
 	return (
 		<StyledNav>
 			{
 				isDesktop && <>
-					<AsideButton startIcon={<HomeOutlinedIcon />}>
-						<Link href='/' >
-							{homeLang}
-						</Link>
-					</AsideButton>
-					<AsideButton startIcon={<ContentPasteOutlinedIcon />}>
-						<Link href='/boards' >
-							{boardsLang}
-						</Link>
-					</AsideButton>
-					<AsideButton startIcon={<AccountCircleIcon />}>
-						<Link href='/profile' >
-							{profileLang}
-						</Link>
-					</AsideButton>
-					<Divider />
-					<AsideButton startIcon={<LoginIcon />}>
-						<Link href='/signin' >
-							{signInLang}
-						</Link>
-					</AsideButton>
-					<AsideButton startIcon={<GroupAddIcon />}>
-						<Link href='/signup' >
-							{signUpLang}
-						</Link>
-					</AsideButton>
-					<AsideButton startIcon={<LogoutOutlinedIcon />}>
-						<Link href='/' >
+					{isAuth && <>
+						<AsideButton startIcon={<HomeOutlinedIcon />}>
+							<Link href='/' >
+								{homeLang}
+							</Link>
+						</AsideButton>
+						<AsideButton startIcon={<ContentPasteOutlinedIcon />}>
+							<Link href='/boards' >
+								{boardsLang}
+							</Link>
+						</AsideButton>
+						<AsideButton startIcon={<AccountCircleIcon />}>
+							<Link href='/profile' >
+								{profileLang}
+							</Link>
+						</AsideButton>
+						<Divider />
+					</>}
+					{!isAuth
+						? <>
+							<AsideButton startIcon={<LoginIcon />}>
+								<Link href='/signin' >
+									{signInLang}
+								</Link>
+							</AsideButton>
+							<AsideButton startIcon={<GroupAddIcon />}>
+								<Link href='/signup' >
+									{signUpLang}
+								</Link>
+							</AsideButton>
+						</>
+						: <AsideButton onClick={handleLogOut} startIcon={<LogoutOutlinedIcon />}>
 							{signOutLang}
-						</Link>
-					</AsideButton>
+						</AsideButton>
+					}
 				</>
 			}
 			{
 				!isDesktop && <>
-					<IconButton
-						color="secondary"
-					>
-						<Link href='/' >
-							<HomeOutlinedIcon />
-						</Link>
-					</IconButton>
-					<IconButton
-						color="secondary"
-					>
-						<Link href='/boards' >
-							<ContentPasteOutlinedIcon />
-						</Link>
-					</IconButton>
-					<IconButton
-						color="secondary"
-					>
-						<Link href='/profile' >
-							<AccountCircleIcon />
-						</Link>
-					</IconButton>
-					<IconButton
-						color="secondary"
-					>
-						<Link href='/signin' >
-							<LoginIcon />
-						</Link>
-					</IconButton>
-					<IconButton
-						color="secondary"
-					>
-						<Link href='/signup' >
-							<GroupAddIcon />
-						</Link>
-					</IconButton>
-					<IconButton
-						color="secondary"
-					>
-						<Link href='/' >
-							<LogoutOutlinedIcon />
-						</Link>
-					</IconButton>
+					{isAuth && <>
+
+						<IconButton
+							color="secondary"
+						>
+							<Link href='/' >
+								<HomeOutlinedIcon />
+							</Link>
+						</IconButton>
+						<IconButton
+							color="secondary"
+						>
+							<Link href='/boards' >
+								<ContentPasteOutlinedIcon />
+							</Link>
+						</IconButton>
+						<IconButton
+							color="secondary"
+						>
+							<Link href='/profile' >
+								<AccountCircleIcon />
+							</Link>
+						</IconButton>
+					</>}
+					{!isAuth
+						? <>
+							<IconButton
+								color="secondary"
+							>
+								<Link href='/signin' >
+									<LoginIcon />
+								</Link>
+							</IconButton>
+							<IconButton
+								color="secondary"
+							>
+								<Link href='/signup' >
+									<GroupAddIcon />
+								</Link>
+							</IconButton>
+						</>
+						: <IconButton
+							color="secondary"
+						>
+							<Link href='/' >
+								<LogoutOutlinedIcon />
+							</Link>
+						</IconButton>
+					}
 				</>
 			}
 		</StyledNav>

@@ -5,6 +5,8 @@ import StyledUserMeta from './StyledUserMeta';
 const UserMeta: FC = (): ReactElement => {
 	const nameLangVersion = useAppSelector((state) => state.lang.text.name);
 	const loginLangVersion = useAppSelector((state) => state.lang.text.login);
+	const name = useAppSelector((state) => state.user.user.name);
+	const login = useAppSelector((state) => state.user.user.login);
 
 	return (
 		<StyledUserMeta>
@@ -12,13 +14,13 @@ const UserMeta: FC = (): ReactElement => {
 				{nameLangVersion.toUpperCase()}
 			</h3>
 			<div>
-        ISRAEL
+				{name}
 			</div>
 			<h3>
 				{loginLangVersion.toUpperCase()}
 			</h3>
 			<div>
-        THE LAST STYLEBENDER
+				{login}
 			</div>
 		</StyledUserMeta>
 	);

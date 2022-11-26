@@ -7,14 +7,14 @@ import { useAppSelector } from '../../../redux/store';
 
 
 const UserAside: FC = (): ReactElement => {
-	const nameLang = useAppSelector((state) => state.lang.text.name);
+	const name = useAppSelector((state) => state.user.user.login);
 	const settingsLang = useAppSelector((state) => state.lang.text.editProfile);
 
 	return (
 		<StyledUserAside>
 			<Image width={55} height={55} src='/avatar.svg' alt='user avatar'/>
 			<div>
-				{nameLang}
+				{name}
 			</div>
 			<Link href='/profile'>
 				<SettingsOutlinedIcon />

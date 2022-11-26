@@ -44,6 +44,7 @@ export interface LangLayoutModel {
   deleteColumn: string;
   deleteTask: string;
   deleteBoard: string;
+  deleteUser: string;
   successCreated: string;
   successDeleted: string;
   editProfile: string,

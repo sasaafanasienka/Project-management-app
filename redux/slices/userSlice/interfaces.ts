@@ -1,10 +1,9 @@
 export interface InitialStateUserModel {
 	isAuth: boolean;
   isLoading: boolean;
-  isCreated: boolean;
   error: string;
 	user: {
-		_id: string;
+		id: string;
 		name: string;
 		login: string;
 		token: string;
@@ -12,7 +11,7 @@ export interface InitialStateUserModel {
 }
 
 export interface NewUserResponseModel {
-  _id: string;
+  id: string;
   name: string;
   login: string;
 }
@@ -21,4 +20,20 @@ export interface NewUserRequestPropsModel {
   name: string;
   login: string;
   password: string;
+}
+
+export interface GetUserByIdProps {
+  id: string;
+  token: string;
+}
+
+export interface DeleteUserProps {
+  id: string;
+  token: string;
+}
+
+export interface UserResponceModel {
+  _id: string;
+  name: string;
+  login: string;
 }

@@ -1,11 +1,12 @@
-import type { Identifier, XYCoord } from 'dnd-core';
 import {
-	FC, ReactElement, useState, useRef,
+	FC, ReactElement, useState, useRef, ChangeEvent,
 } from 'react';
 import DeleteIcon from '@mui/icons-material/Delete';
 import IconButton from '@mui/material/IconButton';
 import { Button } from '@mui/material';
 import { useDrag, useDrop } from 'react-dnd';
+import AddIcon from '@mui/icons-material/Add';
+import EditIcon from '@mui/icons-material/Edit';
 import FlexBox from '../styled/FlexBox';
 import StyledColumn from './StyledColumn';
 import Task from '../task/Task';
@@ -13,6 +14,10 @@ import ModalWindow from '../modal/ModalWindow';
 import { ColumnPropsModel } from './interfaces';
 import { ModalWindowStateModel } from '../modal/interfaces';
 import { ItemTypes } from '../board/interfaces';
+import { TaskModel } from '../task/interfaces';
+import StyledTaskList from './StyledTaskList';
+import StyledColumnTitle from './StyledColumnTitle';
+import UpdateTitleInput from './updateTitleInput/UpdateTitleInput';
 
 const Column: FC<ColumnPropsModel> = (props): ReactElement => {
 	const {
@@ -69,6 +74,21 @@ const Column: FC<ColumnPropsModel> = (props): ReactElement => {
 	drag(drop(columnRef));
 
 	const [isModalOpened, setOpened] = useState<ModalWindowStateModel>(false);
+	const [isTitleUpdate, setIsTitleUpdate] = useState<boolean>(false);
+	const [titleCurrent, setTitleCurrent] = useState<string>(title);
+
+	const handleTitleUpdateConfirm = () => {
+		setIsTitleUpdate(false);
+	};
+
+	const handleTitleUpdateCancel = () => {
+		setIsTitleUpdate(false);
+	};
+
+	const handleTitleUpdateChange = (e: ChangeEvent) => {
+		const target = e.target as HTMLTextAreaElement;
+		setTitleCurrent(target.value);
+	};
 
 	const openModal = () => {
 		setOpened(true);
@@ -89,22 +109,45 @@ const Column: FC<ColumnPropsModel> = (props): ReactElement => {
 				ref={columnRef}
 				data-handler-id={handlerId}
 			>
-				<FlexBox justifyContent='space-between'>
-					<h3>{title}</h3>
+				<FlexBox justifyContent='space-between' wrap='no-wrap'>
+					{isTitleUpdate
+						? <UpdateTitleInput
+							value={titleCurrent}
+							onChange={handleTitleUpdateChange}
+							onConfirm={handleTitleUpdateConfirm}
+							onCancel={handleTitleUpdateCancel}
+						/>
+						: <StyledColumnTitle onClick={() => setIsTitleUpdate(true)}>
+							<EditIcon color='secondary' />
+							<h3>
+								{title.toUpperCase()}
+								<span>{tasksMck.length}</span>
+							</h3>
+						</StyledColumnTitle>
+					}
 					<IconButton aria-label="delete" size="small" onClick={openModal}>
 						<DeleteIcon fontSize='small'/>
 					</IconButton>
 				</FlexBox>
-				{tasks.map((task, idx) => <Task
-					key={idx}
-					title={task.title}
-					description={task.description}
-					moveTask={moveTask}
-					index={idx}
-					columnId={id}
-					columnIndex={index}
-					id={task._id}
-				/>)}
+
+				<Button color='info'>
+					<FlexBox alignItems='center' justifyContent='center' gap='0'>
+						<AddIcon fontSize='small' />
+						Add new task
+					</FlexBox>
+				</Button>
+				<StyledTaskList>
+					{tasks.map((task, idx) => <Task
+						key={idx}
+						title={task.title}
+						description={task.description}
+						moveTask={moveTask}
+						index={idx}
+						columnId={id}
+						columnIndex={index}
+						id={task._id}
+					/>)}
+				</StyledTaskList>
 			</StyledColumn>
 			<ModalWindow
 				title={`Are you sure to delete the column "${title}"?`}

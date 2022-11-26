@@ -1,5 +1,5 @@
 import {
-	FC, ReactElement, useState, useRef,
+	FC, ReactElement, useState, useRef, SyntheticEvent
 } from 'react';
 import DeleteIcon from '@mui/icons-material/Delete';
 import IconButton from '@mui/material/IconButton';
@@ -12,6 +12,8 @@ import StyledTask from './StyledTask';
 import ModalWindow from '../modal/ModalWindow';
 import { ModalWindowStateModel } from '../modal/interfaces';
 import { ItemTypes } from '../board/interfaces';
+import TaskDetails from '../taskDetails/TaskDetails';
+import ModalTitleNode from '../modal/modalTitleNode/ModalTitleNode';
 
 const Task: FC<TaskPropsModel> = (props): ReactElement => {
 	const {
@@ -19,6 +21,7 @@ const Task: FC<TaskPropsModel> = (props): ReactElement => {
 	} = { ...props };
 
 	const [isOpened, setOpened] = useState<ModalWindowStateModel>(false);
+	const [isUpdateModalOpened, setIsUpdateModalOpened] = useState<boolean>(false);
 
 	const taskRef = useRef<HTMLDivElement>(null);
 
@@ -64,7 +67,13 @@ const Task: FC<TaskPropsModel> = (props): ReactElement => {
 	drag(drop(taskRef));
 
 	const openModal = () => {
+	const openModal = (event: SyntheticEvent) => {
+		event.stopPropagation();
 		setOpened(true);
+	};
+
+	const openDetailedModal = () => {
+		setIsUpdateModalOpened(true);
 	};
 
 	const closeModal = () => {
@@ -79,6 +88,7 @@ const Task: FC<TaskPropsModel> = (props): ReactElement => {
 		<>
 			<StyledTask
 				ref={taskRef}
+				onClick={openDetailedModal}
 			>
 				<h3>{ title }</h3>
 				<p>{description}</p>
@@ -95,9 +105,29 @@ const Task: FC<TaskPropsModel> = (props): ReactElement => {
 				closeFunc={closeModal}
 			>
 				<Button onClick={closeModal}>Cancel</Button>
-				<Button onClick={deleteTask} variant='contained' autoFocus>
+				<Button onClick={deleteTask} variant='outlined' autoFocus>
             Delete
 				</Button>
+			</ModalWindow>
+			<ModalWindow
+				title={<ModalTitleNode
+					closeFn={() => setIsUpdateModalOpened(false)}
+					firstRow={`Task ID: ${task._id}`}
+					secondRow={`Owner: ${task.userId}`}
+				/>}
+				isOpened={isUpdateModalOpened}
+				closeFunc={closeModal}
+			>
+				<TaskDetails task={task}>
+					<FlexBox justifyContent='right'>
+						<Button onClick={() => setIsUpdateModalOpened(false)} variant='outlined' autoFocus>
+								Delete
+						</Button>
+						<Button color='info' onClick={deleteTask} variant='contained'>
+								Update
+						</Button>
+					</FlexBox>
+				</TaskDetails>
 			</ModalWindow>
 		</>
 	);
