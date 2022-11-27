@@ -11,6 +11,8 @@ import { BoardLinkPropsModel } from './interfaces';
 import FlexBox from '../styled/FlexBox';
 import ModalWindow from '../modal/ModalWindow';
 import { ModalWindowStateModel } from '../modal/interfaces';
+import ModalTitleNode from '../modal/modalTitleNode/ModalTitleNode';
+import ModalDetailsUpdate from '../modal/modalDetailsUpdate/modalDetailsUpdate';
 
 
 const BoardLink: FC<BoardLinkPropsModel> = (props): ReactElement => {
@@ -68,15 +70,22 @@ const BoardLink: FC<BoardLinkPropsModel> = (props): ReactElement => {
 				</Button>
 			</ModalWindow>
 			<ModalWindow
-				title={`Edit board "${title}"?`}
-				description="This action cannot be undone"
+				title={<ModalTitleNode
+					firstRow={`Board ID: ${props.board._id}`}
+					closeFn={closeEditModal}
+					secondRow={`Owner: ${props.board.owner}`}
+				/>}
 				isOpened={isEditModalOpened}
 				closeFunc={closeEditModal}
 			>
-				<Button onClick={closeEditModal}>Cancel</Button>
-				<Button onClick={deleteBoard} variant='contained' autoFocus>
-            Delete
-				</Button>
+				<ModalDetailsUpdate title={props.board.title} users={props.board.users}>
+					<FlexBox justifyContent='right'>
+						<Button onClick={closeEditModal}>Cancel</Button>
+						<Button color='info' onClick={deleteBoard} variant='contained' autoFocus>
+								Update
+						</Button>
+					</FlexBox>
+				</ModalDetailsUpdate>
 			</ModalWindow>
 		</>
 	);
