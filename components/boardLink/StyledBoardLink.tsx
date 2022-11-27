@@ -8,6 +8,15 @@ const StyledBoardLink = styled.div`
   display: flex;
   flex-flow: column;
   border-radius: 5px;
+  transition: all 0.3s ease-in-out;
+  & > div {
+    transition: opacity 0.3s ease-in-out;
+    opacity: 0;
+  }
+  &:hover > div {
+    opacity: 1;
+  }
+
   & h3 {
     margin: 0 0 10px 0;
     font-size: 16px;
@@ -19,6 +28,10 @@ const StyledBoardLink = styled.div`
     font-size: 14px;
     line-height: 140%;
     flex-grow: 1;
+  }
+
+  &:hover {
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
   }
 `;
 
