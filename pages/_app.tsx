@@ -19,7 +19,7 @@ function App({ Component, pageProps }: AppProps) {
 	const interval = useRef<ReturnType<typeof setTimeout>>();
 
 	useEffect(() => {
-		if (document.cookie.replace(/(?:(?:^|.*;\s*)token\s*=\s*([^;]*).*$)|^.*$/, '$1')) {
+		if (document.cookie.match(/token=/)) {
 			const token = document.cookie.split('token=')[1].split(';')[0];
 			const { id, login, exp } = decodeToken(token);
 			dispatch(restoreUserToken({ id, login, token }));
