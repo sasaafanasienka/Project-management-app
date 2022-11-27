@@ -29,7 +29,7 @@ export const createUser = createAsyncThunk<
   NewUserResponseModel,
   NewUserRequestPropsModel,
   { rejectValue: string }
-  >('user/createUser', async (body, { rejectWithValue }) => {
+  >('user/createUser', async (body, { rejectWithValue, ge }) => {
   	try {
   		const res = await fetch(`${BASE_URL}auth/signup`, {
   			method: 'POST',

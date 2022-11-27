@@ -9,12 +9,14 @@ import FlexBox from '../styled/FlexBox';
 import { TaskDetailsPropsModel } from './interfaces';
 import StyledTaskDetails from './StyledTaskDetails';
 
-const TaskDetails: FC<TaskDetailsPropsModel> = ({ children, task }): ReactElement => {
+const TaskDetails: FC<TaskDetailsPropsModel> = ({
+	children, title, description, users,
+}): ReactElement => {
 	const [user, setUser] = useState<string>();
 	const [isTextAreaOpen, setIsTextAreaOpen] = useState(false);
-	const [description, setDescription] = useState(task.description);
+	const [descriptionState, setDescription] = useState(description);
 	const [isTextAreaTitleOpen, setIsTextAreaTitleOpen] = useState(false);
-	const [title, setTitle] = useState(task.title);
+	const [titleState, setTitle] = useState(title);
 	const textAreaRef = useRef<HTMLTextAreaElement>(null);
 	const textAreaTitleRef = useRef<HTMLTextAreaElement>(null);
 
@@ -40,23 +42,23 @@ const TaskDetails: FC<TaskDetailsPropsModel> = ({ children, task }): ReactElemen
 					{isTextAreaTitleOpen ? <TextareaAutosize
 						ref={textAreaTitleRef}
 						onChange={(event) => setTitle(event?.target.value)}
-						value={title}
+						value={titleState}
 						aria-label="empty textarea"
 						placeholder="No title"
 						style={{ width: '100%' }}
-					/> : <p>{task.title}</p>}
+					/> : <p>{title}</p>}
 				</div>
 				<div onClick={handleDescriptionUpdate}>
 					{isTextAreaOpen ? <TextareaAutosize
 						ref={textAreaRef}
 						onChange={(event) => setDescription(event?.target.value)}
-						value={description}
+						value={descriptionState}
 						aria-label="empty textarea"
 						placeholder="No description"
 						style={{ width: '100%' }}
-					/> : <p>{task.description}</p>}
+					/> : <p>{description}</p>}
 				</div>
-				<p>{`Assigned to: ${task.users.map((i) => i).toString()}`}</p>
+				<p>{`Assigned to: ${users.map((i) => i).toString()}`}</p>
 				<FlexBox column>
 					<FormControl fullWidth>
 						<InputLabel id="demo-simple-select-label">Assign to: </InputLabel>
