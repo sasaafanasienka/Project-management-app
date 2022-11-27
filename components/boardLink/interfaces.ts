@@ -1,4 +1,5 @@
+import { BoardModel } from '../../redux/slices/boardSlice/interfaces';
+
 export interface BoardLinkPropsModel {
-  title: string;
-  description: string;
+  board: BoardModel;
 }

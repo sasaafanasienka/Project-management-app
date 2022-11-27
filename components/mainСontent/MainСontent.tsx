@@ -6,6 +6,7 @@ const MainContent = styled.div`
   align-items: stretch;
   justify-content: flex-start;
   height: calc(100vh - 100px);
+  overflow-y: scroll;
 `;
 
 export default MainContent;

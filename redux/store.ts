@@ -3,6 +3,8 @@ import {
 } from '@reduxjs/toolkit';
 import { createWrapper, HYDRATE } from 'next-redux-wrapper';
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
+import { boardSlice } from './slices/boardSlice';
+import { InitialStateBoardModel } from './slices/boardSlice/interfaces';
 import { langSlice } from './slices/langSlice';
 import { InitialStateModel } from './slices/langSlice/interfaces';
 import { userSlice } from './slices/userSlice';
@@ -11,6 +13,7 @@ import { InitialStateUserModel } from './slices/userSlice/interfaces';
 const combinedReducer = combineReducers({
 	lang: langSlice.reducer,
 	user: userSlice.reducer,
+	boards: boardSlice.reducer,
 });
 
 const reducer = (
@@ -18,6 +21,7 @@ const reducer = (
 	action: PayloadAction<CombinedState<{
 		lang: InitialStateModel;
 		user: InitialStateUserModel;
+		boards: InitialStateBoardModel;
 	}>>,
 ) => {
 	if (action.type === HYDRATE) {
@@ -28,11 +32,13 @@ const reducer = (
 		return nextState as CombinedState<{
 			lang: InitialStateModel;
 			user: InitialStateUserModel;
+			boards: InitialStateBoardModel;
 	}>;
 	}
 	return combinedReducer(state, action) as CombinedState<{
 			lang: InitialStateModel;
 			user: InitialStateUserModel;
+			boards: InitialStateBoardModel;
 	}>;
 };
 
