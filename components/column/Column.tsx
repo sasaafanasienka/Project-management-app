@@ -1,9 +1,10 @@
 import {
-	ChangeEvent, FC, ReactElement, useState,
+	FC, ReactElement, useState, useRef, ChangeEvent,
 } from 'react';
 import DeleteIcon from '@mui/icons-material/Delete';
 import IconButton from '@mui/material/IconButton';
 import { Button } from '@mui/material';
+import { useDrag, useDrop } from 'react-dnd';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import FlexBox from '../styled/FlexBox';
@@ -12,57 +13,65 @@ import Task from '../task/Task';
 import ModalWindow from '../modal/ModalWindow';
 import { ColumnPropsModel } from './interfaces';
 import { ModalWindowStateModel } from '../modal/interfaces';
+import { ItemTypes } from '../board/interfaces';
 import { TaskModel } from '../task/interfaces';
 import StyledTaskList from './StyledTaskList';
 import StyledColumnTitle from './StyledColumnTitle';
 import UpdateTitleInput from './updateTitleInput/UpdateTitleInput';
 
-const tasksMck: TaskModel[] = [
-	{
-		_id: '1',
-		title: 'Eat',
-		order: 0,
-		boardId: '1561',
-		columnId: '16589',
-		description: 'Pasta',
-		userId: 2342343,
-		users: ['15151', '1151', '16516'],
-	},
-	{
-		_id: '2',
-		title: 'Sleep',
-		order: 0,
-		boardId: '155461',
-		columnId: '1655489',
-		description: 'React-error-boundary - is a lightweight package ready to use for this scenario with TS support built-in. This approach also lets you avoid class components that are not that popular anymore.',
-		userId: 234234345,
-		users: ['15154541', '451151', '1456516'],
-	},
-	{
-		_id: '3',
-		title: 'Train',
-		order: 0,
-		boardId: '156541',
-		columnId: '165849',
-		description: 'However, many hooks are initialized with null-ish default values, and you may wonder how to provide types. Explicitly declare the type, and use a union type:',
-		userId: 234236543,
-		users: ['1465151', '184151', '16556616'],
-	},
-	{
-		_id: '3',
-		title: 'Learn React',
-		order: 0,
-		boardId: '156541',
-		columnId: '165849',
-		description: 'However, many hooks are initialized with null-ish default values, and you may wonder how to provide types. Explicitly declare the type, and use a union type:',
-		userId: 234236543,
-		users: ['1465151', '184151', '16556616'],
-	},
-];
-
-
 const Column: FC<ColumnPropsModel> = (props): ReactElement => {
-	const { title } = { ...props };
+	const {
+		title, index, id, tasks, moveColumn, moveTask, moveIntoEmptyColumn,
+	} = { ...props };
+
+	const columnRef = useRef<HTMLDivElement>(null);
+
+	interface DragItem {
+		index: number
+		id: string
+		type: string
+		columnId: string
+	}
+
+	const [collected, drag] = useDrag({
+		type: ItemTypes.COLUMN,
+		item: () => ({ id, index }),
+	});
+
+	const [{ handlerId }, drop] = useDrop<DragItem, void, >({
+		accept: [ItemTypes.COLUMN, ItemTypes.TASK],
+		collect(monitor) {
+			return {
+				handlerId: monitor.getHandlerId(),
+			};
+		},
+		hover(item: DragItem, monitor) {
+			if (monitor.getItemType() === ItemTypes.COLUMN) {
+				if (!columnRef.current) {
+					return;
+				}
+				const dragId = item.id;
+				const hoverId = id;
+				if (dragId === hoverId) {
+					return;
+				}
+
+				moveColumn(dragId, hoverId);
+				item.id = hoverId;
+			}
+			if (monitor.getItemType() === ItemTypes.TASK) {
+				const dragId = item.id;
+				const dragColumnId = item.columnId;
+				const hoverColumnId = id;
+
+				if (dragColumnId !== hoverColumnId) {
+					moveIntoEmptyColumn(dragId, dragColumnId, hoverColumnId);
+				}
+			}
+		},
+	});
+
+	drag(drop(columnRef));
 
 	const [isModalOpened, setOpened] = useState<ModalWindowStateModel>(false);
 	const [isTitleUpdate, setIsTitleUpdate] = useState<boolean>(false);
@@ -93,9 +102,13 @@ const Column: FC<ColumnPropsModel> = (props): ReactElement => {
 		closeModal();
 	};
 
+
 	return (
 		<>
-			<StyledColumn>
+			<StyledColumn
+				ref={columnRef}
+				data-handler-id={handlerId}
+			>
 				<FlexBox justifyContent='space-between' wrap='no-wrap'>
 					{isTitleUpdate
 						? <UpdateTitleInput
@@ -108,7 +121,7 @@ const Column: FC<ColumnPropsModel> = (props): ReactElement => {
 							<EditIcon color='secondary' />
 							<h3>
 								{title.toUpperCase()}
-								<span>{tasksMck.length}</span>
+								<span>{tasks.length}</span>
 							</h3>
 						</StyledColumnTitle>
 					}
@@ -116,6 +129,7 @@ const Column: FC<ColumnPropsModel> = (props): ReactElement => {
 						<DeleteIcon fontSize='small'/>
 					</IconButton>
 				</FlexBox>
+
 				<Button color='info'>
 					<FlexBox alignItems='center' justifyContent='center' gap='0'>
 						<AddIcon fontSize='small' />
@@ -123,7 +137,18 @@ const Column: FC<ColumnPropsModel> = (props): ReactElement => {
 					</FlexBox>
 				</Button>
 				<StyledTaskList>
-					{tasksMck.map((item) => <Task key={item._id} task={item} />)}
+					{tasks.map((task, idx) => <Task
+						key={idx}
+						title={task.title}
+						description={task.description}
+						moveTask={moveTask}
+						index={idx}
+						columnId={id}
+						columnIndex={index}
+						id={task._id}
+						userId={task.userId}
+						users={task.users}
+					/>)}
 				</StyledTaskList>
 			</StyledColumn>
 			<ModalWindow
@@ -138,9 +163,7 @@ const Column: FC<ColumnPropsModel> = (props): ReactElement => {
 				</Button>
 			</ModalWindow>
 		</>
-
 	);
 };
-
 
 export default Column;
