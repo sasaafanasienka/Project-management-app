@@ -17,6 +17,7 @@ const initialState: InitialStateUserModel = {
 	isAuth: false,
 	isLoading: false,
 	error: '',
+	usersAll: [],
 	user: {
 		id: '',
 		name: '',
@@ -24,6 +25,30 @@ const initialState: InitialStateUserModel = {
 		token: '',
 	},
 };
+
+export const getAllUsers = createAsyncThunk('user/getAllUsers', async (_, { rejectWithValue, getState }) => {
+	const state = getState() as ReturnType<Store['getState']>;
+	const { token } = state.user.user;
+	try {
+		const response = await fetch(`${BASE_URL}users`, {
+			method: 'GET',
+			headers: {
+				'Content-Type': 'application/json',
+				Authorization: `Bearer ${token}`,
+			},
+		});
+		if (!response.ok) {
+			const { statusCode, message } = await response.json();
+  			throw new Error(`${statusCode} ${message}`);
+		}
+		return await response.json();
+	} catch (err) {
+		if (err instanceof Error) {
+  			return rejectWithValue(`${err.message}`);
+  		}
+  		return rejectWithValue('Unknown Error! Try to refresh the page');
+	}
+});
 
 export const createUser = createAsyncThunk<
   NewUserResponseModel,
@@ -247,6 +272,21 @@ export const userSlice = createSlice({
 			},
 		);
 		builder.addCase(updateUser.rejected, (state, action) => {
+			state.isLoading = false;
+			state.error = action.payload as string;
+		});
+		builder.addCase(getAllUsers.pending, (state) => {
+			state.isLoading = true;
+			state.error = '';
+		});
+		builder.addCase(
+			getAllUsers.fulfilled,
+			(state, action) => {
+				state.isLoading = false;
+				state.usersAll = action.payload;
+			},
+		);
+		builder.addCase(getAllUsers.rejected, (state, action) => {
 			state.isLoading = false;
 			state.error = action.payload as string;
 		});
