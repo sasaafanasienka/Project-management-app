@@ -5,9 +5,13 @@ export interface BoardModel {
   users: Array<string>;
 }
 
+export interface BoardUserModel extends BoardModel{
+  invited: boolean;
+}
+
 export interface InitialStateBoardModel {
   isLoading: boolean;
-  boards: BoardModel[];
+  boards: BoardUserModel[];
   error: string,
 }
 

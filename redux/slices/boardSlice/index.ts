@@ -3,7 +3,9 @@
 import {
 	createAsyncThunk, createSlice, PayloadAction, Store,
 } from '@reduxjs/toolkit';
-import { BoardModel, InitialStateBoardModel, NewBoardPropsModel } from './interfaces';
+import {
+	BoardModel, BoardUserModel, InitialStateBoardModel, NewBoardPropsModel,
+} from './interfaces';
 
 const BASE_URL = 'https://final-task-backend-production-287c.up.railway.app/';
 
@@ -14,7 +16,7 @@ const initialState: InitialStateBoardModel = {
 };
 
 export const createBoard = createAsyncThunk<
-  BoardModel,
+  BoardUserModel,
   NewBoardPropsModel,
   { rejectValue: string }
 >('boards/createBoard', async (body, { rejectWithValue, getState }) => {
@@ -34,7 +36,8 @@ export const createBoard = createAsyncThunk<
 			const { statusCode, message } = await response.json();
 			throw new Error(`${statusCode} ${message}`);
 		}
-		return await response.json();
+		const newBoard = await response.json();
+		return Object.assign(newBoard, { invited: false });
 	} catch (error) {
 		if (error instanceof Error) {
 			return rejectWithValue(`${error.message}`);
@@ -72,7 +75,7 @@ export const deleteBoard = createAsyncThunk<
 });
 
 export const updateBoard = createAsyncThunk<
-  BoardModel,
+  BoardUserModel,
   {boardId: string, body: NewBoardPropsModel},
   { rejectValue: string }
 >('boards/updateBoard', async ({ boardId, body }, { rejectWithValue, getState }) => {
@@ -112,7 +115,14 @@ export const getUserBoards = createAsyncThunk('boards/getUserBoards', async (boa
 			},
 		});
 		const boardsAll = await response.json();
-		return boardsAll.filter((board: BoardModel) => id === board.owner || board.users.includes(id));
+		return boardsAll
+			.filter((board: BoardModel) => id === board.owner || board.users.includes(id))
+			.map((board: BoardModel) => {
+				if (board.owner === id) {
+					return Object.assign(board, { invited: false });
+				}
+				return Object.assign(board, { invited: true });
+			});
 	} catch {
 		return rejectWithValue('error');
 	}
@@ -130,7 +140,7 @@ export const boardSlice = createSlice({
 		});
 		builder.addCase(
 			getUserBoards.fulfilled,
-			(state, action: PayloadAction<Array<BoardModel>>) => {
+			(state, action: PayloadAction<Array<BoardUserModel>>) => {
 				state.isLoading = false;
 				state.boards = action.payload;
 			},
@@ -145,7 +155,7 @@ export const boardSlice = createSlice({
 		});
 		builder.addCase(
 			createBoard.fulfilled,
-			(state, action: PayloadAction<BoardModel>) => {
+			(state, action: PayloadAction<BoardUserModel>) => {
 				state.isLoading = false;
 				state.boards.push(action.payload);
 			},
