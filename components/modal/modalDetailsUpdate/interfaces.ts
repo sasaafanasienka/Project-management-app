@@ -5,4 +5,5 @@ export interface TaskDetailsPropsModel {
   title: string;
   description?: string;
   users: string[];
+  onUpdate?: (arg0: BoardModel) => void;
 }

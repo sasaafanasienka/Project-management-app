@@ -1,7 +1,14 @@
+export interface UserResponceModel {
+  _id: string;
+  name: string;
+  login: string;
+}
+
 export interface InitialStateUserModel {
 	isAuth: boolean;
   isLoading: boolean;
   error: string;
+  usersAll: Array<UserResponceModel>;
 	user: {
 		id: string;
 		name: string;
@@ -30,10 +37,4 @@ export interface GetUserByIdProps {
 export interface DeleteUserProps {
   id: string;
   token: string;
-}
-
-export interface UserResponceModel {
-  _id: string;
-  name: string;
-  login: string;
 }
