@@ -19,3 +19,8 @@ export interface NewColumnPropsModel {
   // users: Array<string>;
 }
 
+export interface UpdateColumnPropsModel {
+  title: string;
+  order: number;
+}
+

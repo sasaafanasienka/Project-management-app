@@ -19,7 +19,7 @@ import StyledTaskList from './StyledTaskList';
 import StyledColumnTitle from './StyledColumnTitle';
 import UpdateTitleInput from './updateTitleInput/UpdateTitleInput';
 import { useAppDispatch } from '../../redux/store';
-import { deleteColumn } from '../../redux/slices/columnSlice';
+import { deleteColumn, updateColumn } from '../../redux/slices/columnSlice';
 
 const Column: FC<ColumnPropsModel> = (props): ReactElement => {
 	const {
@@ -82,6 +82,14 @@ const Column: FC<ColumnPropsModel> = (props): ReactElement => {
 	const [titleCurrent, setTitleCurrent] = useState<string>(title);
 
 	const handleTitleUpdateConfirm = () => {
+		dispatch(updateColumn({
+			boardid,
+			columnId: id,
+			body: {
+				title: titleCurrent,
+				order: index,
+			},
+		}));
 		setIsTitleUpdate(false);
 	};
 

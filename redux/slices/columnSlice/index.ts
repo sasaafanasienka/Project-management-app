@@ -5,7 +5,7 @@ import {
 } from '@reduxjs/toolkit';
 import { toast } from 'react-toastify';
 import {
-	ColumnModel, InitialStateColumnModel, NewColumnPropsModel,
+	ColumnModel, InitialStateColumnModel, UpdateColumnPropsModel,
 } from './interfaces';
 import { BASE_URL } from '../../../config';
 import { readCookie } from '../../../utils/cookieUtilities';
@@ -20,7 +20,7 @@ const initialState: InitialStateColumnModel = {
 export const getBoardById = createAsyncThunk<
 	ColumnModel,
 	{ rejectValue: string }
-	>('columns/getBoardById', async (location, { rejectWithValue, getState }) => {
+	>('columns/getBoardById', async (location, { rejectWithValue }) => {
 		const token = readCookie('token');
 		const URL: string = `${BASE_URL}boards/${location}/columns`;
 		if (location) {
@@ -52,7 +52,7 @@ export const getBoardById = createAsyncThunk<
 
 export const createColumn = createAsyncThunk<
   ColumnModel,
-  NewColumnPropsModel,
+  { boardid: string, formData: UpdateColumnPropsModel },
   { rejectValue: string }
 >('boards/createColumn', async (props, { rejectWithValue, getState }) => {
 	const state = getState() as ReturnType<Store['getState']>;
@@ -86,10 +86,9 @@ export const createColumn = createAsyncThunk<
 
 export const deleteColumn = createAsyncThunk<
   ColumnModel,
-  {boardId: string},
+  {boardid: string, columnId: string},
   { rejectValue: string }
->('boards/deleteColumn', async (props, { rejectWithValue, getState }) => {
-	const state = getState() as ReturnType<Store['getState']>;
+>('boards/deleteColumn', async (props, { rejectWithValue }) => {
 	const token = readCookie('token');
 	const { boardid, columnId } = { ...props };
 	try {
@@ -117,55 +116,38 @@ export const deleteColumn = createAsyncThunk<
 	}
 });
 
-// export const updateColumn = createAsyncThunk<
-//   ColumnModel,
-//   {boardId: string, body: NewColumnPropsModel},
-//   { rejectValue: string }
-// >('boards/updateColumn', async ({ boardId, body }, { rejectWithValue, getState }) => {
-// 	const state = getState() as ReturnType<Store['getState']>;
-// 	const { token } = state.user.user;
-// 	try {
-// 		const response = await fetch(`${BASE_URL}boards/${boardId}`, {
-// 			method: 'PUT',
-// 			headers: {
-// 				'Content-Type': 'application/json',
-// 				Authorization: `Bearer ${token}`,
-// 			},
-// 			body: JSON.stringify(body),
-// 		});
-// 		if (!response.ok) {
-// 			const { statusCode, message } = await response.json();
-// 			throw new Error(`${statusCode} ${message}`);
-// 		}
-// 		return await response.json();
-// 	} catch (error) {
-// 		if (error instanceof Error) {
-// 			return rejectWithValue(`${error.message}`);
-// 		}
-// 		return rejectWithValue('Unknown Error! Try to refresh the page');
-// 	}
-// });
-
-// export const getColumnsSet = createAsyncThunk<
-//   Array<ColumnModel>,
-//   {boardId: string},
-//   { rejectValue: string }
-// >('boards/getColumnsSet', async (boardId, { rejectWithValue, getState }) => {
-// 	const state = getState() as ReturnType<Store['getState']>;
-// 	const { id, token } = state.user.user;
-// 	try {
-// 		const response = await fetch(`${BASE_URL}boardsSet/${id}`, {
-// 			method: 'GET',
-// 			headers: {
-// 				'Content-Type': 'application/json',
-// 				Authorization: `Bearer ${token}`,
-// 			},
-// 		});
-// 		return await response.json();
-// 	} catch {
-// 		return rejectWithValue('error');
-// 	}
-// });
+export const updateColumn = createAsyncThunk<
+ColumnModel,
+  {boardid: string, columnId: string, body: UpdateColumnPropsModel},
+  { rejectValue: string }
+>('boards/updateColumn', async (props, { rejectWithValue }) => {
+	const token = readCookie('token');
+	const { boardid, columnId, body } = { ...props };
+	try {
+		const response = await fetch(`${BASE_URL}boards/${boardid}/columns/${columnId}`, {
+			method: 'PUT',
+			headers: {
+				'Content-Type': 'application/json',
+				Authorization: `Bearer ${token}`,
+			},
+			body: JSON.stringify(body),
+		});
+		if (!response.ok) {
+			const { statusCode, message } = await response.json();
+			throw new Error(`${statusCode} ${message}`);
+		}
+		const data = await response.json();
+		toast.success(`Column ${data.title} successfully renamed`);
+		return data;
+	} catch (error) {
+		if (error instanceof Error) {
+			toast.error(error.message);
+			return rejectWithValue(`${error.message}`);
+		}
+		toast.error('Unknown Error! Try to refresh the page');
+		return rejectWithValue('Unknown Error! Try to refresh the page');
+	}
+});
 
 export const columnSlice = createSlice({
 	name: 'columns',
@@ -221,44 +203,25 @@ export const columnSlice = createSlice({
 			state.isLoading = false;
 			state.error = action.payload as string;
 		});
-		// builder.addCase(getColumnsSet.pending, (state) => {
-		// 	state.isLoading = true;
-		// 	state.error = '';
-		// });
-		// builder.addCase(
-		// 	getColumnsSet.fulfilled,
-		// 	(state, action: PayloadAction<Array<ColumnModel>>) => {
-		// 		state.isLoading = false;
-		// 		state.columns = action.payload;
-		// 	},
-		// );
-		// builder.addCase(getColumnsSet.rejected, (state, action) => {
-		// 	state.isLoading = false;
-		// 	state.error = action.payload as string;
-		// });
-
-		// builder.addCase(updateColumn.pending, (state) => {
-		// 	state.isLoading = true;
-		// 	state.error = '';
-		// });
-		// builder.addCase(
-		// 	updateColumn.fulfilled,
-		// 	(state, action: PayloadAction<ColumnModel>) => {
-		// 		state.isLoading = false;
-		// 		state.columns = state.columns.map((item) => {
-		// 			if (item._id === action.payload._id) {
-		// 				item.title = action.payload.title;
-		// 			}
-		// 			return item;
-		// 		});
-		// 	},
-		// );
-		// builder.addCase(updateColumn.rejected, (state, action) => {
-		// 	state.isLoading = false;
-		// 	state.error = action.payload as string;
-		// });
+		builder.addCase(updateColumn.pending, (state) => {
+			state.isLoading = true;
+			state.error = '';
+		});
+		builder.addCase(
+			updateColumn.fulfilled,
+			(state, action: PayloadAction<ColumnModel>) => {
+				state.isLoading = false;
+				state.columns = state.columns.map((item) => {
+					if (item._id === action.payload._id) {
+						item.title = action.payload.title;
+					}
+					return item;
+				});
+			},
+		);
+		builder.addCase(updateColumn.rejected, (state, action) => {
+			state.isLoading = false;
+			state.error = action.payload as string;
+		});
 	},
 });
-
-export const { } = columnSlice.actions;
-
