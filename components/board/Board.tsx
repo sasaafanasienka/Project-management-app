@@ -15,20 +15,18 @@ import { useAppSelector, useAppDispatch } from '../../redux/store';
 import { getColumns } from '../../redux/slices/columnSlice';
 
 const Board: FC<BoardPropsModel> = (props): ReactElement => {
-	const router = useRouter();
-	const { boardid } = router.query;
-
-	const { location } = { ...props };
-
 	const [columns, setColumns] = useState(mockData);
 
+	const router = useRouter();
 	const columnss = useAppSelector((state) => state.columns);
 
 	const dispatch = useAppDispatch();
 
 	useEffect(() => {
 		if (columnss.status === 'no-loaded') {
-			dispatch(getColumns(boardid as string));
+			const { boardid } = router.query;
+			console.log(boardid);
+			dispatch(getColumns(boardid));
 		}
 	});
 

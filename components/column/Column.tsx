@@ -102,7 +102,6 @@ const Column: FC<ColumnPropsModel> = (props): ReactElement => {
 		closeModal();
 	};
 
-
 	return (
 		<>
 			<StyledColumn
