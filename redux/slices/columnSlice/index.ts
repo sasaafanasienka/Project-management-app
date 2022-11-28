@@ -15,10 +15,10 @@ const initialState: InitialStateColumnModel = {
 	error: '',
 };
 
-export const getColumns = createAsyncThunk<
+export const getBoardById = createAsyncThunk<
 	ColumnModel,
 	{ rejectValue: string }
-	>('columns/getColumns', async (location, { rejectWithValue, getState }) => {
+	>('columns/getBoardById', async (location, { rejectWithValue, getState }) => {
 		const state = getState() as ReturnType<Store['getState']>;
 		const { token } = state.user.user;
 		console.log(location);
@@ -164,13 +164,13 @@ export const columnSlice = createSlice({
 	reducers: {
 	},
 	extraReducers: (builder) => {
-		builder.addCase(getColumns.pending, (state) => {
+		builder.addCase(getBoardById.pending, (state) => {
 			state.status = 'loaded';
 			state.isLoading = true;
 			state.error = '';
 		});
 		builder.addCase(
-			getColumns.fulfilled,
+			getBoardById.fulfilled,
 			(state, action) => {
 				console.log(action);
 				state.status = 'loaded';
@@ -178,7 +178,7 @@ export const columnSlice = createSlice({
 				state.columns = action.payload;
 			},
 		);
-		builder.addCase(getColumns.rejected, (state, action) => {
+		builder.addCase(getBoardById.rejected, (state, action) => {
 			state.status = 'loaded';
 			state.isLoading = false;
 			state.error = action.payload as string;
