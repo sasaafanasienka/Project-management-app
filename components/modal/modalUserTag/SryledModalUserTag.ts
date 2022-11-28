@@ -27,6 +27,10 @@ const StyledModalUserTag = styled.div`
       border-color: #E15342;
       transform: scale(1.1);
     }
+
+    svg{
+      font-size: 14px;
+    }
   }
 `;
 
