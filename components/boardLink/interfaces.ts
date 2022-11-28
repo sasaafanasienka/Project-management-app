@@ -1,5 +1,5 @@
-import { BoardModel } from '../../redux/slices/boardSlice/interfaces';
+import { BoardUserModel } from '../../redux/slices/boardSlice/interfaces';
 
 export interface BoardLinkPropsModel {
-  board: BoardModel;
+  board: BoardUserModel;
 }

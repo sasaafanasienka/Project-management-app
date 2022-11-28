@@ -16,7 +16,7 @@ import ModalDetailsUpdate from '../modal/modalDetailsUpdate/modalDetailsUpdate';
 
 
 const BoardLink: FC<BoardLinkPropsModel> = (props): ReactElement => {
-	const { title, _id: id } = { ...props.board };
+	const { title, _id: id, invited } = { ...props.board };
 
 	const [isDeleteModalOpened, setDeleteModalOpened] = useState<ModalWindowStateModel>(false);
 	const [isEditModalOpened, setEditModalOpened] = useState<boolean>(false);
@@ -46,7 +46,7 @@ const BoardLink: FC<BoardLinkPropsModel> = (props): ReactElement => {
 	return (
 		<>
 			<Link href={`/boards/${id}`}>
-				<StyledBoardLink>
+				<StyledBoardLink owned={invited}>
 					<h3>{ title }</h3>
 					<FlexBox justifyContent='flex-end' gap='0'>
 						<IconButton aria-label="delete" size="small" onClick={openEditModal}>
@@ -56,6 +56,7 @@ const BoardLink: FC<BoardLinkPropsModel> = (props): ReactElement => {
 							<DeleteIcon fontSize='small' color='disabled' />
 						</IconButton>
 					</FlexBox>
+					<span></span>
 				</StyledBoardLink>
 			</Link>
 			<ModalWindow
@@ -71,7 +72,7 @@ const BoardLink: FC<BoardLinkPropsModel> = (props): ReactElement => {
 			</ModalWindow>
 			<ModalWindow
 				title={<ModalTitleNode
-					firstRow={`Board ID: ${props.board._id}`}
+					firstRow={`Board ID: ${id}`}
 					closeFn={closeEditModal}
 					secondRow={`Owner: ${props.board.owner}`}
 				/>}
