@@ -18,13 +18,17 @@ import { TaskModel } from '../task/interfaces';
 import StyledTaskList from './StyledTaskList';
 import StyledColumnTitle from './StyledColumnTitle';
 import UpdateTitleInput from './updateTitleInput/UpdateTitleInput';
+import { useAppDispatch } from '../../redux/store';
+import { deleteColumn } from '../../redux/slices/columnSlice';
 
 const Column: FC<ColumnPropsModel> = (props): ReactElement => {
 	const {
-		title, index, id, tasks, moveColumn, moveTask, moveIntoEmptyColumn,
+		title, index, id, tasks, moveColumn, moveTask, moveIntoEmptyColumn, boardid,
 	} = { ...props };
 
 	const columnRef = useRef<HTMLDivElement>(null);
+
+	const dispatch = useAppDispatch();
 
 	interface DragItem {
 		index: number
@@ -90,16 +94,15 @@ const Column: FC<ColumnPropsModel> = (props): ReactElement => {
 		setTitleCurrent(target.value);
 	};
 
-	const openModal = () => {
-		setOpened(true);
+	const handleModal = (value: boolean = !isModalOpened) => {
+		setOpened(value);
 	};
 
-	const closeModal = () => {
-		setOpened(false);
-	};
-
-	const deleteColumn = () => {
-		closeModal();
+	const deleteItem = () => {
+		dispatch(deleteColumn({ boardid, columnId: id }))
+			.then(() => {
+				handleModal(false);
+			});
 	};
 
 	return (
@@ -124,7 +127,7 @@ const Column: FC<ColumnPropsModel> = (props): ReactElement => {
 							</h3>
 						</StyledColumnTitle>
 					}
-					<IconButton aria-label="delete" size="small" onClick={openModal}>
+					<IconButton aria-label="delete" size="small" onClick={handleModal}>
 						<DeleteIcon fontSize='small'/>
 					</IconButton>
 				</FlexBox>
@@ -154,10 +157,10 @@ const Column: FC<ColumnPropsModel> = (props): ReactElement => {
 				title={`Are you sure to delete the column "${title}"?`}
 				description="This action cannot be undone"
 				isOpened={isModalOpened}
-				closeFunc={closeModal}
+				closeFunc={handleModal}
 			>
-				<Button onClick={closeModal}>Cancel</Button>
-				<Button onClick={deleteColumn} variant='contained' autoFocus>
+				<Button onClick={handleModal}>Cancel</Button>
+				<Button onClick={deleteItem} variant='contained' autoFocus>
             Delete
 				</Button>
 			</ModalWindow>

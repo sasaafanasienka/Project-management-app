@@ -87,26 +87,24 @@ const Board: FC<BoardPropsModel> = (props): ReactElement => {
 
 	};
 
-	const handleModal = isModalOpened
-		? () => setIsModalOpened(false)
-		: () => setIsModalOpened(true);
-
+	const handleModal = (value: boolean = !isModalOpened) => {
+		setIsModalOpened(value);
+	};
 	// const handleSubmit = (formData: BoardModel) => {
 	const handleSubmit = (formData: ColumnModel) => {
 		if (formData) {
 			dispatch(createColumn({ boardid, formData }))
-				.unwrap()
-				.then(({ title }) => {
-					toast.success(`Board "${title}" successfully created`);
-					handleModal();
-				})
-				.catch((err) => toast.error(`An error has occured: ${err}`));
+				.then(() => {
+					handleModal(false);
+				});
 		}
 	};
+	console.log(columns);
 
 	const renderColumn = (column: ColumnPropsModel, index: number) => (
 		<Column
-			id={column.id}
+			boardid={boardid}
+			id={column._id}
 			index={index}
 			key={column.title}
 			title={column.title}
