@@ -2,6 +2,7 @@ import {
 	FC, ReactElement, useState, MouseEvent,
 } from 'react';
 import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
 import IconButton from '@mui/material/IconButton';
 import Button from '@mui/material/Button';
 import Link from 'next/link';
@@ -10,35 +11,49 @@ import { BoardLinkPropsModel } from './interfaces';
 import FlexBox from '../styled/FlexBox';
 import ModalWindow from '../modal/ModalWindow';
 import { ModalWindowStateModel } from '../modal/interfaces';
+import ModalTitleNode from '../modal/modalTitleNode/ModalTitleNode';
+import ModalDetailsUpdate from '../modal/modalDetailsUpdate/modalDetailsUpdate';
 
 
 const BoardLink: FC<BoardLinkPropsModel> = (props): ReactElement => {
-	const { title, description } = { ...props };
+	const { title, _id: id } = { ...props.board };
 
-	const [isOpened, setOpened] = useState<ModalWindowStateModel>(false);
+	const [isDeleteModalOpened, setDeleteModalOpened] = useState<ModalWindowStateModel>(false);
+	const [isEditModalOpened, setEditModalOpened] = useState<boolean>(false);
 
-	const openModal = (event: MouseEvent): void => {
+	const openDeleteModal = (event: MouseEvent): void => {
 		event.preventDefault();
-		setOpened(true);
+		setDeleteModalOpened(true);
 	};
 
-	const closeModal = (): void => {
-		setOpened(false);
+	const closeDeleteModal = (): void => {
+		setDeleteModalOpened(false);
 	};
 
 	const deleteBoard = (): void => {
-		closeModal();
+		closeDeleteModal();
+	};
+
+	const openEditModal = (event: MouseEvent): void => {
+		event.preventDefault();
+		setEditModalOpened(true);
+	};
+
+	const closeEditModal = (): void => {
+		setEditModalOpened(false);
 	};
 
 	return (
 		<>
-			<Link href="/boards/111">
+			<Link href={`/boards/${id}`}>
 				<StyledBoardLink>
 					<h3>{ title }</h3>
-					<p>{description}</p>
-					<FlexBox justifyContent='flex-end'>
-						<IconButton aria-label="delete" size="small" onClick={openModal}>
-							<DeleteIcon fontSize='small'/>
+					<FlexBox justifyContent='flex-end' gap='0'>
+						<IconButton aria-label="delete" size="small" onClick={openEditModal}>
+							<EditIcon fontSize='small' color='disabled' />
+						</IconButton>
+						<IconButton aria-label="delete" size="small" onClick={openDeleteModal}>
+							<DeleteIcon fontSize='small' color='disabled' />
 						</IconButton>
 					</FlexBox>
 				</StyledBoardLink>
@@ -46,13 +61,31 @@ const BoardLink: FC<BoardLinkPropsModel> = (props): ReactElement => {
 			<ModalWindow
 				title={`Are you sure to delete the board "${title}"?`}
 				description="This action cannot be undone"
-				isOpened={isOpened}
-				closeFunc={closeModal}
+				isOpened={isDeleteModalOpened}
+				closeFunc={closeDeleteModal}
 			>
-				<Button onClick={closeModal}>Cancel</Button>
+				<Button onClick={closeDeleteModal}>Cancel</Button>
 				<Button onClick={deleteBoard} variant='contained' autoFocus>
             Delete
 				</Button>
+			</ModalWindow>
+			<ModalWindow
+				title={<ModalTitleNode
+					firstRow={`Board ID: ${props.board._id}`}
+					closeFn={closeEditModal}
+					secondRow={`Owner: ${props.board.owner}`}
+				/>}
+				isOpened={isEditModalOpened}
+				closeFunc={closeEditModal}
+			>
+				<ModalDetailsUpdate title={props.board.title} users={props.board.users}>
+					<FlexBox justifyContent='right'>
+						<Button onClick={closeEditModal}>Cancel</Button>
+						<Button color='info' onClick={deleteBoard} variant='contained' autoFocus>
+								Update
+						</Button>
+					</FlexBox>
+				</ModalDetailsUpdate>
 			</ModalWindow>
 		</>
 	);

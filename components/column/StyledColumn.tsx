@@ -9,11 +9,11 @@ export interface StyledColumnPropsModel {
 
 const StyledColumn = styled.div<StyledColumnPropsModel>`
   /* width: 250px; */
-  flex: 0 0 270px;
+  flex: 0 0 320px;
   max-height: calc(100vh - 200px);
   border: 1px dashed ${theme.palette.secondary.light};
   border-radius: 5px;
-  padding: 12px;
+  padding: 24px;
   display: ${(props) => (props.display ?? 'flex')};
   flex-flow: column;
   gap: 10px;

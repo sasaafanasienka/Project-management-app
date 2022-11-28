@@ -1,23 +1,28 @@
+/* eslint-disable no-underscore-dangle */
 import { FC, ReactElement } from 'react';
+import AddBoard from '../addBoard/AddBoard';
 import BoardLink from '../boardLink/BoardLink';
 import PageHeading from '../pageHeading/PageHeading';
 import FlexBox from '../styled/FlexBox';
 
 const temporaryBoardsMock = [
 	{
-		title: 'Create super app',
-		description: 'Collaborate, manage projects, and reach new productivity peaks. Accomplish it all with RS Project Management App',
-		id: 123,
+		_id: '1',
+		title: 'Укусить за бочок',
+		owner: 'Серый Волк',
+		users: ['козлик', 'asdas', 'asd'],
 	},
 	{
-		title: 'Create qwwer erw fgdfgdf app',
-		description: 'Collaborate, manage projects, and reach',
-		id: 1234,
+		_id: '2',
+		title: 'Learn Next js',
+		owner: 'Dan Abramov',
+		users: ['saa', 'asdas', 'asd'],
 	},
 	{
-		title: 'Go fuck yourself',
-		description: 'Collaborate, manage ',
-		id: 12345,
+		_id: '3',
+		title: 'Learn SWR',
+		owner: 'Dan Abramov',
+		users: ['saa', 'asdas', 'asd'],
 	},
 ];
 
@@ -27,11 +32,11 @@ const Boards: FC = (): ReactElement => (
 		<FlexBox justifyContent='flex-start' alignItems='stretch'>
 			{temporaryBoardsMock.map((el) => (
 				<BoardLink
-					key={el.id}
-					title={el.title}
-					description={el.description}
+					board={el}
+					key={el._id}
 				/>
 			))}
+			<AddBoard />
 		</FlexBox>
 	</>
 );
