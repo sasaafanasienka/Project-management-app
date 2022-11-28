@@ -10,6 +10,7 @@ const StyledBoardLink = styled.div`
   border-radius: 5px;
   transition: all 0.3s ease-in-out;
   & > div {
+    margin-top: auto;
     transition: opacity 0.3s ease-in-out;
     opacity: 0;
   }

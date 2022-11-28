@@ -1,8 +1,8 @@
 import {
-	FormControl, InputLabel, MenuItem, Select, TextareaAutosize,
+	FormControl, InputLabel, MenuItem, Select, SelectChangeEvent, TextareaAutosize,
 } from '@mui/material';
 import {
-	FC, ReactElement, useRef, useState,
+	FC, ReactElement, useEffect, useRef, useState,
 } from 'react';
 import EditIcon from '@mui/icons-material/Edit';
 import Divider from '../../divider/Divider';
@@ -10,23 +10,52 @@ import FlexBox from '../../styled/FlexBox';
 import { TaskDetailsPropsModel } from './interfaces';
 import StyledModalDetailsUpdate from './StyledModalDetailsUpdate';
 import ModalUserTag from '../modalUserTag/modalUserTag';
+import { useAppSelector } from '../../../redux/store';
+import { UserResponceModel } from '../../../redux/slices/userSlice/interfaces';
 
 const ModalDetailsUpdate: FC<TaskDetailsPropsModel> = ({
-	children, title, description, users,
+	children, title, description, users, onUpdate,
 }): ReactElement => {
-	const [user, setUser] = useState<string>();
 	const [isTextAreaOpen, setIsTextAreaOpen] = useState(false);
 	const [descriptionState, setDescription] = useState(description);
 	const [isTextAreaTitleOpen, setIsTextAreaTitleOpen] = useState(false);
 	const [titleState, setTitle] = useState(title);
 	const textAreaRef = useRef<HTMLTextAreaElement>(null);
 	const textAreaTitleRef = useRef<HTMLTextAreaElement>(null);
+	const user = useAppSelector((state) => state.user.user.id);
 
-	const [updatedUsers, setUpdatedUsers] = useState<Array<string>>(users);
-	// const [toChooseFromUsers, setToChooseFromUsers] = useState<Array<string>>(usersAll);
+	const usersAll = useAppSelector((state) => state.user.usersAll);
+
+	const [updatedUsers, setUpdatedUsers] = useState<Array<UserResponceModel>>([]);
+	const [toChooseFromUsers, setToChooseFromUsers] = useState<Array<UserResponceModel>>(usersAll);
+
+	useEffect(() => {
+		const usersToAdd = updatedUsers.map((u) => u._id);
+		console.log(updatedUsers);
+
+		if (onUpdate) {
+			onUpdate({
+				title: textAreaTitleRef.current?.value,
+				owner: user,
+				users: usersToAdd,
+			});
+		}
+	}, [onUpdate, textAreaTitleRef, updatedUsers, user]);
+
 
 	const handleDeleteUser = (name: string) => {
-		setUpdatedUsers((oldUsers) => oldUsers.filter((u) => u !== name));
+		setUpdatedUsers((oldUsers) => oldUsers.filter((u) => u.login !== name));
+		setToChooseFromUsers((state) => state.concat(...usersAll.filter((u) => u.login === name)));
+	};
+
+	const handleSelectChoice = (e: SelectChangeEvent) => {
+		const target = e.target as HTMLInputElement;
+		const actualUser = usersAll.filter((u) => u.login === target.value);
+		setUpdatedUsers((state) => {
+			state.push(actualUser[0]);
+			return state;
+		});
+		setToChooseFromUsers((state) => state.filter((u) => u.login !== target.value));
 	};
 
 	const handleDescriptionUpdate = () => {
@@ -74,9 +103,9 @@ const ModalDetailsUpdate: FC<TaskDetailsPropsModel> = ({
 					</div>
 				}
 				<FlexBox justifyContent='left' wrap='wrap' gap='5px'>
-					{updatedUsers.map((name) => <ModalUserTag
-						name={name}
-						key={name}
+					{updatedUsers.map((u) => <ModalUserTag
+						name={u.login}
+						key={u._id}
 						deleteUser={handleDeleteUser} />)}
 				</FlexBox>
 				<FlexBox column>
@@ -85,13 +114,15 @@ const ModalDetailsUpdate: FC<TaskDetailsPropsModel> = ({
 						<Select
 							labelId="demo-simple-select-label"
 							id="demo-simple-select"
-							value={user}
 							label="Invite users: "
-							onChange={(event) => setUser(event.target.value)}
+							onChange={handleSelectChoice}
 						>
-							<MenuItem value={10}>Ten</MenuItem>
-							<MenuItem value={20}>Twenty</MenuItem>
-							<MenuItem value={30}>Thirty</MenuItem>
+							{(toChooseFromUsers || [])
+								.map((userOption) => <MenuItem
+									key={userOption._id}
+									value={userOption.login}>
+									{userOption.login}
+								</MenuItem>)}
 						</Select>
 					</FormControl>
 					{ children }
