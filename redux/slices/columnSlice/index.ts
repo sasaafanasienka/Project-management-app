@@ -7,6 +7,7 @@ import {
 	ColumnModel, InitialStateColumnModel, NewColumnPropsModel,
 } from './interfaces';
 import { BASE_URL } from '../../../config';
+import { readCookie } from '../../../utils/cookieUtilities';
 
 const initialState: InitialStateColumnModel = {
 	status: 'no-loaded',
@@ -19,12 +20,9 @@ export const getBoardById = createAsyncThunk<
 	ColumnModel,
 	{ rejectValue: string }
 	>('columns/getBoardById', async (location, { rejectWithValue, getState }) => {
-		const state = getState() as ReturnType<Store['getState']>;
-		const { token } = state.user.user;
-		console.log(location);
+		const token = readCookie('token');
 		const URL: string = `${BASE_URL}boards/${location}/columns`;
 		if (location) {
-			console.log('location');
 			try {
 				const response = await fetch(URL, {
 					method: 'GET',
@@ -38,7 +36,6 @@ export const getBoardById = createAsyncThunk<
 					throw new Error(`${statusCode} ${message}`);
 				}
 				const data = await response.json();
-				console.log(data);
 				return data;
 			} catch (error) {
 				if (error instanceof Error) {
@@ -52,33 +49,35 @@ export const getBoardById = createAsyncThunk<
 	});
 
 
-// export const createColumn = createAsyncThunk<
-//   ColumnModel,
-//   NewColumnPropsModel,
-//   { rejectValue: string }
-// >('boards/createColumn', async (body, { rejectWithValue, getState }) => {
-// 	const state = getState() as ReturnType<Store['getState']>;
-// 	const { token } = state.user.user;
-// 	try {
-// 		const response = await fetch(`${BASE_URL}boards`, {
-// 			method: 'POST',
-// 			headers: {
-// 				'Content-Type': 'application/json',
-// 				Authorization: `Bearer ${token}`,
-// 			},
-// 		});
-// 		if (!response.ok) {
-// 			const { statusCode, message } = await response.json();
-// 			throw new Error(`${statusCode} ${message}`);
-// 		}
-// 		return await response.json();
-// 	} catch (error) {
-// 		if (error instanceof Error) {
-// 			return rejectWithValue(`${error.message}`);
-// 		}
-// 		return rejectWithValue('Unknown Error! Try to refresh the page');
-// 	}
-// });
+export const createColumn = createAsyncThunk<
+  ColumnModel,
+  NewColumnPropsModel,
+  { rejectValue: string }
+>('boards/createColumn', async (props, { rejectWithValue, getState }) => {
+	const state = getState() as ReturnType<Store['getState']>;
+	const { token } = state.user.user;
+	const { boardid, formData } = { ...props };
+	try {
+		const response = await fetch(`${BASE_URL}boards/${boardid}/columns`, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				Authorization: `Bearer ${token}`,
+			},
+			body: JSON.stringify({ ...formData, order: 0 }),
+		});
+		if (!response.ok) {
+			const { statusCode, message } = await response.json();
+			throw new Error(`${statusCode} ${message}`);
+		}
+		return await response.json();
+	} catch (error) {
+		if (error instanceof Error) {
+			return rejectWithValue(`${error.message}`);
+		}
+		return rejectWithValue('Unknown Error! Try to refresh the page');
+	}
+});
 
 // export const deleteColumn = createAsyncThunk<
 //   ColumnModel,
@@ -172,7 +171,6 @@ export const columnSlice = createSlice({
 		builder.addCase(
 			getBoardById.fulfilled,
 			(state, action) => {
-				console.log(action);
 				state.status = 'loaded';
 				state.isLoading = false;
 				state.columns = action.payload;
@@ -180,6 +178,21 @@ export const columnSlice = createSlice({
 		);
 		builder.addCase(getBoardById.rejected, (state, action) => {
 			state.status = 'loaded';
+			state.isLoading = false;
+			state.error = action.payload as string;
+		});
+		builder.addCase(createColumn.pending, (state) => {
+			state.isLoading = true;
+			state.error = '';
+		});
+		builder.addCase(
+			createColumn.fulfilled,
+			(state, action: PayloadAction<ColumnModel>) => {
+				state.isLoading = false;
+				state.columns.push(action.payload);
+			},
+		);
+		builder.addCase(createColumn.rejected, (state, action) => {
 			state.isLoading = false;
 			state.error = action.payload as string;
 		});
@@ -195,21 +208,6 @@ export const columnSlice = createSlice({
 		// 	},
 		// );
 		// builder.addCase(getColumnsSet.rejected, (state, action) => {
-		// 	state.isLoading = false;
-		// 	state.error = action.payload as string;
-		// });
-		// builder.addCase(createColumn.pending, (state) => {
-		// 	state.isLoading = true;
-		// 	state.error = '';
-		// });
-		// builder.addCase(
-		// 	createColumn.fulfilled,
-		// 	(state, action: PayloadAction<ColumnModel>) => {
-		// 		state.isLoading = false;
-		// 		state.columns.push(action.payload);
-		// 	},
-		// );
-		// builder.addCase(createColumn.rejected, (state, action) => {
 		// 	state.isLoading = false;
 		// 	state.error = action.payload as string;
 		// });

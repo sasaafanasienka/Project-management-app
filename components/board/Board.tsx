@@ -7,6 +7,7 @@ import { deepCopy } from 'deep-copy-ts';
 import { useRouter } from 'next/router';
 import { Button } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
+import { toast } from 'react-toastify';
 import Column from '../column/Column';
 import { ColumnPropsModel } from '../column/interfaces';
 import PageHeading from '../pageHeading/PageHeading';
@@ -14,7 +15,7 @@ import FlexBox from '../styled/FlexBox';
 import mockData from './mockData';
 import BoardPropsModel from './interfaces';
 import { useAppSelector, useAppDispatch } from '../../redux/store';
-import { getBoardById, getColumns } from '../../redux/slices/columnSlice';
+import { createColumn, getBoardById, getColumns } from '../../redux/slices/columnSlice';
 import { getUserBoards } from '../../redux/slices/boardSlice';
 import { getAllUsers } from '../../redux/slices/userSlice';
 import ModalWindow from '../modal/ModalWindow';
@@ -39,14 +40,17 @@ const Board: FC<BoardPropsModel> = (props): ReactElement => {
 		dispatch(getUserBoards())
 			.then(
 				(res) => {
+					console.log(boardid);
+					console.log(res.payload.findIndex((el) => el._id === boardid));
 					if (res.payload.findIndex((el) => el._id === boardid) >= 0) {
 						dispatch(getBoardById(boardid));
 					} else {
-						router.push('404');
+						console.log(404);
+						// router.push('404');
 					}
 				},
 			);
-	}, [dispatch]);
+	}, [dispatch, boardid]);
 
 
 	const moveColumn = (dragId: number, hoverId: number): void => {
@@ -90,14 +94,13 @@ const Board: FC<BoardPropsModel> = (props): ReactElement => {
 	// const handleSubmit = (formData: BoardModel) => {
 	const handleSubmit = (formData: ColumnModel) => {
 		if (formData) {
-			console.log(formData);
-		// 	dispatch(createBoard(formData))
-		// 		.unwrap()
-		// 		.then(({ title }) => {
-		// 			toast.success(`Board "${title}" successfully created`);
-		// 			handleModal();
-		// 		})
-		// 		.catch((err) => toast.error(`An error has occured: ${err}`));
+			dispatch(createColumn({ boardid, formData }))
+				.unwrap()
+				.then(({ title }) => {
+					toast.success(`Board "${title}" successfully created`);
+					handleModal();
+				})
+				.catch((err) => toast.error(`An error has occured: ${err}`));
 		}
 	};
 

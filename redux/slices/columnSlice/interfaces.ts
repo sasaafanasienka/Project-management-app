@@ -14,7 +14,8 @@ export interface InitialStateColumnModel {
 
 export interface NewColumnPropsModel {
   title: string;
-  owner: string;
-  users: Array<string>;
+  boardid: string;
+  // owner: string;
+  // users: Array<string>;
 }
 

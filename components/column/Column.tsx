@@ -120,7 +120,7 @@ const Column: FC<ColumnPropsModel> = (props): ReactElement => {
 							<EditIcon color='secondary' />
 							<h3>
 								{title.toUpperCase()}
-								<span>{tasks.length}</span>
+								{/* <span>{tasks.length}</span> */}
 							</h3>
 						</StyledColumnTitle>
 					}
@@ -136,7 +136,7 @@ const Column: FC<ColumnPropsModel> = (props): ReactElement => {
 					</FlexBox>
 				</Button>
 				<StyledTaskList>
-					{tasks.map((task, idx) => <Task
+					{/* {tasks.map((task, idx) => <Task
 						key={idx}
 						title={task.title}
 						description={task.description}
@@ -147,7 +147,7 @@ const Column: FC<ColumnPropsModel> = (props): ReactElement => {
 						id={task._id}
 						userId={task.userId}
 						users={task.users}
-					/>)}
+					/>)} */}
 				</StyledTaskList>
 			</StyledColumn>
 			<ModalWindow
