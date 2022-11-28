@@ -5,7 +5,7 @@ import {
 import StyledSideLine from './StyledSideLine';
 
 const BoardFilterBar: FC = (): ReactElement => {
-	const [alignment, setAlignment] = useState('web');
+	const [alignment, setAlignment] = useState('all');
 
 	const handleChange = (
 		event: MouseEvent<HTMLElement>,
@@ -23,8 +23,8 @@ const BoardFilterBar: FC = (): ReactElement => {
 			aria-label="Board owner filtering"
 			size='small'
 		>
-			<ToggleButton value="All">All</ToggleButton>
-			<ToggleButton value="ownerd"><StyledSideLine owned /> Owned Boards</ToggleButton>
+			<ToggleButton value="all">All</ToggleButton>
+			<ToggleButton value="ownerd"><StyledSideLine owned /> Own Boards</ToggleButton>
 			<ToggleButton value="guest"><StyledSideLine /> Guest Boards</ToggleButton>
 		</ToggleButtonGroup>
 	);

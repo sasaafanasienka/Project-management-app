@@ -1,5 +1,5 @@
 /* eslint-disable no-underscore-dangle */
-import { Button, IconButton } from '@mui/material';
+import { Button } from '@mui/material';
 import {
 	FC, ReactElement, useEffect, useState,
 } from 'react';
