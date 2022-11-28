@@ -19,7 +19,8 @@ export const createBoard = createAsyncThunk<
   { rejectValue: string }
 >('boards/createBoard', async (body, { rejectWithValue, getState }) => {
 	const state = getState() as ReturnType<Store['getState']>;
-	const { token } = state.user.user;
+	const { token, id } = state.user.user;
+	const bodyWithOwner = Object.assign(body, { owner: id });
 	try {
 		const response = await fetch(`${BASE_URL}boards`, {
 			method: 'POST',
@@ -27,6 +28,7 @@ export const createBoard = createAsyncThunk<
 				'Content-Type': 'application/json',
 				Authorization: `Bearer ${token}`,
 			},
+			body: JSON.stringify(bodyWithOwner),
 		});
 		if (!response.ok) {
 			const { statusCode, message } = await response.json();
@@ -98,22 +100,19 @@ export const updateBoard = createAsyncThunk<
 	}
 });
 
-export const getBoardsSet = createAsyncThunk<
-  Array<BoardModel>,
-  {boardId: string},
-  { rejectValue: string }
->('boards/getBoardsSet', async (boardId, { rejectWithValue, getState }) => {
+export const getUserBoards = createAsyncThunk('boards/getUserBoards', async (boardId, { rejectWithValue, getState }) => {
 	const state = getState() as ReturnType<Store['getState']>;
 	const { id, token } = state.user.user;
 	try {
-		const response = await fetch(`${BASE_URL}boardsSet/${id}`, {
+		const response = await fetch(`${BASE_URL}boards/`, {
 			method: 'GET',
 			headers: {
 				'Content-Type': 'application/json',
 				Authorization: `Bearer ${token}`,
 			},
 		});
-		return await response.json();
+		const boardsAll = await response.json();
+		return boardsAll.filter((board: BoardModel) => id === board.owner || board.users.includes(id));
 	} catch {
 		return rejectWithValue('error');
 	}
@@ -125,18 +124,18 @@ export const boardSlice = createSlice({
 	reducers: {
 	},
 	extraReducers: (builder) => {
-		builder.addCase(getBoardsSet.pending, (state) => {
+		builder.addCase(getUserBoards.pending, (state) => {
 			state.isLoading = true;
 			state.error = '';
 		});
 		builder.addCase(
-			getBoardsSet.fulfilled,
+			getUserBoards.fulfilled,
 			(state, action: PayloadAction<Array<BoardModel>>) => {
 				state.isLoading = false;
 				state.boards = action.payload;
 			},
 		);
-		builder.addCase(getBoardsSet.rejected, (state, action) => {
+		builder.addCase(getUserBoards.rejected, (state, action) => {
 			state.isLoading = false;
 			state.error = action.payload as string;
 		});
