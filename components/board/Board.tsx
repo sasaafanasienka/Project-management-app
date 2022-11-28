@@ -1,17 +1,37 @@
 import {
-	FC, ReactElement, useState,
+	FC, ReactElement, useEffect, useState,
 } from 'react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { deepCopy } from 'deep-copy-ts';
+import { useRouter } from 'next/router';
 import Column from '../column/Column';
 import { ColumnPropsModel } from '../column/interfaces';
 import PageHeading from '../pageHeading/PageHeading';
 import FlexBox from '../styled/FlexBox';
 import mockData from './mockData';
+import BoardPropsModel from './interfaces';
+import { useAppSelector, useAppDispatch } from '../../redux/store';
+import { getColumns } from '../../redux/slices/columnSlice';
 
-const Board: FC = (): ReactElement => {
+const Board: FC<BoardPropsModel> = (props): ReactElement => {
+	const router = useRouter();
+	const { boardid } = router.query;
+
+	const { location } = { ...props };
+
 	const [columns, setColumns] = useState(mockData);
+
+	const columnss = useAppSelector((state) => state.columns);
+
+	const dispatch = useAppDispatch();
+
+	useEffect(() => {
+		if (columnss.status === 'no-loaded') {
+			dispatch(getColumns(boardid as string));
+		}
+	});
+
 
 	const moveColumn = (dragId: number, hoverId: number): void => {
 		const dragIndex = columns.findIndex((el) => el.id === dragId);

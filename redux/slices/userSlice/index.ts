@@ -10,8 +10,7 @@ import {
 	NewUserRequestPropsModel,
 	NewUserResponseModel,
 } from './interfaces';
-
-const BASE_URL = 'https://final-task-backend-production-287c.up.railway.app/';
+import { BASE_URL } from '../../../config';
 
 const initialState: InitialStateUserModel = {
 	isAuth: false,

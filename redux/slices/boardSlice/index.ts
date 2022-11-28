@@ -4,8 +4,7 @@ import {
 	createAsyncThunk, createSlice, PayloadAction, Store,
 } from '@reduxjs/toolkit';
 import { BoardModel, InitialStateBoardModel, NewBoardPropsModel } from './interfaces';
-
-const BASE_URL = 'https://final-task-backend-production-287c.up.railway.app/';
+import { BASE_URL } from '../../../config';
 
 const initialState: InitialStateBoardModel = {
 	isLoading: false,

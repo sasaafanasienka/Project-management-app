@@ -4,6 +4,7 @@ import {
 import { createWrapper, HYDRATE } from 'next-redux-wrapper';
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
 import { boardSlice } from './slices/boardSlice';
+import { columnSlice } from './slices/columnSlice';
 import { InitialStateBoardModel } from './slices/boardSlice/interfaces';
 import { langSlice } from './slices/langSlice';
 import { InitialStateModel } from './slices/langSlice/interfaces';
@@ -14,6 +15,7 @@ const combinedReducer = combineReducers({
 	lang: langSlice.reducer,
 	user: userSlice.reducer,
 	boards: boardSlice.reducer,
+	columns: columnSlice.reducer,
 });
 
 const reducer = (
