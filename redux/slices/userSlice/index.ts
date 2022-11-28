@@ -28,7 +28,7 @@ export const createUser = createAsyncThunk<
   NewUserResponseModel,
   NewUserRequestPropsModel,
   { rejectValue: string }
-  >('user/createUser', async (body, { rejectWithValue, ge }) => {
+  >('user/createUser', async (body, { rejectWithValue }) => {
   	try {
   		const res = await fetch(`${BASE_URL}auth/signup`, {
   			method: 'POST',
@@ -103,7 +103,6 @@ export const getUserById = createAsyncThunk('user/getUserById', async (_, { reje
 export const deleteUser = createAsyncThunk('user/deleteUser', async (_, { rejectWithValue, getState }) => {
 	const state = getState() as ReturnType<Store['getState']>;
 	const { id, token } = state.user.user;
-	console.log(id);
 	try {
 		const response = await fetch(`${BASE_URL}users/${id}`, {
 			method: 'DELETE',
@@ -155,8 +154,7 @@ export const userSlice = createSlice({
 	initialState,
 	reducers: {
 		logOut: () => {
-			const expiped = Date.now() - 1000;
-			document.cookie = `token=; expires${expiped}`;
+			document.cookie = 'token=; expires = Thu, 01 Jan 1970 00:00:00 GMT';
 			return initialState;
 		},
 		restoreUserToken: (state, action: PayloadAction<{
