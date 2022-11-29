@@ -50,7 +50,7 @@ export const deleteBoard = createAsyncThunk<
   BoardModel,
   {boardId: string},
   { rejectValue: string }
->('boards/deleteBoard', async (boardId, { rejectWithValue, getState }) => {
+>('boards/deleteBoard', async ({ boardId }, { rejectWithValue, getState }) => {
 	const state = getState() as ReturnType<Store['getState']>;
 	const { token } = state.user.user;
 	try {
