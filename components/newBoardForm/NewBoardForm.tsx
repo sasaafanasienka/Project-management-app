@@ -11,7 +11,7 @@ import FlexBox from '../styled/FlexBox';
 import StyledNewBoardForm from './StyledNewBoardForm';
 
 export interface NewBoardFormProps {
-  onSubmit: (arg0: BoardModel | FormData) => void;
+  onSubmit: (arg0: BoardModel) => void;
   onClose: () => void;
 	updateMode?: {
 		assignedUsers: Array<string>;
