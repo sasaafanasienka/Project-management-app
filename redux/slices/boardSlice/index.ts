@@ -80,7 +80,9 @@ export const updateBoard = createAsyncThunk<
   { rejectValue: string }
 >('boards/updateBoard', async ({ boardId, body }, { rejectWithValue, getState }) => {
 	const state = getState() as ReturnType<Store['getState']>;
-	const { token } = state.user.user;
+	const { token, id } = state.user.user;
+	const bodyWithOwner = Object.assign(body, { owner: id });
+	console.log(bodyWithOwner);
 	try {
 		const response = await fetch(`${BASE_URL}boards/${boardId}`, {
 			method: 'PUT',
@@ -88,7 +90,7 @@ export const updateBoard = createAsyncThunk<
 				'Content-Type': 'application/json',
 				Authorization: `Bearer ${token}`,
 			},
-			body: JSON.stringify(body),
+			body: JSON.stringify(bodyWithOwner),
 		});
 		if (!response.ok) {
 			const { statusCode, message } = await response.json();
@@ -185,11 +187,11 @@ export const boardSlice = createSlice({
 		});
 		builder.addCase(
 			updateBoard.fulfilled,
-			(state, action: PayloadAction<BoardModel>) => {
+			(state, action: PayloadAction<BoardUserModel>) => {
 				state.isLoading = false;
 				state.boards = state.boards.map((item) => {
 					if (item._id === action.payload._id) {
-						item.title = action.payload.title;
+						return action.payload;
 					}
 					return item;
 				});
