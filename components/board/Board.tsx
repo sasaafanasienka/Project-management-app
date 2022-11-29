@@ -32,8 +32,9 @@ const Board: FC<BoardPropsModel> = (props): ReactElement => {
 	const { boardid } = router.query;
 
 	const boards = useAppSelector((state) => state.boards);
-	const columns = useAppSelector((state) => state.columns.columns);
-	const st = useAppSelector((state) => state);
+	const columns = useAppSelector((state) => state.columns.columns.filter(
+		(column) => column.boardId === boardid,
+	));
 
 	const dispatch = useAppDispatch();
 
@@ -81,7 +82,7 @@ const Board: FC<BoardPropsModel> = (props): ReactElement => {
 
 	};
 
-	const handleModal = (value: boolean = !isModalOpened) => {
+	const handleModal = (event, value: boolean = !isModalOpened) => {
 		setIsModalOpened(value);
 	};
 	// const handleSubmit = (formData: BoardModel) => {
@@ -93,8 +94,6 @@ const Board: FC<BoardPropsModel> = (props): ReactElement => {
 				});
 		}
 	};
-	console.log(columns);
-	console.log(st);
 
 	const renderColumn = (column: ColumnPropsModel, index: number) => (
 		<Column
@@ -114,7 +113,7 @@ const Board: FC<BoardPropsModel> = (props): ReactElement => {
 		<>
 			<DndProvider backend={HTML5Backend}>
 				<PageHeading text='Boards > Board name'></PageHeading>
-				<FlexBox justifyContent='flex-start' alignItems='stretch' wrap='nowrap'>
+				<FlexBox justifyContent='flex-start' alignItems='flex-start' wrap='nowrap'>
 					{columns.map((column, index) => renderColumn(column, index))}
 					<Button color='info' onClick={handleModal}>
 						<FlexBox alignItems='center' justifyContent='center' gap='0'>

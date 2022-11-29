@@ -20,7 +20,8 @@ import StyledColumnTitle from './StyledColumnTitle';
 import UpdateTitleInput from './updateTitleInput/UpdateTitleInput';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { deleteColumn, updateColumn } from '../../redux/slices/columnSlice';
-import { getTasksInColumn } from '../../redux/slices/tasksSlice';
+import { createTask, getTasksInColumn } from '../../redux/slices/tasksSlice';
+import NewTaskForm from '../newTaskForm/NewTaskForm';
 
 const Column: FC<ColumnPropsModel> = (props): ReactElement => {
 	const {
@@ -29,62 +30,65 @@ const Column: FC<ColumnPropsModel> = (props): ReactElement => {
 
 	const columnRef = useRef<HTMLDivElement>(null);
 
-	const tasks = useAppSelector((state) => state.tasks.tasks);
+	const tasks = useAppSelector((state) => state.tasks.tasks.filter(
+		(task) => task.columnId === id,
+	));
 
 	const dispatch = useAppDispatch();
 
 	useEffect(() => {
 		dispatch(getTasksInColumn({ boardid, columnId: id }));
-	}, [dispatch]);
+	}, []);
 
-	interface DragItem {
-		index: number
-		id: string
-		type: string
-		columnId: string
-	}
+	// interface DragItem {
+	// 	index: number
+	// 	id: string
+	// 	type: string
+	// 	columnId: string
+	// }
 
-	const [collected, drag] = useDrag({
-		type: ItemTypes.COLUMN,
-		item: () => ({ id, index }),
-	});
+	// const [collected, drag] = useDrag({
+	// 	type: ItemTypes.COLUMN,
+	// 	item: () => ({ id, index }),
+	// });
 
-	const [{ handlerId }, drop] = useDrop<DragItem, void, >({
-		accept: [ItemTypes.COLUMN, ItemTypes.TASK],
-		collect(monitor) {
-			return {
-				handlerId: monitor.getHandlerId(),
-			};
-		},
-		hover(item: DragItem, monitor) {
-			if (monitor.getItemType() === ItemTypes.COLUMN) {
-				if (!columnRef.current) {
-					return;
-				}
-				const dragId = item.id;
-				const hoverId = id;
-				if (dragId === hoverId) {
-					return;
-				}
+	// const [{ handlerId }, drop] = useDrop<DragItem, void, >({
+	// 	accept: [ItemTypes.COLUMN, ItemTypes.TASK],
+	// 	collect(monitor) {
+	// 		return {
+	// 			handlerId: monitor.getHandlerId(),
+	// 		};
+	// 	},
+	// 	hover(item: DragItem, monitor) {
+	// 		if (monitor.getItemType() === ItemTypes.COLUMN) {
+	// 			if (!columnRef.current) {
+	// 				return;
+	// 			}
+	// 			const dragId = item.id;
+	// 			const hoverId = id;
+	// 			if (dragId === hoverId) {
+	// 				return;
+	// 			}
 
-				moveColumn(dragId, hoverId);
-				item.id = hoverId;
-			}
-			if (monitor.getItemType() === ItemTypes.TASK) {
-				const dragId = item.id;
-				const dragColumnId = item.columnId;
-				const hoverColumnId = id;
+	// 			moveColumn(dragId, hoverId);
+	// 			item.id = hoverId;
+	// 		}
+	// 		if (monitor.getItemType() === ItemTypes.TASK) {
+	// 			const dragId = item.id;
+	// 			const dragColumnId = item.columnId;
+	// 			const hoverColumnId = id;
 
-				if (dragColumnId !== hoverColumnId) {
-					moveIntoEmptyColumn(dragId, dragColumnId, hoverColumnId);
-				}
-			}
-		},
-	});
+	// 			if (dragColumnId !== hoverColumnId) {
+	// 				moveIntoEmptyColumn(dragId, dragColumnId, hoverColumnId);
+	// 			}
+	// 		}
+	// 	},
+	// });
 
-	drag(drop(columnRef));
+	// drag(drop(columnRef));
 
-	const [isModalOpened, setOpened] = useState<ModalWindowStateModel>(false);
+	const [isDelModalOpened, setDelModalOpened] = useState<ModalWindowStateModel>(false);
+	const [isCreateModalOpened, setCreateModalOpened] = useState<ModalWindowStateModel>(false);
 	const [isTitleUpdate, setIsTitleUpdate] = useState<boolean>(false);
 	const [titleCurrent, setTitleCurrent] = useState<string>(title);
 
@@ -109,23 +113,34 @@ const Column: FC<ColumnPropsModel> = (props): ReactElement => {
 		setTitleCurrent(target.value);
 	};
 
-	const handleModal = (value: boolean = !isModalOpened) => {
-		setOpened(value);
+	const handleDelModal = (event, value: boolean = !isDelModalOpened) => {
+		setDelModalOpened(value);
+	};
+
+	const handleCreateModal = (event, value: boolean = !isCreateModalOpened) => {
+		setCreateModalOpened(value);
 	};
 
 	const deleteItem = () => {
 		dispatch(deleteColumn({ boardid, columnId: id }))
 			.then(() => {
-				handleModal(false);
+				handleDelModal(false);
 			});
+	};
+
+	const handleSubmit = (formData: TaskModel) => {
+		if (formData) {
+			dispatch(createTask({ boardid, columnId: id, formData }));
+			// .unwrap()
+			// .then(() => {
+			// 	handleCreateModal();
+			// });
+		}
 	};
 
 	return (
 		<>
-			<StyledColumn
-				ref={columnRef}
-				data-handler-id={handlerId}
-			>
+			<StyledColumn>
 				<FlexBox justifyContent='space-between' wrap='no-wrap'>
 					{isTitleUpdate
 						? <UpdateTitleInput
@@ -142,18 +157,18 @@ const Column: FC<ColumnPropsModel> = (props): ReactElement => {
 							</h3>
 						</StyledColumnTitle>
 					}
-					<IconButton aria-label="delete" size="small" onClick={handleModal}>
+					<IconButton aria-label="delete" size="small" onClick={handleDelModal}>
 						<DeleteIcon fontSize='small'/>
 					</IconButton>
 				</FlexBox>
-				<Button color='info'>
+				<Button color='info' onClick={handleCreateModal}>
 					<FlexBox alignItems='center' justifyContent='center' gap='0'>
 						<AddIcon fontSize='small' />
 						Add new task
 					</FlexBox>
 				</Button>
 				<StyledTaskList>
-					{/* {tasks.map((task, idx) => <Task
+					{tasks.map((task, idx) => <Task
 						key={idx}
 						title={task.title}
 						description={task.description}
@@ -164,19 +179,29 @@ const Column: FC<ColumnPropsModel> = (props): ReactElement => {
 						id={task._id}
 						userId={task.userId}
 						users={task.users}
-					/>)} */}
+					/>)}
 				</StyledTaskList>
 			</StyledColumn>
 			<ModalWindow
 				title={`Are you sure to delete the column "${title}"?`}
 				description="This action cannot be undone"
-				isOpened={isModalOpened}
-				closeFunc={handleModal}
+				isOpened={isDelModalOpened}
+				closeFunc={handleDelModal}
 			>
-				<Button onClick={handleModal}>Cancel</Button>
+				<Button onClick={handleDelModal}>Cancel</Button>
 				<Button onClick={deleteItem} variant='contained' autoFocus>
             Delete
 				</Button>
+			</ModalWindow>
+			<ModalWindow
+				title={'Create new Column'}
+				isOpened={isCreateModalOpened}
+				// closeFunc={handleCreateModal}
+			>
+				<NewTaskForm
+					onSubmit={handleSubmit}
+					onClose={handleCreateModal}
+					boardid={boardid} />
 			</ModalWindow>
 		</>
 	);

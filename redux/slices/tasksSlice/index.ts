@@ -36,7 +36,6 @@ export const getTasksInColumn = createAsyncThunk<
 				throw new Error(`${statusCode} ${message}`);
 			}
 			const data = await response.json();
-			console.log(data);
 			return data;
 		} catch (error) {
 			if (error instanceof Error) {
@@ -47,39 +46,40 @@ export const getTasksInColumn = createAsyncThunk<
 	});
 
 
-// export const createColumn = createAsyncThunk<
-//   ColumnModel,
-//   { boardid: string, formData: UpdateColumnPropsModel },
-//   { rejectValue: string }
-// >('boards/createColumn', async (props, { rejectWithValue, getState }) => {
-// 	const state = getState() as ReturnType<Store['getState']>;
-// 	const { token } = state.user.user;
-// 	const { boardid, formData } = { ...props };
-// 	try {
-// 		const response = await fetch(`${BASE_URL}boards/${boardid}/columns`, {
-// 			method: 'POST',
-// 			headers: {
-// 				'Content-Type': 'application/json',
-// 				Authorization: `Bearer ${token}`,
-// 			},
-// 			body: JSON.stringify({ ...formData, order: 0 }),
-// 		});
-// 		if (!response.ok) {
-// 			const { statusCode, message } = await response.json();
-// 			throw new Error(`${statusCode} ${message}`);
-// 		}
-// 		const data = await response.json();
-// 		toast.success(`Column ${data.title} successfully created`);
-// 		return data;
-// 	} catch (error) {
-// 		if (error instanceof Error) {
-// 			toast.error(error.message);
-// 			return rejectWithValue(`${error.message}`);
-// 		}
-// 		toast.error('Unknown Error! Try to refresh the page');
-// 		return rejectWithValue('Unknown Error! Try to refresh the page');
-// 	}
-// });
+export const createTask = createAsyncThunk<
+  TaskModel,
+  { boardid: string, columnId: string, formData: UpdateTaskPropsModel },
+  { rejectValue: string }
+>('tasks/createTask', async (props, { rejectWithValue, getState }) => {
+	const state = getState() as ReturnType<Store['getState']>;
+	const userId = state.user.user.id;
+	const token = readCookie('token');
+	const { boardid, columnId, formData } = { ...props };
+	try {
+		const response = await fetch(`${BASE_URL}boards/${boardid}/columns/${columnId}/tasks`, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				Authorization: `Bearer ${token}`,
+			},
+			body: JSON.stringify({ ...formData, order: 0, userId }),
+		});
+		if (!response.ok) {
+			const { statusCode, message } = await response.json();
+			throw new Error(`${statusCode} ${message}`);
+		}
+		const data = await response.json();
+		toast.success(`Task ${data.title} successfully created`);
+		return data;
+	} catch (error) {
+		if (error instanceof Error) {
+			toast.error(error.message);
+			return rejectWithValue(`${error.message}`);
+		}
+		toast.error('Unknown Error! Try to refresh the page');
+		return rejectWithValue('Unknown Error! Try to refresh the page');
+	}
+});
 
 // export const deleteColumn = createAsyncThunk<
 //   ColumnModel,
@@ -167,21 +167,21 @@ export const tasksSlice = createSlice({
 			state.isLoading = false;
 			state.error = action.payload as string;
 		});
-		// 		builder.addCase(createColumn.pending, (state) => {
-		// 			state.isLoading = true;
-		// 			state.error = '';
-		// 		});
-		// 		builder.addCase(
-		// 			createColumn.fulfilled,
-		// 			(state, action: PayloadAction<ColumnModel>) => {
-		// 				state.isLoading = false;
-		// 				state.columns.push(action.payload);
-		// 			},
-		// 		);
-		// 		builder.addCase(createColumn.rejected, (state, action) => {
-		// 			state.isLoading = false;
-		// 			state.error = action.payload as string;
-		// 		});
+		builder.addCase(createTask.pending, (state) => {
+			state.isLoading = true;
+			state.error = '';
+		});
+		builder.addCase(
+			createTask.fulfilled,
+			(state, action: PayloadAction<TaskModel>) => {
+				state.isLoading = false;
+				state.tasks.push(action.payload);
+			},
+		);
+		builder.addCase(createTask.rejected, (state, action) => {
+			state.isLoading = false;
+			state.error = action.payload as string;
+		});
 		// 		builder.addCase(deleteColumn.pending, (state) => {
 		// 			state.isLoading = true;
 		// 			state.error = '';
