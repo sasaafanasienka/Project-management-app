@@ -2,16 +2,18 @@ import { ToggleButtonGroup, ToggleButton } from '@mui/material';
 import {
 	FC, ReactElement, useState, MouseEvent,
 } from 'react';
+import { BoardFilterBarProps, FilterOptionsModel } from './interfaces';
 import StyledSideLine from './StyledSideLine';
 
-const BoardFilterBar: FC = (): ReactElement => {
-	const [alignment, setAlignment] = useState('all');
+const BoardFilterBar: FC<BoardFilterBarProps> = ({ onChange }): ReactElement => {
+	const [alignment, setAlignment] = useState<FilterOptionsModel>(FilterOptionsModel.all);
 
 	const handleChange = (
 		event: MouseEvent<HTMLElement>,
-		newAlignment: string,
+		newAlignment: FilterOptionsModel,
 	) => {
-		setAlignment(newAlignment);
+		onChange(newAlignment);
+		setAlignment(newAlignment || FilterOptionsModel.all);
 	};
 
 	return (
@@ -23,9 +25,11 @@ const BoardFilterBar: FC = (): ReactElement => {
 			aria-label="Board owner filtering"
 			size='small'
 		>
-			<ToggleButton value="all">All</ToggleButton>
-			<ToggleButton value="ownerd"><StyledSideLine owned /> Own Boards</ToggleButton>
-			<ToggleButton value="guest"><StyledSideLine /> Guest Boards</ToggleButton>
+			<ToggleButton value={FilterOptionsModel.all}>All</ToggleButton>
+			<ToggleButton value={FilterOptionsModel.own}><StyledSideLine owned />
+				Own Boards
+			</ToggleButton>
+			<ToggleButton value={FilterOptionsModel.guest}><StyledSideLine /> Guest Boards</ToggleButton>
 		</ToggleButtonGroup>
 	);
 };
