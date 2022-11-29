@@ -32,6 +32,8 @@ const Column: FC<ColumnPropsModel> = (props): ReactElement => {
 		(task) => task.columnId === id,
 	));
 
+	console.log(tasks);
+
 	const dispatch = useAppDispatch();
 
 	useEffect(() => {

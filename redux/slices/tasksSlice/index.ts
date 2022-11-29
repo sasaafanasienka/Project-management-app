@@ -161,8 +161,11 @@ export const tasksSlice = createSlice({
 		builder.addCase(
 			getTasksInColumn.fulfilled,
 			(state, action) => {
+				console.log(action.payload);
 				state.isLoading = false;
-				state.tasks = action.payload;
+				state.tasks = [...state.tasks, ...action.payload.filter(
+					(item) => state.tasks.every((elem) => elem._id !== item._id),
+				)];
 			},
 		);
 		builder.addCase(getTasksInColumn.rejected, (state, action) => {

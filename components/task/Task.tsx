@@ -78,7 +78,9 @@ const Task: FC<TaskPropsModel> = (props): ReactElement => {
 				<h3>{ title }</h3>
 				<p>{description}</p>
 				<FlexBox justifyContent='space-between'>
-					<p style={{ width: '40%', margin: 0 }}>{`Owner: ${boardUsers.find((user) => user._id === userId).login}`}</p>
+					{/* {boardUsers
+					&& <p style={{ width: '40%', margin: 0 }}>{`Owner: ${boardUsers.find((user) => user._id === userId).login}`}</p>
+					} */}
 					<IconButton aria-label="delete" size="small" onClick={handleDeleteModal}>
 						<DeleteIcon fontSize='small'/>
 					</IconButton>
@@ -113,14 +115,6 @@ const Task: FC<TaskPropsModel> = (props): ReactElement => {
 					boardUsers={boardUsers}
 					userId={userId}
 				>
-					{/* <FlexBox justifyContent='right'>
-						<Button onClick={handleDelete} variant='outlined' autoFocus>
-								Delete
-						</Button>
-						<Button color='info' onClick={handleUpdate} variant='contained'>
-								Update
-						</Button>
-					</FlexBox> */}
 				</TaskDetails>
 			</ModalWindow>
 		</>
