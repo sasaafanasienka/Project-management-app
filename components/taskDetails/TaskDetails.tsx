@@ -1,18 +1,23 @@
 import {
+	Button,
 	FormControl, InputLabel, MenuItem, Select, TextareaAutosize,
 } from '@mui/material';
 import {
 	FC, ReactElement, useRef, useState,
 } from 'react';
+import { UserResponceModel } from '../../redux/slices/userSlice/interfaces';
 import Divider from '../divider/Divider';
 import FlexBox from '../styled/FlexBox';
 import { TaskDetailsPropsModel } from './interfaces';
 import StyledTaskDetails from './StyledTaskDetails';
 
 const TaskDetails: FC<TaskDetailsPropsModel> = ({
-	children, title, description, users,
+	children, title, description, users, handleDelete, handleUpdate, boardUsers, userId,
 }): ReactElement => {
-	const [user, setUser] = useState<string>();
+	const [owner, setOwner] = useState<UserResponceModel>(
+		boardUsers.find((user) => user._id === userId) as UserResponceModel,
+	);
+	// const [owner, setOwner] = useState<string>();
 	const [isTextAreaOpen, setIsTextAreaOpen] = useState(false);
 	const [descriptionState, setDescription] = useState(description);
 	const [isTextAreaTitleOpen, setIsTextAreaTitleOpen] = useState(false);
@@ -32,6 +37,15 @@ const TaskDetails: FC<TaskDetailsPropsModel> = ({
 		if (textAreaTitleRef.current) {
 			textAreaTitleRef.current.selectionStart = textAreaTitleRef.current.value.length;
 		}
+	};
+
+	const update = () => {
+		const formData = {
+			title: titleState,
+			description: descriptionState,
+			userId: owner._id,
+		};
+		handleUpdate(formData);
 	};
 
 	return (
@@ -58,23 +72,38 @@ const TaskDetails: FC<TaskDetailsPropsModel> = ({
 						style={{ width: '100%' }}
 					/> : <p>{description}</p>}
 				</div>
-				<p>{`Assigned to: ${users.map((i) => i).toString()}`}</p>
 				<FlexBox column>
 					<FormControl fullWidth>
-						<InputLabel id="demo-simple-select-label">Assign to: </InputLabel>
+						<InputLabel id="demo-simple-select-label">Owner: </InputLabel>
 						<Select
 							labelId="demo-simple-select-label"
 							id="demo-simple-select"
-							value={user}
-							label="Assign to:"
-							onChange={(event) => setUser(event.target.value)}
+							value={owner._id}
+							label="Owner:"
+							onChange={(event) => setOwner(boardUsers.find(
+								(user) => user._id === event.target.value,
+							) as UserResponceModel)}
 						>
-							<MenuItem value={10}>Ten</MenuItem>
-							<MenuItem value={20}>Twenty</MenuItem>
-							<MenuItem value={30}>Thirty</MenuItem>
+							{boardUsers.map((item) => (
+								<MenuItem
+									key={item._id}
+									value={item._id}
+								>
+									{item.login}
+								</MenuItem>
+							))}
 						</Select>
 					</FormControl>
-					{ children }
+					{/* { children } */}
+					<p>{`Assigned to: ${users.join(', ')}`}</p>
+					<FlexBox justifyContent='right'>
+						<Button onClick={handleDelete} variant='outlined' autoFocus>
+								Delete
+						</Button>
+						<Button color='info' onClick={update} variant='contained'>
+								Update
+						</Button>
+					</FlexBox>
 				</FlexBox>
 			</StyledTaskDetails>
 		</FlexBox>

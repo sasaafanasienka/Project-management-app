@@ -28,8 +28,6 @@ const Column: FC<ColumnPropsModel> = (props): ReactElement => {
 		title, index, id, moveColumn, moveTask, moveIntoEmptyColumn, boardid,
 	} = { ...props };
 
-	const columnRef = useRef<HTMLDivElement>(null);
-
 	const tasks = useAppSelector((state) => state.tasks.tasks.filter(
 		(task) => task.columnId === id,
 	));
@@ -39,53 +37,6 @@ const Column: FC<ColumnPropsModel> = (props): ReactElement => {
 	useEffect(() => {
 		dispatch(getTasksInColumn({ boardid, columnId: id }));
 	}, []);
-
-	// interface DragItem {
-	// 	index: number
-	// 	id: string
-	// 	type: string
-	// 	columnId: string
-	// }
-
-	// const [collected, drag] = useDrag({
-	// 	type: ItemTypes.COLUMN,
-	// 	item: () => ({ id, index }),
-	// });
-
-	// const [{ handlerId }, drop] = useDrop<DragItem, void, >({
-	// 	accept: [ItemTypes.COLUMN, ItemTypes.TASK],
-	// 	collect(monitor) {
-	// 		return {
-	// 			handlerId: monitor.getHandlerId(),
-	// 		};
-	// 	},
-	// 	hover(item: DragItem, monitor) {
-	// 		if (monitor.getItemType() === ItemTypes.COLUMN) {
-	// 			if (!columnRef.current) {
-	// 				return;
-	// 			}
-	// 			const dragId = item.id;
-	// 			const hoverId = id;
-	// 			if (dragId === hoverId) {
-	// 				return;
-	// 			}
-
-	// 			moveColumn(dragId, hoverId);
-	// 			item.id = hoverId;
-	// 		}
-	// 		if (monitor.getItemType() === ItemTypes.TASK) {
-	// 			const dragId = item.id;
-	// 			const dragColumnId = item.columnId;
-	// 			const hoverColumnId = id;
-
-	// 			if (dragColumnId !== hoverColumnId) {
-	// 				moveIntoEmptyColumn(dragId, dragColumnId, hoverColumnId);
-	// 			}
-	// 		}
-	// 	},
-	// });
-
-	// drag(drop(columnRef));
 
 	const [isDelModalOpened, setDelModalOpened] = useState<ModalWindowStateModel>(false);
 	const [isCreateModalOpened, setCreateModalOpened] = useState<ModalWindowStateModel>(false);
@@ -130,11 +81,11 @@ const Column: FC<ColumnPropsModel> = (props): ReactElement => {
 
 	const handleSubmit = (formData: TaskModel) => {
 		if (formData) {
-			dispatch(createTask({ boardid, columnId: id, formData }));
-			// .unwrap()
-			// .then(() => {
-			// 	handleCreateModal();
-			// });
+			dispatch(createTask({ boardid, columnId: id, formData }))
+				.unwrap()
+				.then(() => {
+					handleCreateModal();
+				});
 		}
 	};
 
@@ -169,6 +120,7 @@ const Column: FC<ColumnPropsModel> = (props): ReactElement => {
 				</Button>
 				<StyledTaskList>
 					{tasks.map((task, idx) => <Task
+						boardid={boardid}
 						key={idx}
 						title={task.title}
 						description={task.description}
@@ -179,6 +131,7 @@ const Column: FC<ColumnPropsModel> = (props): ReactElement => {
 						id={task._id}
 						userId={task.userId}
 						users={task.users}
+						order={task.order}
 					/>)}
 				</StyledTaskList>
 			</StyledColumn>

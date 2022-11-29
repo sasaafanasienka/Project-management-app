@@ -2,7 +2,7 @@ export interface TaskModel {
   _id: string;
   title: string;
   order: number;
-  boardId: string;
+  boardid: string;
   columnId: string;
   description: string;
   moveTask: any;

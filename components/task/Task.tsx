@@ -13,85 +13,73 @@ import { ModalWindowStateModel } from '../modal/interfaces';
 import { ItemTypes } from '../board/interfaces';
 import TaskDetails from '../taskDetails/TaskDetails';
 import ModalTitleNode from '../modal/modalTitleNode/ModalTitleNode';
+import { useAppDispatch, useAppSelector } from '../../redux/store';
+import { deleteTask, updateTask } from '../../redux/slices/tasksSlice';
 
 const Task: FC<TaskPropsModel> = (props): ReactElement => {
 	const {
-		title, description, id, index, columnIndex, moveTask, columnId, userId, users,
+		title, description, id, index, columnIndex, moveTask, columnId, userId, users, boardid, order,
 	} = { ...props };
 
-	const [isOpened, setOpened] = useState<ModalWindowStateModel>(false);
-	const [isUpdateModalOpened, setIsUpdateModalOpened] = useState<boolean>(false);
+	const boardUsersIds = useAppSelector((state) => (state.boards.boards).find(
+		(board) => board._id === boardid,
+	).users);
 
-	const taskRef = useRef<HTMLDivElement>(null);
+	const boardUsers = useAppSelector((state) => state.user.usersAll.filter(
+		(user) => boardUsersIds.includes(user._id),
+	));
 
-	interface DragItem {
-		index: number
-		id: string
-		columnId: string
-		type: string
-	}
+	const dispatch = useAppDispatch();
 
-	const [{}, drop] = useDrop<DragItem, void>({
-		accept: ItemTypes.TASK,
-		collect(monitor) {
-			return {
-				handlerId: monitor.getHandlerId(),
-				isOver: monitor.isOver(),
-			};
-		},
-		hover(item: DragItem) {
-			if (!taskRef.current) {
-				return;
-			}
-			const dragId = item.id;
-			const hoverId = id;
-			const dragColumnId = item.columnId;
-			const hoverColumnId = columnId;
+	const [isDeleteOpened, setDeleteOpened] = useState<ModalWindowStateModel>(false);
+	const [isDetailedOpened, setIsDetailedOpened] = useState<ModalWindowStateModel>(false);
 
-			if (dragId !== hoverId) {
-				moveTask(dragId, hoverId, dragColumnId, hoverColumnId);
-				if (dragColumnId !== hoverColumnId) {
-					item.id = hoverId;
-				}
-				item.columnId = hoverColumnId;
-			}
-		},
-	});
-
-	const [{}, drag] = useDrag({
-		type: ItemTypes.TASK,
-		item: () => ({ id, index, columnId }),
-	});
-
-	drag(drop(taskRef));
-
-	const openModal = (event: SyntheticEvent) => {
-		event.stopPropagation();
-		setOpened(true);
+	const handleDetailedModal = (event, value: boolean = !isDetailedOpened) => {
+		if (event) {
+			event.stopPropagation();
+		}
+		setIsDetailedOpened(value);
 	};
 
-	const openDetailedModal = () => {
-		setIsUpdateModalOpened(true);
+	const handleDeleteModal = (event, value: boolean = !isDeleteOpened) => {
+		if (event) {
+			event.stopPropagation();
+		}
+		setDeleteOpened(value);
 	};
 
-	const closeModal = () => {
-		setOpened(false);
+	const handleDelete = () => {
+		dispatch(deleteTask({ boardid, columnId, taskId: id }))
+			.then(() => {
+				handleDeleteModal(false);
+				handleDetailedModal(false);
+			});
 	};
 
-	const deleteTask = () => {
-		closeModal();
+	const handleUpdate = (formData) => {
+		const body = {
+			...formData,
+			order,
+			columnId,
+			users,
+		};
+		dispatch(updateTask({
+			boardid, columnId, taskId: id, body,
+		})).then(() => {
+			handleDetailedModal(false);
+		});
 	};
 
 	return (
 		<>
 			<StyledTask
-				ref={taskRef}
-				onClick={openDetailedModal}
+				onClick={handleDetailedModal}
 			>
 				<h3>{ title }</h3>
 				<p>{description}</p>
-				<FlexBox justifyContent='flex-end'>
-					<IconButton aria-label="delete" size="small" onClick={openModal}>
+				<FlexBox justifyContent='space-between'>
+					<p style={{ width: '40%', margin: 0 }}>{`Owner: ${boardUsers.find((user) => user._id === userId).login}`}</p>
+					<IconButton aria-label="delete" size="small" onClick={handleDeleteModal}>
 						<DeleteIcon fontSize='small'/>
 					</IconButton>
 				</FlexBox>
@@ -99,36 +87,40 @@ const Task: FC<TaskPropsModel> = (props): ReactElement => {
 			<ModalWindow
 				title={`Are you sure to delete the task "${title}"?`}
 				description="This action cannot be undone"
-				isOpened={isOpened}
-				closeFunc={closeModal}
+				isOpened={isDeleteOpened}
+				closeFunc={() => { handleDeleteModal(false); }}
 			>
-				<Button onClick={closeModal}>Cancel</Button>
-				<Button onClick={deleteTask} variant='outlined' autoFocus>
+				<Button onClick={handleDeleteModal}>Cancel</Button>
+				<Button onClick={handleDelete} variant='outlined' autoFocus>
             Delete
 				</Button>
 			</ModalWindow>
 			<ModalWindow
 				title={<ModalTitleNode
-					closeFn={() => setIsUpdateModalOpened(false)}
+					closeFn={() => { handleDetailedModal(false); }}
 					firstRow={`Task ID: ${id}`}
 					secondRow={`Owner: ${userId}`}
 				/>}
-				isOpened={isUpdateModalOpened}
-				closeFunc={closeModal}
+				isOpened={isDetailedOpened}
+				closeFunc={() => { handleDetailedModal(false); }}
 			>
 				<TaskDetails
 					title={title}
 					description={description}
 					users={users}
+					handleDelete={handleDelete}
+					handleUpdate={handleUpdate}
+					boardUsers={boardUsers}
+					userId={userId}
 				>
-					<FlexBox justifyContent='right'>
-						<Button onClick={() => setIsUpdateModalOpened(false)} variant='outlined' autoFocus>
+					{/* <FlexBox justifyContent='right'>
+						<Button onClick={handleDelete} variant='outlined' autoFocus>
 								Delete
 						</Button>
-						<Button color='info' onClick={deleteTask} variant='contained'>
+						<Button color='info' onClick={handleUpdate} variant='contained'>
 								Update
 						</Button>
-					</FlexBox>
+					</FlexBox> */}
 				</TaskDetails>
 			</ModalWindow>
 		</>
