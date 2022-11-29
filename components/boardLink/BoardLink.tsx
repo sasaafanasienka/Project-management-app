@@ -12,14 +12,16 @@ import { BoardLinkPropsModel } from './interfaces';
 import FlexBox from '../styled/FlexBox';
 import ModalWindow from '../modal/ModalWindow';
 import { ModalWindowStateModel } from '../modal/interfaces';
-import ModalTitleNode from '../modal/modalTitleNode/ModalTitleNode';
-import ModalDetailsUpdate from '../modal/modalDetailsUpdate/modalDetailsUpdate';
 import { useAppDispatch } from '../../redux/store';
-import { deleteBoard } from '../../redux/slices/boardSlice';
+import { deleteBoard, updateBoard } from '../../redux/slices/boardSlice';
+import NewBoardForm from '../newBoardForm/NewBoardForm';
+import { BoardModel } from '../../redux/slices/boardSlice/interfaces';
 
 
 const BoardLink: FC<BoardLinkPropsModel> = (props): ReactElement => {
-	const { title, _id: id, invited } = { ...props.board };
+	const {
+		title, _id: id, invited, users,
+	} = { ...props.board };
 	const dispatch = useAppDispatch();
 
 	const [isDeleteModalOpened, setDeleteModalOpened] = useState<ModalWindowStateModel>(false);
@@ -53,6 +55,17 @@ const BoardLink: FC<BoardLinkPropsModel> = (props): ReactElement => {
 		setEditModalOpened(false);
 	};
 
+	const handleUpdate = (data: BoardModel) => {
+		dispatch(updateBoard({ boardId: id, body: data }))
+			.unwrap()
+			.then((responseData) => {
+				toast.success(`The Board "${responseData.title}" was successfully updated`);
+				console.log(responseData);
+				closeEditModal();
+			})
+			.catch((error) => toast.error(`An error has occured: ${error}`));
+	};
+
 	return (
 		<>
 			<Link href={`/boards/${id}`}>
@@ -81,22 +94,14 @@ const BoardLink: FC<BoardLinkPropsModel> = (props): ReactElement => {
 				</Button>
 			</ModalWindow>
 			<ModalWindow
-				title={<ModalTitleNode
-					firstRow={`Board ID: ${id}`}
-					closeFn={closeEditModal}
-					secondRow={`Owner: ${props.board.owner}`}
-				/>}
+				title={`Udpate Board "${title}"`}
 				isOpened={isEditModalOpened}
 				closeFunc={closeEditModal}
 			>
-				<ModalDetailsUpdate title={props.board.title} users={props.board.users}>
-					<FlexBox justifyContent='right'>
-						<Button onClick={closeEditModal}>Cancel</Button>
-						<Button color='info' onClick={handleDeleteBoard} variant='contained' autoFocus>
-								Update
-						</Button>
-					</FlexBox>
-				</ModalDetailsUpdate>
+				<NewBoardForm
+					updateMode={{ assignedUsers: users, currentTitle: title }}
+					onSubmit={handleUpdate}
+					onClose={closeEditModal} />
 			</ModalWindow>
 		</>
 	);

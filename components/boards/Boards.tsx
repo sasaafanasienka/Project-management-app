@@ -24,6 +24,10 @@ const Boards: FC = (): ReactElement => {
 	const boards = useAppSelector((state) => state.boards.boards);
 	const [boardsToDisplay, setBoardsToDisplay] = useState<Array<BoardUserModel>>(boards);
 
+	useEffect(() => {
+		setBoardsToDisplay(boards);
+	}, [boards]);
+
 	const handleModal = isModalOpened
 		? () => setIsModalOpened(false)
 		: () => setIsModalOpened(true);
@@ -41,6 +45,7 @@ const Boards: FC = (): ReactElement => {
 	};
 
 	const handleFilterBoards = (option: FilterOptionsModel) => {
+		console.log(boards, boardsToDisplay);
 		switch (option) {
 		case FilterOptionsModel.all:
 			setBoardsToDisplay(boards);
