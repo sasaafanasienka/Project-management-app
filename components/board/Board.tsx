@@ -33,21 +33,15 @@ const Board: FC<BoardPropsModel> = (props): ReactElement => {
 
 	const boards = useAppSelector((state) => state.boards);
 	const columns = useAppSelector((state) => state.columns.columns);
+	const st = useAppSelector((state) => state);
 
 	const dispatch = useAppDispatch();
 
 	useEffect(() => {
 		dispatch(getUserBoards())
 			.then(
-				(res) => {
-					console.log(boardid);
-					console.log(res.payload.findIndex((el) => el._id === boardid));
-					if (res.payload.findIndex((el) => el._id === boardid) >= 0) {
-						dispatch(getBoardById(boardid));
-					} else {
-						console.log(404);
-						// router.push('404');
-					}
+				() => {
+					dispatch(getBoardById(boardid));
 				},
 			);
 	}, [dispatch, boardid]);
@@ -100,6 +94,7 @@ const Board: FC<BoardPropsModel> = (props): ReactElement => {
 		}
 	};
 	console.log(columns);
+	console.log(st);
 
 	const renderColumn = (column: ColumnPropsModel, index: number) => (
 		<Column

@@ -1,5 +1,5 @@
 import {
-	FC, ReactElement, useState, useRef, ChangeEvent,
+	FC, ReactElement, useState, useRef, ChangeEvent, useEffect,
 } from 'react';
 import DeleteIcon from '@mui/icons-material/Delete';
 import IconButton from '@mui/material/IconButton';
@@ -18,17 +18,24 @@ import { TaskModel } from '../task/interfaces';
 import StyledTaskList from './StyledTaskList';
 import StyledColumnTitle from './StyledColumnTitle';
 import UpdateTitleInput from './updateTitleInput/UpdateTitleInput';
-import { useAppDispatch } from '../../redux/store';
+import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { deleteColumn, updateColumn } from '../../redux/slices/columnSlice';
+import { getTasksInColumn } from '../../redux/slices/tasksSlice';
 
 const Column: FC<ColumnPropsModel> = (props): ReactElement => {
 	const {
-		title, index, id, tasks, moveColumn, moveTask, moveIntoEmptyColumn, boardid,
+		title, index, id, moveColumn, moveTask, moveIntoEmptyColumn, boardid,
 	} = { ...props };
 
 	const columnRef = useRef<HTMLDivElement>(null);
 
+	const tasks = useAppSelector((state) => state.tasks.tasks);
+
 	const dispatch = useAppDispatch();
+
+	useEffect(() => {
+		dispatch(getTasksInColumn({ boardid, columnId: id }));
+	}, [dispatch]);
 
 	interface DragItem {
 		index: number
@@ -139,7 +146,6 @@ const Column: FC<ColumnPropsModel> = (props): ReactElement => {
 						<DeleteIcon fontSize='small'/>
 					</IconButton>
 				</FlexBox>
-
 				<Button color='info'>
 					<FlexBox alignItems='center' justifyContent='center' gap='0'>
 						<AddIcon fontSize='small' />
