@@ -8,17 +8,16 @@ import {
 import { UserResponceModel } from '../../redux/slices/userSlice/interfaces';
 import Divider from '../divider/Divider';
 import FlexBox from '../styled/FlexBox';
-import { TaskDetailsPropsModel } from './interfaces';
+import { TaskDetailsPropsModel, TaskUpdateFormModel } from './interfaces';
 import StyledTaskDetails from './StyledTaskDetails';
 
 const TaskDetails: FC<TaskDetailsPropsModel> = ({
-	children, title, description, users, handleDelete, handleUpdate, boardUsers, userId,
+	title, description, users, handleDelete, handleUpdate, boardUsers, userId,
 }): ReactElement => {
-	const [owner, setOwner] = useState<UserResponceModel>(
-		boardUsers.find((user) => user._id === userId) as UserResponceModel,
-	);
+	const owner = boardUsers.find((user) => user._id === userId) as UserResponceModel;
+
+	const [taskOwner, setTaskOwner] = useState<UserResponceModel>(owner);
 	const [taskUsers, setTaskUsers] = useState(users);
-	// const [owner, setOwner] = useState<string>();
 	const [isTextAreaOpen, setIsTextAreaOpen] = useState(false);
 	const [descriptionState, setDescription] = useState(description);
 	const [isTextAreaTitleOpen, setIsTextAreaTitleOpen] = useState(false);
@@ -40,11 +39,11 @@ const TaskDetails: FC<TaskDetailsPropsModel> = ({
 		}
 	};
 
-	const update = () => {
-		const formData = {
+	const update = (): void => {
+		const formData: TaskUpdateFormModel = {
 			title: titleState,
 			description: descriptionState,
-			userId: owner._id,
+			userId: taskOwner._id,
 			users: taskUsers,
 		};
 		handleUpdate(formData);
@@ -84,9 +83,9 @@ const TaskDetails: FC<TaskDetailsPropsModel> = ({
 						<Select
 							labelId="demo-simple-select-label"
 							id="demo-simple-select"
-							value={owner._id}
+							value={taskOwner._id}
 							label="Owner:"
-							onChange={(event) => setOwner(boardUsers.find(
+							onChange={(event) => setTaskOwner(boardUsers.find(
 								(user) => user._id === event.target.value,
 							) as UserResponceModel)}
 						>

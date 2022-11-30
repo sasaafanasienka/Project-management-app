@@ -1,11 +1,18 @@
 import { ReactNode } from 'react';
 import { UserResponceModel } from '../../redux/slices/userSlice/interfaces';
 
+export interface TaskUpdateFormModel {
+  title: string,
+  description: string,
+  userId: string,
+  users: string[],
+}
+
 export interface TaskDetailsPropsModel {
   children?: ReactNode;
   title: string;
-  handleUpdate: () => void;
   handleDelete: () => void;
+  handleUpdate: (formData: TaskUpdateFormModel) => void;
   description: string;
   users: string[];
   boardUsers: UserResponceModel[];
