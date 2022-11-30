@@ -15,15 +15,19 @@ import TaskDetails from '../taskDetails/TaskDetails';
 import ModalTitleNode from '../modal/modalTitleNode/ModalTitleNode';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { deleteTask, updateTask } from '../../redux/slices/tasksSlice';
+import { BoardModel } from '../../redux/slices/boardSlice/interfaces';
 
 const Task: FC<TaskPropsModel> = (props): ReactElement => {
 	const {
-		title, description, id, index, columnIndex, moveTask, columnId, userId, users, boardid, order,
+		title, description, id, index, columnIndex, columnId, userId, users, boardid, order,
 	} = { ...props };
 
-	const boardUsersIds = useAppSelector((state) => (state.boards.boards).find(
-		(board) => board._id === boardid,
-	).users);
+	const boardUsersIds = useAppSelector((state) => {
+		if (state.boards) {
+			return (state.boards.boards.find((board) => board._id === boardid) as BoardModel).users;
+		}
+		return [];
+	});
 
 	const boardUsers = useAppSelector((state) => state.user.usersAll.filter(
 		(user) => boardUsersIds.includes(user._id),
@@ -61,7 +65,6 @@ const Task: FC<TaskPropsModel> = (props): ReactElement => {
 			...formData,
 			order,
 			columnId,
-			users,
 		};
 		dispatch(updateTask({
 			boardid, columnId, taskId: id, body,
@@ -78,9 +81,6 @@ const Task: FC<TaskPropsModel> = (props): ReactElement => {
 				<h3>{ title }</h3>
 				<p>{description}</p>
 				<FlexBox justifyContent='space-between'>
-					{/* {boardUsers
-					&& <p style={{ width: '40%', margin: 0 }}>{`Owner: ${boardUsers.find((user) => user._id === userId).login}`}</p>
-					} */}
 					<IconButton aria-label="delete" size="small" onClick={handleDeleteModal}>
 						<DeleteIcon fontSize='small'/>
 					</IconButton>
@@ -114,8 +114,7 @@ const Task: FC<TaskPropsModel> = (props): ReactElement => {
 					handleUpdate={handleUpdate}
 					boardUsers={boardUsers}
 					userId={userId}
-				>
-				</TaskDetails>
+				/>
 			</ModalWindow>
 		</>
 	);

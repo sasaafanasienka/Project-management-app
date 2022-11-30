@@ -1,6 +1,6 @@
 import {
 	Button,
-	FormControl, InputLabel, MenuItem, Select, TextareaAutosize,
+	FormControl, InputLabel, MenuItem, OutlinedInput, Select, TextareaAutosize,
 } from '@mui/material';
 import {
 	FC, ReactElement, useRef, useState,
@@ -17,6 +17,7 @@ const TaskDetails: FC<TaskDetailsPropsModel> = ({
 	const [owner, setOwner] = useState<UserResponceModel>(
 		boardUsers.find((user) => user._id === userId) as UserResponceModel,
 	);
+	const [taskUsers, setTaskUsers] = useState(users);
 	// const [owner, setOwner] = useState<string>();
 	const [isTextAreaOpen, setIsTextAreaOpen] = useState(false);
 	const [descriptionState, setDescription] = useState(description);
@@ -44,8 +45,13 @@ const TaskDetails: FC<TaskDetailsPropsModel> = ({
 			title: titleState,
 			description: descriptionState,
 			userId: owner._id,
+			users: taskUsers,
 		};
 		handleUpdate(formData);
+	};
+
+	const usersHandler = (event) => {
+		setTaskUsers(event.target.value);
 	};
 
 	return (
@@ -94,8 +100,27 @@ const TaskDetails: FC<TaskDetailsPropsModel> = ({
 							))}
 						</Select>
 					</FormControl>
-					{/* { children } */}
-					<p>{`Assigned to: ${users.join(', ')}`}</p>
+					<FormControl fullWidth>
+						<InputLabel id="demo-multiple-name-label"
+						>Invited users:</InputLabel>
+						<Select
+							labelId="demo-multiple-name-label"
+							id="demo-multiple-name"
+							multiple
+							input={<OutlinedInput label="Invited users" />}
+							value={taskUsers}
+							onChange={usersHandler}
+						>
+							{boardUsers.map((user) => (
+								<MenuItem
+									key={user._id}
+									value={user._id}
+								>
+									{user.login}
+								</MenuItem>
+							))}
+						</Select>
+					</FormControl>
 					<FlexBox justifyContent='right'>
 						<Button onClick={handleDelete} variant='outlined' autoFocus>
 								Delete

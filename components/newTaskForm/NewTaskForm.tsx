@@ -17,15 +17,18 @@ export interface NewBoardFormProps {
 }
 
 const NewTaskForm: FC<NewBoardFormProps> = ({ onSubmit, onClose, boardid }): ReactElement => {
-	const boardUsersIds = useAppSelector((state) => (state.boards.boards).find(
-		(board) => board._id === boardid,
-	).users);
+	const dispatch = useAppDispatch();
+
+	const boardUsersIds = useAppSelector((state) => {
+		if (state.boards) {
+			return (state.boards.boards.find((board) => board._id === boardid) as BoardModel).users;
+		}
+		return [];
+	});
 
 	const boardUsers = useAppSelector((state) => state.user.usersAll.filter(
 		(user) => boardUsersIds.includes(user._id),
 	));
-
-	const dispatch = useAppDispatch();
 
 	useEffect(() => {
 		dispatch(getAllUsers());
