@@ -3,7 +3,9 @@
 import {
 	createAsyncThunk, createSlice, PayloadAction, Store,
 } from '@reduxjs/toolkit';
-import { BoardModel, InitialStateBoardModel, NewBoardPropsModel } from './interfaces';
+import {
+	BoardModel, BoardUserModel, InitialStateBoardModel, NewBoardPropsModel,
+} from './interfaces';
 
 const BASE_URL = 'https://final-task-backend-production-287c.up.railway.app/';
 
@@ -14,7 +16,7 @@ const initialState: InitialStateBoardModel = {
 };
 
 export const createBoard = createAsyncThunk<
-  BoardModel,
+  BoardUserModel,
   NewBoardPropsModel,
   { rejectValue: string }
 >('boards/createBoard', async (body, { rejectWithValue, getState }) => {
@@ -34,7 +36,8 @@ export const createBoard = createAsyncThunk<
 			const { statusCode, message } = await response.json();
 			throw new Error(`${statusCode} ${message}`);
 		}
-		return await response.json();
+		const newBoard = await response.json();
+		return Object.assign(newBoard, { invited: false });
 	} catch (error) {
 		if (error instanceof Error) {
 			return rejectWithValue(`${error.message}`);
@@ -47,7 +50,7 @@ export const deleteBoard = createAsyncThunk<
   BoardModel,
   {boardId: string},
   { rejectValue: string }
->('boards/deleteBoard', async (boardId, { rejectWithValue, getState }) => {
+>('boards/deleteBoard', async ({ boardId }, { rejectWithValue, getState }) => {
 	const state = getState() as ReturnType<Store['getState']>;
 	const { token } = state.user.user;
 	try {
@@ -72,12 +75,14 @@ export const deleteBoard = createAsyncThunk<
 });
 
 export const updateBoard = createAsyncThunk<
-  BoardModel,
+  BoardUserModel,
   {boardId: string, body: NewBoardPropsModel},
   { rejectValue: string }
 >('boards/updateBoard', async ({ boardId, body }, { rejectWithValue, getState }) => {
 	const state = getState() as ReturnType<Store['getState']>;
-	const { token } = state.user.user;
+	const { token, id } = state.user.user;
+	const bodyWithOwner = Object.assign(body, { owner: id });
+	console.log(bodyWithOwner);
 	try {
 		const response = await fetch(`${BASE_URL}boards/${boardId}`, {
 			method: 'PUT',
@@ -85,7 +90,7 @@ export const updateBoard = createAsyncThunk<
 				'Content-Type': 'application/json',
 				Authorization: `Bearer ${token}`,
 			},
-			body: JSON.stringify(body),
+			body: JSON.stringify(bodyWithOwner),
 		});
 		if (!response.ok) {
 			const { statusCode, message } = await response.json();
@@ -112,7 +117,14 @@ export const getUserBoards = createAsyncThunk('boards/getUserBoards', async (boa
 			},
 		});
 		const boardsAll = await response.json();
-		return boardsAll.filter((board: BoardModel) => id === board.owner || board.users.includes(id));
+		return boardsAll
+			.filter((board: BoardModel) => id === board.owner || board.users.includes(id))
+			.map((board: BoardModel) => {
+				if (board.owner === id) {
+					return Object.assign(board, { invited: false });
+				}
+				return Object.assign(board, { invited: true });
+			});
 	} catch {
 		return rejectWithValue('error');
 	}
@@ -130,7 +142,7 @@ export const boardSlice = createSlice({
 		});
 		builder.addCase(
 			getUserBoards.fulfilled,
-			(state, action: PayloadAction<Array<BoardModel>>) => {
+			(state, action: PayloadAction<Array<BoardUserModel>>) => {
 				state.isLoading = false;
 				state.boards = action.payload;
 			},
@@ -145,7 +157,7 @@ export const boardSlice = createSlice({
 		});
 		builder.addCase(
 			createBoard.fulfilled,
-			(state, action: PayloadAction<BoardModel>) => {
+			(state, action: PayloadAction<BoardUserModel>) => {
 				state.isLoading = false;
 				state.boards.push(action.payload);
 			},
@@ -175,11 +187,11 @@ export const boardSlice = createSlice({
 		});
 		builder.addCase(
 			updateBoard.fulfilled,
-			(state, action: PayloadAction<BoardModel>) => {
+			(state, action: PayloadAction<BoardUserModel>) => {
 				state.isLoading = false;
 				state.boards = state.boards.map((item) => {
 					if (item._id === action.payload._id) {
-						item.title = action.payload.title;
+						return action.payload;
 					}
 					return item;
 				});
