@@ -7,6 +7,7 @@ import { Button } from '@mui/material';
 import { useDrag, useDrop } from 'react-dnd';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
+import { Droppable } from 'react-beautiful-dnd';
 import FlexBox from '../styled/FlexBox';
 import StyledColumn from './StyledColumn';
 import Task from '../task/Task';
@@ -21,57 +22,8 @@ import UpdateTitleInput from './updateTitleInput/UpdateTitleInput';
 
 const Column: FC<ColumnPropsModel> = (props): ReactElement => {
 	const {
-		title, index, id, tasks, moveColumn, moveTask, moveIntoEmptyColumn,
+		title, id, tasks,
 	} = { ...props };
-
-	const columnRef = useRef<HTMLDivElement>(null);
-
-	interface DragItem {
-		index: number
-		id: string
-		type: string
-		columnId: string
-	}
-
-	const [collected, drag] = useDrag({
-		type: ItemTypes.COLUMN,
-		item: () => ({ id, index }),
-	});
-
-	const [{ handlerId }, drop] = useDrop<DragItem, void, >({
-		accept: [ItemTypes.COLUMN, ItemTypes.TASK],
-		collect(monitor) {
-			return {
-				handlerId: monitor.getHandlerId(),
-			};
-		},
-		hover(item: DragItem, monitor) {
-			if (monitor.getItemType() === ItemTypes.COLUMN) {
-				if (!columnRef.current) {
-					return;
-				}
-				const dragId = item.id;
-				const hoverId = id;
-				if (dragId === hoverId) {
-					return;
-				}
-
-				moveColumn(dragId, hoverId);
-				item.id = hoverId;
-			}
-			if (monitor.getItemType() === ItemTypes.TASK) {
-				const dragId = item.id;
-				const dragColumnId = item.columnId;
-				const hoverColumnId = id;
-
-				if (dragColumnId !== hoverColumnId) {
-					moveIntoEmptyColumn(dragId, dragColumnId, hoverColumnId);
-				}
-			}
-		},
-	});
-
-	drag(drop(columnRef));
 
 	const [isModalOpened, setOpened] = useState<ModalWindowStateModel>(false);
 	const [isTitleUpdate, setIsTitleUpdate] = useState<boolean>(false);
@@ -106,8 +58,6 @@ const Column: FC<ColumnPropsModel> = (props): ReactElement => {
 	return (
 		<>
 			<StyledColumn
-				ref={columnRef}
-				data-handler-id={handlerId}
 			>
 				<FlexBox justifyContent='space-between' wrap='no-wrap'>
 					{isTitleUpdate
@@ -136,20 +86,21 @@ const Column: FC<ColumnPropsModel> = (props): ReactElement => {
 						Add new task
 					</FlexBox>
 				</Button>
-				<StyledTaskList>
-					{tasks.map((task, idx) => <Task
-						key={idx}
-						title={task.title}
-						description={task.description}
-						moveTask={moveTask}
-						index={idx}
-						columnId={id}
-						columnIndex={index}
-						id={task._id}
-						userId={task.userId}
-						users={task.users}
-					/>)}
-				</StyledTaskList>
+				<Droppable droppableId={title}>
+					{(provided) => (
+						<StyledTaskList
+							ref={provided.innerRef}
+							{...provided.droppableProps}
+						>
+							{tasks.map((task, index) => <Task
+								key={task.title}
+								task={task}
+								index={index}
+							/>)}
+							{provided.placeholder}
+						</StyledTaskList>
+					)}
+				</Droppable>
 			</StyledColumn>
 			<ModalWindow
 				title={`Are you sure to delete the column "${title}"?`}

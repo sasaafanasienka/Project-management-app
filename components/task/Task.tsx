@@ -5,6 +5,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import IconButton from '@mui/material/IconButton';
 import { Button } from '@mui/material';
 import { useDrag, useDrop } from 'react-dnd';
+import { Draggable } from 'react-beautiful-dnd';
 import FlexBox from '../styled/FlexBox';
 import { TaskPropsModel } from './interfaces';
 import StyledTask from './StyledTask';
@@ -16,54 +17,11 @@ import ModalTitleNode from '../modal/modalTitleNode/ModalTitleNode';
 
 const Task: FC<TaskPropsModel> = (props): ReactElement => {
 	const {
-		title, description, id, index, columnIndex, moveTask, columnId, userId, users,
-	} = { ...props };
+		title, description, _id: id, columnId, userId, users,
+	} = { ...props.task };
 
 	const [isOpened, setOpened] = useState<ModalWindowStateModel>(false);
 	const [isUpdateModalOpened, setIsUpdateModalOpened] = useState<boolean>(false);
-
-	const taskRef = useRef<HTMLDivElement>(null);
-
-	interface DragItem {
-		index: number
-		id: string
-		columnId: string
-		type: string
-	}
-
-	const [{}, drop] = useDrop<DragItem, void>({
-		accept: ItemTypes.TASK,
-		collect(monitor) {
-			return {
-				handlerId: monitor.getHandlerId(),
-				isOver: monitor.isOver(),
-			};
-		},
-		hover(item: DragItem) {
-			if (!taskRef.current) {
-				return;
-			}
-			const dragId = item.id;
-			const hoverId = id;
-			const dragColumnId = item.columnId;
-			const hoverColumnId = columnId;
-
-			if (dragId !== hoverId) {
-				moveTask(dragId, hoverId, dragColumnId, hoverColumnId);
-				if (dragColumnId !== hoverColumnId) {
-					item.id = hoverId;
-				}
-				item.columnId = hoverColumnId;
-			}
-		},
-	});
-
-	const [{}, drag] = useDrag({
-		type: ItemTypes.TASK,
-		item: () => ({ id, index, columnId }),
-	});
-
-	drag(drop(taskRef));
 
 	const openModal = (event: SyntheticEvent) => {
 		event.stopPropagation();
@@ -84,18 +42,25 @@ const Task: FC<TaskPropsModel> = (props): ReactElement => {
 
 	return (
 		<>
-			<StyledTask
-				ref={taskRef}
-				onClick={openDetailedModal}
-			>
-				<h3>{ title }</h3>
-				<p>{description}</p>
-				<FlexBox justifyContent='flex-end'>
-					<IconButton aria-label="delete" size="small" onClick={openModal}>
-						<DeleteIcon fontSize='small'/>
-					</IconButton>
-				</FlexBox>
-			</StyledTask>
+			<Draggable draggableId={title} index={props.index}>
+				{(provided) => (
+					<StyledTask
+						ref={provided.innerRef}
+						{...provided.draggableProps}
+						{...provided.dragHandleProps}
+						// innerRef={provided.innerRef}
+						onClick={openDetailedModal}
+					>
+						<h3>{ title }</h3>
+						<p>{description}</p>
+						<FlexBox justifyContent='flex-end'>
+							<IconButton aria-label="delete" size="small" onClick={openModal}>
+								<DeleteIcon fontSize='small'/>
+							</IconButton>
+						</FlexBox>
+					</StyledTask>
+				)}
+			</Draggable>
 			<ModalWindow
 				title={`Are you sure to delete the task "${title}"?`}
 				description="This action cannot be undone"
