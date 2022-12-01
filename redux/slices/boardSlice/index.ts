@@ -3,11 +3,9 @@
 import {
 	createAsyncThunk, createSlice, PayloadAction, Store,
 } from '@reduxjs/toolkit';
-import {
-	BoardModel, BoardUserModel, InitialStateBoardModel, NewBoardPropsModel,
-} from './interfaces';
-
-const BASE_URL = 'https://final-task-backend-production-287c.up.railway.app/';
+import { BoardModel, InitialStateBoardModel, NewBoardPropsModel } from './interfaces';
+import { BASE_URL } from '../../../config';
+import { readCookie } from '../../../utils/cookieUtilities';
 
 const initialState: InitialStateBoardModel = {
 	isLoading: false,
@@ -107,7 +105,8 @@ export const updateBoard = createAsyncThunk<
 
 export const getUserBoards = createAsyncThunk('boards/getUserBoards', async (boardId, { rejectWithValue, getState }) => {
 	const state = getState() as ReturnType<Store['getState']>;
-	const { id, token } = state.user.user;
+	const { id } = state.user.user;
+	const token = readCookie('token');
 	try {
 		const response = await fetch(`${BASE_URL}boards/`, {
 			method: 'GET',

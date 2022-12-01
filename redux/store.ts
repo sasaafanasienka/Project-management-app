@@ -4,16 +4,22 @@ import {
 import { createWrapper, HYDRATE } from 'next-redux-wrapper';
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
 import { boardSlice } from './slices/boardSlice';
+import { columnSlice } from './slices/columnSlice';
 import { InitialStateBoardModel } from './slices/boardSlice/interfaces';
 import { langSlice } from './slices/langSlice';
 import { InitialStateModel } from './slices/langSlice/interfaces';
 import { userSlice } from './slices/userSlice';
 import { InitialStateUserModel } from './slices/userSlice/interfaces';
+import { tasksSlice } from './slices/tasksSlice';
+import { InitialStateColumnModel } from './slices/columnSlice/interfaces';
+import { InitialStateTaskModel } from './slices/tasksSlice/interfaces';
 
 const combinedReducer = combineReducers({
 	lang: langSlice.reducer,
 	user: userSlice.reducer,
 	boards: boardSlice.reducer,
+	columns: columnSlice.reducer,
+	tasks: tasksSlice.reducer,
 });
 
 const reducer = (
@@ -22,6 +28,8 @@ const reducer = (
 		lang: InitialStateModel;
 		user: InitialStateUserModel;
 		boards: InitialStateBoardModel;
+		columns: InitialStateColumnModel;
+		tasks: InitialStateTaskModel;
 	}>>,
 ) => {
 	if (action.type === HYDRATE) {
@@ -33,12 +41,16 @@ const reducer = (
 			lang: InitialStateModel;
 			user: InitialStateUserModel;
 			boards: InitialStateBoardModel;
+			columns: InitialStateColumnModel;
+			tasks: InitialStateTaskModel;
 	}>;
 	}
 	return combinedReducer(state, action) as CombinedState<{
 			lang: InitialStateModel;
 			user: InitialStateUserModel;
 			boards: InitialStateBoardModel;
+			columns: InitialStateColumnModel;
+			tasks: InitialStateTaskModel;
 	}>;
 };
 

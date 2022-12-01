@@ -1,8 +1,19 @@
+export interface TaskPropsModel {
+  title: string;
+  description: string;
+  id: string;
+  columnId: string;
+  userId: string;
+  users: string[];
+  boardid: string;
+  order: number;
+}
+
 export interface TaskModel {
   _id: string;
   title: string;
   order: number;
-  boardId: string;
+  boardid: string;
   columnId: string;
   description: string;
   moveTask: any;
@@ -12,9 +23,4 @@ export interface TaskModel {
   userId: number;
   users: Array<string>;
 }
-
-export interface TaskPropsModel {
-  task: TaskModel;
-}
-
 

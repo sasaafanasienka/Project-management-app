@@ -10,6 +10,7 @@ export interface ColumnPropsModel {
   moveIntoEmptyColumn?: any;
   id: string;
   tasks: TaskPropsModel;
+  boardid: string;
 }
 
 

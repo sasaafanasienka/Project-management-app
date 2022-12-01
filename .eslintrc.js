@@ -26,6 +26,7 @@ module.exports = {
 			},
 		],
 		'linebreak-style': 0,
+		'no-underscore-dangle': 0,
 		'no-multiple-empty-lines': [1, { max: 2 }],
 		'react/react-in-jsx-scope': 'off',
 		indent: [1, 'tab'],

@@ -1,97 +1,86 @@
-import {
-	FC, ReactElement, useState, useRef, SyntheticEvent,
-} from 'react';
+import { FC, ReactElement, useState } from 'react';
 import DeleteIcon from '@mui/icons-material/Delete';
 import IconButton from '@mui/material/IconButton';
 import { Button } from '@mui/material';
-import { useDrag, useDrop } from 'react-dnd';
 import FlexBox from '../styled/FlexBox';
 import { TaskPropsModel } from './interfaces';
 import StyledTask from './StyledTask';
 import ModalWindow from '../modal/ModalWindow';
 import { ModalWindowStateModel } from '../modal/interfaces';
-import { ItemTypes } from '../board/interfaces';
 import TaskDetails from '../taskDetails/TaskDetails';
 import ModalTitleNode from '../modal/modalTitleNode/ModalTitleNode';
+import { useAppDispatch, useAppSelector } from '../../redux/store';
+import { deleteTask, updateTask } from '../../redux/slices/tasksSlice';
+import { BoardModel } from '../../redux/slices/boardSlice/interfaces';
+import { TaskUpdateFormModel } from '../taskDetails/interfaces';
 
-const Task: FC<TaskPropsModel> = (props): ReactElement => {
-	const {
-		title, description, id, index, columnIndex, moveTask, columnId, userId, users,
-	} = { ...props };
-
-	const [isOpened, setOpened] = useState<ModalWindowStateModel>(false);
-	const [isUpdateModalOpened, setIsUpdateModalOpened] = useState<boolean>(false);
-
-	const taskRef = useRef<HTMLDivElement>(null);
-
-	interface DragItem {
-		index: number
-		id: string
-		columnId: string
-		type: string
-	}
-
-	const [{}, drop] = useDrop<DragItem, void>({
-		accept: ItemTypes.TASK,
-		collect(monitor) {
-			return {
-				handlerId: monitor.getHandlerId(),
-				isOver: monitor.isOver(),
-			};
-		},
-		hover(item: DragItem) {
-			if (!taskRef.current) {
-				return;
-			}
-			const dragId = item.id;
-			const hoverId = id;
-			const dragColumnId = item.columnId;
-			const hoverColumnId = columnId;
-
-			if (dragId !== hoverId) {
-				moveTask(dragId, hoverId, dragColumnId, hoverColumnId);
-				if (dragColumnId !== hoverColumnId) {
-					item.id = hoverId;
-				}
-				item.columnId = hoverColumnId;
-			}
-		},
+const Task: FC<TaskPropsModel> = ({
+	title, description, id, columnId, userId, users, boardid, order,
+}): ReactElement => {
+	const boardUsersIds = useAppSelector((state) => {
+		if (state.boards) {
+			return (state.boards.boards.find((board) => board._id === boardid) as BoardModel).users;
+		}
+		return [];
 	});
 
-	const [{}, drag] = useDrag({
-		type: ItemTypes.TASK,
-		item: () => ({ id, index, columnId }),
-	});
+	const boardUsers = useAppSelector((state) => state.user.usersAll.filter(
+		(user) => boardUsersIds.includes(user._id),
+	));
 
-	drag(drop(taskRef));
+	const dispatch = useAppDispatch();
 
-	const openModal = (event: SyntheticEvent) => {
-		event.stopPropagation();
-		setOpened(true);
+	const [isDeleteOpened, setDeleteOpened] = useState<ModalWindowStateModel>(false);
+	const [isDetailedOpened, setIsDetailedOpened] = useState<ModalWindowStateModel>(false);
+
+	const handleDetailedModal = (event: MouseEvent | null, value: boolean = !isDetailedOpened) => {
+		if (event) {
+			event.stopPropagation();
+		}
+		setIsDetailedOpened(value);
 	};
 
-	const openDetailedModal = () => {
-		setIsUpdateModalOpened(true);
+	const handleDeleteModal = (event: MouseEvent | null, value: boolean = !isDeleteOpened) => {
+		if (event) {
+			event.stopPropagation();
+		}
+		setDeleteOpened(value);
 	};
 
-	const closeModal = () => {
-		setOpened(false);
+	const handleDelete = () => {
+		dispatch(deleteTask({ boardid, columnId, taskId: id }))
+			.then(() => {
+				handleDeleteModal(null, false);
+				handleDetailedModal(null, false);
+			});
 	};
 
-	const deleteTask = () => {
-		closeModal();
+	const handleUpdate = (formData: TaskUpdateFormModel): void => {
+		const body = {
+			...formData,
+			order,
+			columnId,
+		};
+		dispatch(updateTask({
+			boardid, columnId, taskId: id, body,
+		})).then(() => {
+			handleDetailedModal(null, false);
+		});
 	};
 
 	return (
 		<>
 			<StyledTask
-				ref={taskRef}
-				onClick={openDetailedModal}
+				onClick={() => { handleDetailedModal(null); }}
 			>
 				<h3>{ title }</h3>
 				<p>{description}</p>
-				<FlexBox justifyContent='flex-end'>
-					<IconButton aria-label="delete" size="small" onClick={openModal}>
+				<FlexBox justifyContent='space-between'>
+					<IconButton
+						aria-label="delete"
+						size="small"
+						onClick={() => { handleDeleteModal(null); }}
+					>
 						<DeleteIcon fontSize='small'/>
 					</IconButton>
 				</FlexBox>
@@ -99,37 +88,32 @@ const Task: FC<TaskPropsModel> = (props): ReactElement => {
 			<ModalWindow
 				title={`Are you sure to delete the task "${title}"?`}
 				description="This action cannot be undone"
-				isOpened={isOpened}
-				closeFunc={closeModal}
+				isOpened={isDeleteOpened}
+				closeFunc={() => { handleDeleteModal(null, false); }}
 			>
-				<Button onClick={closeModal}>Cancel</Button>
-				<Button onClick={deleteTask} variant='outlined' autoFocus>
+				<Button onClick={() => { handleDeleteModal(null); }}>Cancel</Button>
+				<Button onClick={handleDelete} variant='outlined' autoFocus>
             Delete
 				</Button>
 			</ModalWindow>
 			<ModalWindow
 				title={<ModalTitleNode
-					closeFn={() => setIsUpdateModalOpened(false)}
+					closeFn={() => { handleDetailedModal(null, false); }}
 					firstRow={`Task ID: ${id}`}
 					secondRow={`Owner: ${userId}`}
 				/>}
-				isOpened={isUpdateModalOpened}
-				closeFunc={closeModal}
+				isOpened={isDetailedOpened}
+				closeFunc={() => { handleDetailedModal(null, false); }}
 			>
 				<TaskDetails
 					title={title}
 					description={description}
 					users={users}
-				>
-					<FlexBox justifyContent='right'>
-						<Button onClick={() => setIsUpdateModalOpened(false)} variant='outlined' autoFocus>
-								Delete
-						</Button>
-						<Button color='info' onClick={deleteTask} variant='contained'>
-								Update
-						</Button>
-					</FlexBox>
-				</TaskDetails>
+					handleDelete={handleDelete}
+					handleUpdate={handleUpdate}
+					boardUsers={boardUsers}
+					userId={userId}
+				/>
 			</ModalWindow>
 		</>
 	);
