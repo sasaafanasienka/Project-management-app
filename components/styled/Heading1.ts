@@ -7,7 +7,10 @@ interface FlexBoxModel {
 }
 
 const Heading1 = styled.h1<FlexBoxModel>`
+  color: #373737;
   width: 100%;
+  display: flex;
+  align-items: center;
   margin: 0 0 16px 0;
   font-size: 20px;
   /* height: 100%;

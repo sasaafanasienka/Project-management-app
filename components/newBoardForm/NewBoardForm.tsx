@@ -13,11 +13,15 @@ import StyledNewBoardForm from './StyledNewBoardForm';
 export interface NewBoardFormProps {
   onSubmit: (arg0: BoardModel) => void;
   onClose: () => void;
+	updateMode?: {
+		assignedUsers: Array<string>;
+		currentTitle: string;
+	}
 }
 
-const NewBoardForm: FC<NewBoardFormProps> = ({ onSubmit, onClose }): ReactElement => {
+const NewBoardForm: FC<NewBoardFormProps> = ({ onSubmit, onClose, updateMode }): ReactElement => {
 	const usersAll = useAppSelector((state) => state.user.usersAll);
-	const [personName, setPersonName] = React.useState<string[]>([]);
+	const [personName, setPersonName] = React.useState<string[]>(updateMode?.assignedUsers || []);
 
 	const handleChange = (event: SelectChangeEvent<typeof personName>) => {
 		const {
@@ -54,7 +58,7 @@ const NewBoardForm: FC<NewBoardFormProps> = ({ onSubmit, onClose }): ReactElemen
 	return (
 		<StyledNewBoardForm onSubmit={handleSubmit(onSubmit)}>
 			<FlexBox column alignItems='stretch'>
-				<TextField label="Title" variant="outlined" {...register('title', {
+				<TextField label="Title" variant="outlined" defaultValue={updateMode?.currentTitle} {...register('title', {
 					required: 'Please enter board title',
 				})}
 				error={!!errors.title} helperText={errors?.title ? errors?.title.message : null}
@@ -87,7 +91,7 @@ const NewBoardForm: FC<NewBoardFormProps> = ({ onSubmit, onClose }): ReactElemen
 				<FlexBox justifyContent='right'>
 					<Button onClick={onClose}>Cancel</Button>
 					<Button type="submit" color='info' variant='contained' disabled={!isDirty} autoFocus>
-                    Create
+						{updateMode ? 'Update' : 'Create' }
 					</Button>
 				</FlexBox>
 			</FlexBox>

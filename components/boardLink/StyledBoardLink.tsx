@@ -1,7 +1,14 @@
 import styled from '@emotion/styled';
 
-const StyledBoardLink = styled.div`
+export interface StyledBoardLinkProps {
+  owned?: boolean;
+}
+
+const StyledBoardLink = styled.div<StyledBoardLinkProps>`
+  color: #373737;
+  position: relative;
   width: 200px;
+  min-height: 120px;
   height: 100%;
   background-color: white;
   padding: 20px 10px 10px 20px;
@@ -34,6 +41,18 @@ const StyledBoardLink = styled.div`
   &:hover {
     box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
   }
+
+  & > span {
+    position: absolute;
+    display: block;
+    background-color: ${(props) => (props.owned ? '#9BCBEB' : '#F3B455')};
+    top:0;
+    left: 0;
+    border-radius: 5px;
+    width: 4px;
+    height: 100%;
+  }
 `;
 
+// #F3B455
 export default StyledBoardLink;
