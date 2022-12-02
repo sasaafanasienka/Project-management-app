@@ -1,11 +1,10 @@
 import {
 	FC, ReactElement, useEffect, useState,
 } from 'react';
-import { DndProvider } from 'react-dnd';
-import { HTML5Backend } from 'react-dnd-html5-backend';
 import { useRouter } from 'next/router';
 import { Button } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
+import { DragDropContext, DropResult } from 'react-beautiful-dnd';
 import Column from '../column/Column';
 import { ColumnPropsModel } from '../column/interfaces';
 import PageHeading from '../pageHeading/PageHeading';
@@ -20,7 +19,7 @@ import NewColumnForm from '../newColumnForm/NewColumnForm';
 import { ColumnModel } from '../../redux/slices/columnSlice/interfaces';
 
 
-const Board: FC<BoardPropsModel> = (props): ReactElement => {
+const Board: FC<BoardPropsModel> = (): ReactElement => {
 	const [isModalOpened, setIsModalOpened] = useState<ModalWindowStateModel>(false);
 
 	const router = useRouter();
@@ -55,26 +54,26 @@ const Board: FC<BoardPropsModel> = (props): ReactElement => {
 		}
 	};
 
-	const renderColumn = (column: ColumnPropsModel, index: number) => (
-		<Column
-			boardid={boardid}
-			id={column._id}
-			index={index}
-			key={column.title}
-			title={column.title}
-			moveColumn={moveColumn}
-			moveTask={moveTask}
-			moveIntoEmptyColumn={moveIntoEmptyColumn}
-			tasks={column.tasks}
-		/>
-	);
+	const handleDragEnd = (result: DropResult) => {
+		const { destination, source, draggableId } = result;
+		if (!destination) {
+			return;
+		}
+
+		if (destination.droppableId === source.droppableId
+			&& destination.index === source.index) {
+			return;
+		}
+		console.log(destination, source, draggableId);
+	};
 
 	return (
 		<>
-			<DndProvider backend={HTML5Backend}>
+			<DragDropContext onDragEnd={handleDragEnd}>
 				<PageHeading text='Boards > Board name'></PageHeading>
 				<FlexBox justifyContent='flex-start' alignItems='flex-start' wrap='nowrap'>
-					{columns.map((column, index) => renderColumn(column, index))}
+					{columns.map((column) => <Column
+						title={column.title} id={column.id} tasks={column.tasks} key={column.title} />)}
 					<Button color='info' onClick={handleModal}>
 						<FlexBox alignItems='center' justifyContent='center' gap='0'>
 							<AddIcon fontSize='small' />
@@ -82,7 +81,7 @@ const Board: FC<BoardPropsModel> = (props): ReactElement => {
 						</FlexBox>
 					</Button>
 				</FlexBox>
-			</DndProvider>
+			</DragDropContext>
 			<ModalWindow
 				title={'Create new Column'}
 				isOpened={isModalOpened}
