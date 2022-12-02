@@ -2,6 +2,7 @@ import { FC, ReactElement, useState } from 'react';
 import DeleteIcon from '@mui/icons-material/Delete';
 import IconButton from '@mui/material/IconButton';
 import { Button } from '@mui/material';
+import { Draggable } from 'react-beautiful-dnd';
 import FlexBox from '../styled/FlexBox';
 import { TaskPropsModel } from './interfaces';
 import StyledTask from './StyledTask';
@@ -15,7 +16,7 @@ import { BoardModel } from '../../redux/slices/boardSlice/interfaces';
 import { TaskUpdateFormModel } from '../taskDetails/interfaces';
 
 const Task: FC<TaskPropsModel> = ({
-	title, description, id, columnId, userId, users, boardid, order,
+	title, description, id, columnId, userId, users, boardid, order, index,
 }): ReactElement => {
 	const boardUsersIds = useAppSelector((state) => {
 		if (state.boards) {
@@ -70,21 +71,25 @@ const Task: FC<TaskPropsModel> = ({
 
 	return (
 		<>
-			<StyledTask
-				onClick={() => { handleDetailedModal(null); }}
-			>
-				<h3>{ title }</h3>
-				<p>{description}</p>
-				<FlexBox justifyContent='space-between'>
-					<IconButton
-						aria-label="delete"
-						size="small"
-						onClick={() => { handleDeleteModal(null); }}
+			<Draggable draggableId={title} index={index}>
+				{(provided) => (
+					<StyledTask
+						ref={provided.innerRef}
+						{...provided.draggableProps}
+						{...provided.dragHandleProps}
+						// innerRef={provided.innerRef}
+						onClick={() => { handleDetailedModal(null); }}
 					>
-						<DeleteIcon fontSize='small'/>
-					</IconButton>
-				</FlexBox>
-			</StyledTask>
+						<h3>{ title }</h3>
+						<p>{description}</p>
+						<FlexBox justifyContent='flex-end'>
+							<IconButton aria-label="delete" size="small" onClick={() => { handleDeleteModal(null); }}>
+								<DeleteIcon fontSize='small'/>
+							</IconButton>
+						</FlexBox>
+					</StyledTask>
+				)}
+			</Draggable>
 			<ModalWindow
 				title={`Are you sure to delete the task "${title}"?`}
 				description="This action cannot be undone"
