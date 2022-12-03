@@ -3,7 +3,10 @@
 import {
 	createAsyncThunk, createSlice, PayloadAction, Store,
 } from '@reduxjs/toolkit';
-import { BoardModel, InitialStateBoardModel, NewBoardPropsModel } from './interfaces';
+import { toast } from 'react-toastify';
+import {
+	BoardModel, BoardUserModel, InitialStateBoardModel, NewBoardPropsModel,
+} from './interfaces';
 import { BASE_URL } from '../../../config';
 import { readCookie } from '../../../utils/cookieUtilities';
 
@@ -35,11 +38,14 @@ export const createBoard = createAsyncThunk<
 			throw new Error(`${statusCode} ${message}`);
 		}
 		const newBoard = await response.json();
+		toast.success(`Board ${newBoard.title} successfully created`);
 		return Object.assign(newBoard, { invited: false });
 	} catch (error) {
 		if (error instanceof Error) {
+			toast.error(error.message);
 			return rejectWithValue(`${error.message}`);
 		}
+		toast.error('Unknown Error! Try to refresh the page');
 		return rejectWithValue('Unknown Error! Try to refresh the page');
 	}
 });
@@ -63,7 +69,9 @@ export const deleteBoard = createAsyncThunk<
 			const { statusCode, message } = await response.json();
 			throw new Error(`${statusCode} ${message}`);
 		}
-		return await response.json();
+		const data = await response.json();
+		toast.success(`Board ${data.title} successfully deleted`);
+		return data;
 	} catch (error) {
 		if (error instanceof Error) {
 			return rejectWithValue(`${error.message}`);
@@ -80,7 +88,6 @@ export const updateBoard = createAsyncThunk<
 	const state = getState() as ReturnType<Store['getState']>;
 	const { token, id } = state.user.user;
 	const bodyWithOwner = Object.assign(body, { owner: id });
-	console.log(bodyWithOwner);
 	try {
 		const response = await fetch(`${BASE_URL}boards/${boardId}`, {
 			method: 'PUT',
@@ -94,11 +101,15 @@ export const updateBoard = createAsyncThunk<
 			const { statusCode, message } = await response.json();
 			throw new Error(`${statusCode} ${message}`);
 		}
-		return await response.json();
+		const data = await response.json();
+		toast.success(`Board ${data.title} successfully updated`);
+		return data;
 	} catch (error) {
 		if (error instanceof Error) {
+			toast.error(error.message);
 			return rejectWithValue(`${error.message}`);
 		}
+		toast.error('Unknown Error! Try to refresh the page');
 		return rejectWithValue('Unknown Error! Try to refresh the page');
 	}
 });

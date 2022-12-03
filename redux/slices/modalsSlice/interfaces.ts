@@ -4,6 +4,8 @@ export type ModalNameModel =
   | 'detailsTask'
   | 'deleteColumn'
   | 'createColumn'
+  | 'editBoard'
+  | 'deleteBoard'
 
 export interface InitialStateModalsModel {
   newTask: boolean,
@@ -11,4 +13,6 @@ export interface InitialStateModalsModel {
   detailsTask: boolean,
   deleteColumn: boolean,
   createColumn: boolean,
+  editBoard: boolean,
+  deleteBoard: boolean,
 }
