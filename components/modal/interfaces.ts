@@ -5,7 +5,6 @@ export interface ModalWindowPropsModel {
   description?: string;
   children: ReactNode;
   isOpened: boolean;
-  closeFunc: () => void;
 }
 
 export type ModalWindowStateModel = boolean;

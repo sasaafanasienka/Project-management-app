@@ -1,5 +1,5 @@
 import {
-	FC, ReactElement, useState, ChangeEvent, useEffect,
+	FC, ReactElement, useState, ChangeEvent, useEffect, SyntheticEvent,
 } from 'react';
 import DeleteIcon from '@mui/icons-material/Delete';
 import IconButton from '@mui/material/IconButton';
@@ -13,7 +13,6 @@ import StyledColumn from './StyledColumn';
 import Task from '../task/Task';
 import ModalWindow from '../modal/ModalWindow';
 import { ColumnPropsModel } from './interfaces';
-import { ModalWindowStateModel } from '../modal/interfaces';
 import StyledTaskList from './StyledTaskList';
 import StyledColumnTitle from './StyledColumnTitle';
 import UpdateTitleInput from './updateTitleInput/UpdateTitleInput';
@@ -22,8 +21,11 @@ import { deleteColumn, updateColumn } from '../../redux/slices/columnSlice';
 import { createTask, getTasksInColumn } from '../../redux/slices/tasksSlice';
 import NewTaskForm from '../newTaskForm/NewTaskForm';
 import { CreateTaskBodyModel } from '../../redux/slices/tasksSlice/interfaces';
+import { ModalNameModel } from '../../redux/slices/modalsSlice/interfaces';
+import { closeModals, openModal } from '../../redux/slices/modalsSlice';
 
 const Column: FC<ColumnPropsModel> = (props): ReactElement => {
+	const dispatch = useAppDispatch();
 	const {
 		title, index, id, boardId,
 	} = { ...props };
@@ -31,15 +33,22 @@ const Column: FC<ColumnPropsModel> = (props): ReactElement => {
 	const tasks = useAppSelector((state) => state.tasks.tasks.filter(
 		(task) => task.columnId === id,
 	));
+	const deleteColumnModalState = useAppSelector((state) => state.modals.deleteColumn);
+	const newTaskModalState = useAppSelector((state) => state.modals.newTask);
 
-	const dispatch = useAppDispatch();
+	const handleOpenModal = (event: SyntheticEvent, name: ModalNameModel) => {
+		event.stopPropagation();
+		dispatch(openModal(name));
+	};
+
+	const handleCloseModals = () => {
+		dispatch(closeModals());
+	};
 
 	useEffect(() => {
 		dispatch(getTasksInColumn({ boardid: boardId, columnId: id }));
 	}, []);
 
-	const [isDelModalOpened, setDelModalOpened] = useState<ModalWindowStateModel>(false);
-	const [isCreateModalOpened, setCreateModalOpened] = useState<ModalWindowStateModel>(false);
 	const [isTitleUpdate, setIsTitleUpdate] = useState<boolean>(false);
 	const [titleCurrent, setTitleCurrent] = useState<string>(title);
 
@@ -64,26 +73,10 @@ const Column: FC<ColumnPropsModel> = (props): ReactElement => {
 		setTitleCurrent(target.value);
 	};
 
-	const handleDelModal = (value: boolean = !isDelModalOpened) => {
-		setDelModalOpened(value);
-	};
-
-	const handleCreateModal = (value: boolean = !isCreateModalOpened) => {
-		setCreateModalOpened(value);
-	};
-
-	const toggleDelModal = () => {
-		handleDelModal(!isDelModalOpened);
-	};
-
-	const toggleCreateModal = () => {
-		handleDelModal(!isCreateModalOpened);
-	};
-
 	const deleteItem = () => {
 		dispatch(deleteColumn({ boardId, columnId: id }))
 			.then(() => {
-				handleDelModal(false);
+				dispatch(closeModals());
 			});
 	};
 
@@ -92,7 +85,7 @@ const Column: FC<ColumnPropsModel> = (props): ReactElement => {
 			dispatch(createTask({ boardId, columnId: id, formData }))
 				.unwrap()
 				.then(() => {
-					handleCreateModal();
+					dispatch(closeModals());
 				});
 		}
 	};
@@ -126,13 +119,13 @@ const Column: FC<ColumnPropsModel> = (props): ReactElement => {
 							<IconButton
 								aria-label="delete"
 								size="small"
-								onClick={toggleDelModal}>
+								onClick={(event) => { handleOpenModal(event, 'deleteColumn'); }}>
 								<DeleteIcon fontSize='small'/>
 							</IconButton>
 						</FlexBox>
 						<Button
 							color='info'
-							onClick={toggleCreateModal}>
+							onClick={(event) => { handleOpenModal(event, 'newTask'); }}>
 							<FlexBox alignItems='center' justifyContent='center' gap='0'>
 								<AddIcon fontSize='small' />
 							Add new task
@@ -152,7 +145,7 @@ const Column: FC<ColumnPropsModel> = (props): ReactElement => {
 										columnId={task.columnId}
 										userId={task.userId}
 										users={task.users}
-										boardid={task.boardId}
+										boardId={task.boardId}
 										order={task.order}
 										title={task.title}
 									/>)}
@@ -167,22 +160,20 @@ const Column: FC<ColumnPropsModel> = (props): ReactElement => {
 			<ModalWindow
 				title={`Are you sure to delete the column "${title}"?`}
 				description="This action cannot be undone"
-				isOpened={isDelModalOpened}
-				closeFunc={handleDelModal}
+				isOpened={deleteColumnModalState}
 			>
-				<Button onClick={toggleDelModal}>Cancel</Button>
+				<Button onClick={handleCloseModals}>Cancel</Button>
 				<Button onClick={deleteItem} variant='contained' autoFocus>
             Delete
 				</Button>
 			</ModalWindow>
 			<ModalWindow
-				title={'Create new Column'}
-				isOpened={isCreateModalOpened}
-				closeFunc={handleCreateModal}
+				title={'Create new Task'}
+				isOpened={newTaskModalState}
 			>
 				<NewTaskForm
 					onSubmit={handleSubmit}
-					onClose={handleCreateModal}
+					onClose={handleCloseModals}
 					boardId={boardId}
 				/>
 			</ModalWindow>

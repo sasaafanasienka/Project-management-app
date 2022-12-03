@@ -7,15 +7,19 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import { ModalWindowPropsModel } from './interfaces';
+import { useAppDispatch } from '../../redux/store';
+import { closeModals } from '../../redux/slices/modalsSlice';
 
 const ModalWindow: FC<ModalWindowPropsModel> = (props): ReactElement => {
+	const dispatch = useAppDispatch();
+
 	const {
-		title, description, children, isOpened, closeFunc,
+		title, description, children, isOpened,
 	} = { ...props };
 
 	const close = (event: KeyboardEvent): void => {
 		if (event.key === 'Escape') {
-			closeFunc();
+			dispatch(closeModals());
 		}
 		window.removeEventListener('keyup', close);
 	};

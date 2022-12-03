@@ -1,9 +1,9 @@
 /* eslint-disable no-param-reassign */
 import { createSlice } from '@reduxjs/toolkit';
-import { InitialStateModel, LangOption } from './interfaces';
+import { InitialLangStateModel, LangOption } from './interfaces';
 import { engLayout, rusLayout } from './localization';
 
-const initialState: InitialStateModel = {
+const initialState: InitialLangStateModel = {
 	currentLang: LangOption.EN,
 	text: engLayout,
 };

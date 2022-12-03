@@ -5,14 +5,16 @@ import { createWrapper, HYDRATE } from 'next-redux-wrapper';
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
 import { boardSlice } from './slices/boardSlice';
 import { columnSlice } from './slices/columnSlice';
-import { InitialStateBoardModel } from './slices/boardSlice/interfaces';
 import { langSlice } from './slices/langSlice';
-import { InitialStateModel } from './slices/langSlice/interfaces';
 import { userSlice } from './slices/userSlice';
-import { InitialStateUserModel } from './slices/userSlice/interfaces';
 import { tasksSlice } from './slices/tasksSlice';
+import { modalsSlice } from './slices/modalsSlice';
+import { InitialStateBoardModel } from './slices/boardSlice/interfaces';
 import { InitialStateColumnModel } from './slices/columnSlice/interfaces';
 import { InitialStateTaskModel } from './slices/tasksSlice/interfaces';
+import { InitialStateUserModel } from './slices/userSlice/interfaces';
+import { InitialLangStateModel } from './slices/langSlice/interfaces';
+import { InitialStateModalsModel } from './slices/modalsSlice/interfaces';
 
 const combinedReducer = combineReducers({
 	lang: langSlice.reducer,
@@ -20,16 +22,18 @@ const combinedReducer = combineReducers({
 	boards: boardSlice.reducer,
 	columns: columnSlice.reducer,
 	tasks: tasksSlice.reducer,
+	modals: modalsSlice.reducer,
 });
 
 const reducer = (
 	state: ReturnType<typeof combinedReducer> | undefined,
 	action: PayloadAction<CombinedState<{
-		lang: InitialStateModel;
+		lang: InitialLangStateModel;
 		user: InitialStateUserModel;
 		boards: InitialStateBoardModel;
 		columns: InitialStateColumnModel;
 		tasks: InitialStateTaskModel;
+		modals: InitialStateModalsModel;
 	}>>,
 ) => {
 	if (action.type === HYDRATE) {
@@ -38,19 +42,21 @@ const reducer = (
 			...action.payload, // apply delta from hydration
 		};
 		return nextState as CombinedState<{
-			lang: InitialStateModel;
+			lang: InitialLangStateModel;
 			user: InitialStateUserModel;
 			boards: InitialStateBoardModel;
 			columns: InitialStateColumnModel;
 			tasks: InitialStateTaskModel;
-	}>;
+			modals: InitialStateModalsModel;
+		}>;
 	}
 	return combinedReducer(state, action) as CombinedState<{
-			lang: InitialStateModel;
-			user: InitialStateUserModel;
-			boards: InitialStateBoardModel;
-			columns: InitialStateColumnModel;
-			tasks: InitialStateTaskModel;
+		lang: InitialLangStateModel;
+		user: InitialStateUserModel;
+		boards: InitialStateBoardModel;
+		columns: InitialStateColumnModel;
+		tasks: InitialStateTaskModel;
+		modals: InitialStateModalsModel;
 	}>;
 };
 
