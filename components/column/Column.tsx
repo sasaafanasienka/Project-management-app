@@ -7,6 +7,8 @@ import { Button } from '@mui/material';
 import { useDrag, useDrop } from 'react-dnd';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
+import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
+import { Draggable, Droppable } from 'react-beautiful-dnd';
 import FlexBox from '../styled/FlexBox';
 import StyledColumn from './StyledColumn';
 import Task from '../task/Task';
@@ -25,7 +27,7 @@ import NewTaskForm from '../newTaskForm/NewTaskForm';
 
 const Column: FC<ColumnPropsModel> = (props): ReactElement => {
 	const {
-		title, index, id, moveColumn, moveTask, moveIntoEmptyColumn, boardid,
+		title, index, id, boardId,
 	} = { ...props };
 
 	const tasks = useAppSelector((state) => state.tasks.tasks.filter(
@@ -37,7 +39,7 @@ const Column: FC<ColumnPropsModel> = (props): ReactElement => {
 	const dispatch = useAppDispatch();
 
 	useEffect(() => {
-		dispatch(getTasksInColumn({ boardid, columnId: id }));
+		dispatch(getTasksInColumn({ boardid: boardId, columnId: id }));
 	}, []);
 
 	const [isDelModalOpened, setDelModalOpened] = useState<ModalWindowStateModel>(false);
@@ -47,7 +49,7 @@ const Column: FC<ColumnPropsModel> = (props): ReactElement => {
 
 	const handleTitleUpdateConfirm = () => {
 		dispatch(updateColumn({
-			boardid,
+			boardId,
 			columnId: id,
 			body: {
 				title: titleCurrent,
@@ -75,7 +77,7 @@ const Column: FC<ColumnPropsModel> = (props): ReactElement => {
 	};
 
 	const deleteItem = () => {
-		dispatch(deleteColumn({ boardid, columnId: id }))
+		dispatch(deleteColumn({ boardId, columnId: id }))
 			.then(() => {
 				handleDelModal(false);
 			});
@@ -83,7 +85,7 @@ const Column: FC<ColumnPropsModel> = (props): ReactElement => {
 
 	const handleSubmit = (formData: TaskModel) => {
 		if (formData) {
-			dispatch(createTask({ boardid, columnId: id, formData }))
+			dispatch(createTask({ boardId, columnId: id, formData }))
 				.unwrap()
 				.then(() => {
 					handleCreateModal();
@@ -93,50 +95,81 @@ const Column: FC<ColumnPropsModel> = (props): ReactElement => {
 
 	return (
 		<>
-			<StyledColumn>
-				<FlexBox justifyContent='space-between' wrap='no-wrap'>
-					{isTitleUpdate
-						? <UpdateTitleInput
-							value={titleCurrent}
-							onChange={handleTitleUpdateChange}
-							onConfirm={handleTitleUpdateConfirm}
-							onCancel={handleTitleUpdateCancel}
-						/>
-						: <StyledColumnTitle onClick={() => setIsTitleUpdate(true)}>
-							<EditIcon color='secondary' />
-							<h3>
-								{title.toUpperCase()}
-								{/* <span>{tasks.length}</span> */}
-							</h3>
-						</StyledColumnTitle>
-					}
-					<IconButton aria-label="delete" size="small" onClick={handleDelModal}>
-						<DeleteIcon fontSize='small'/>
-					</IconButton>
-				</FlexBox>
-				<Button color='info' onClick={handleCreateModal}>
-					<FlexBox alignItems='center' justifyContent='center' gap='0'>
-						<AddIcon fontSize='small' />
-						Add new task
-					</FlexBox>
-				</Button>
-				<StyledTaskList>
-					{tasks.map((task, idx) => <Task
-						boardid={boardid}
-						key={idx}
-						title={task.title}
-						description={task.description}
-						moveTask={moveTask}
-						index={idx}
-						columnId={id}
-						columnIndex={index}
-						id={task._id}
-						userId={task.userId}
-						users={task.users}
-						order={task.order}
-					/>)}
-				</StyledTaskList>
-			</StyledColumn>
+			<Draggable draggableId={id} index={index} key={id}>
+				{({ draggableProps, dragHandleProps, innerRef }) => (
+					<StyledColumn {...draggableProps} ref={innerRef}>
+						<FlexBox justifyContent='space-between' wrap='no-wrap'>
+							<div {...dragHandleProps}>
+								<IconButton aria-label="drag" size="medium">
+									<DragIndicatorIcon />
+								</IconButton>
+							</div>
+							{isTitleUpdate
+								? <UpdateTitleInput
+									value={titleCurrent}
+									onChange={handleTitleUpdateChange}
+									onConfirm={handleTitleUpdateConfirm}
+									onCancel={handleTitleUpdateCancel}
+								/>
+								: <StyledColumnTitle onClick={() => setIsTitleUpdate(true)}>
+									<EditIcon color='secondary' />
+									<h3>
+										{title.toUpperCase()}
+										{tasks.length && <span>{tasks.length}</span>}
+									</h3>
+								</StyledColumnTitle>
+							}
+							<IconButton aria-label="delete" size="small" onClick={handleDelModal}>
+								<DeleteIcon fontSize='small'/>
+							</IconButton>
+						</FlexBox>
+						<Button color='info' onClick={handleCreateModal}>
+							<FlexBox alignItems='center' justifyContent='center' gap='0'>
+								<AddIcon fontSize='small' />
+							Add new task
+							</FlexBox>
+						</Button>
+						{/* <StyledTaskList
+						>
+							{tasks.map((task, idx) => <Task
+								key={task._id}
+								index={idx}
+								description={task.description}
+								id={task._id}
+								columnId={task.columnId}
+								userId={task.userId}
+								users={task.users}
+								boardid={task.boardId}
+								order={task.order}
+								title={task.title}
+							/>)}
+						</StyledTaskList> */}
+						<Droppable droppableId={id} type='task' key={id}>
+							{(provided) => (
+								<StyledTaskList
+									ref={provided.innerRef}
+									{...provided.droppableProps}
+								>
+									{tasks.map((task, idx) => <Task
+										key={task._id}
+										index={idx}
+										description={task.description}
+										id={task._id}
+										columnId={task.columnId}
+										userId={task.userId}
+										users={task.users}
+										boardid={task.boardId}
+										order={task.order}
+										title={task.title}
+									/>)}
+									{provided.placeholder}
+								</StyledTaskList>
+							)}
+						</Droppable>
+					</StyledColumn>
+				)}
+			</Draggable>
+
 			<ModalWindow
 				title={`Are you sure to delete the column "${title}"?`}
 				description="This action cannot be undone"
@@ -151,12 +184,12 @@ const Column: FC<ColumnPropsModel> = (props): ReactElement => {
 			<ModalWindow
 				title={'Create new Column'}
 				isOpened={isCreateModalOpened}
-				// closeFunc={handleCreateModal}
+				closeFunc={handleCreateModal}
 			>
 				<NewTaskForm
 					onSubmit={handleSubmit}
 					onClose={handleCreateModal}
-					boardid={boardid} />
+					boardid={boardId} />
 			</ModalWindow>
 		</>
 	);

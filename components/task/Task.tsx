@@ -20,13 +20,13 @@ const Task: FC<TaskPropsModel> = ({
 }): ReactElement => {
 	const boardUsersIds = useAppSelector((state) => {
 		if (state.boards) {
-			return (state.boards.boards.find((board) => board._id === boardid) as BoardModel).users;
+			return (state.boards.boards.find((board) => board._id === boardid) as BoardModel)?.users;
 		}
 		return [];
 	});
 
 	const boardUsers = useAppSelector((state) => state.user.usersAll.filter(
-		(user) => boardUsersIds.includes(user._id),
+		(user) => boardUsersIds?.includes(user._id),
 	));
 
 	const dispatch = useAppDispatch();
@@ -71,13 +71,23 @@ const Task: FC<TaskPropsModel> = ({
 
 	return (
 		<>
-			<Draggable draggableId={title} index={index}>
+			{/* <StyledTask
+				onClick={() => { handleDetailedModal(null); }}
+			>
+				<h3>{ title }</h3>
+				<p>{description}</p>
+				<FlexBox justifyContent='flex-end'>
+					<IconButton aria-label="delete" size="small" onClick={() => { handleDeleteModal(null); }}>
+						<DeleteIcon fontSize='small'/>
+					</IconButton>
+				</FlexBox>
+			</StyledTask> */}
+			<Draggable draggableId={id} index={index} key={id}>
 				{(provided) => (
 					<StyledTask
 						ref={provided.innerRef}
 						{...provided.draggableProps}
 						{...provided.dragHandleProps}
-						// innerRef={provided.innerRef}
 						onClick={() => { handleDetailedModal(null); }}
 					>
 						<h3>{ title }</h3>
