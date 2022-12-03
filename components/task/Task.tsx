@@ -16,11 +16,11 @@ import { BoardModel } from '../../redux/slices/boardSlice/interfaces';
 import { TaskUpdateFormModel } from '../taskDetails/interfaces';
 
 const Task: FC<TaskPropsModel> = ({
-	title, description, id, columnId, userId, users, boardid, order, index,
+	title, description, id, columnId, userId, users, boardId, order, index,
 }): ReactElement => {
 	const boardUsersIds = useAppSelector((state) => {
 		if (state.boards) {
-			return (state.boards.boards.find((board) => board._id === boardid) as BoardModel)?.users;
+			return (state.boards.boards.find((board) => board._id === boardId) as BoardModel)?.users;
 		}
 		return [];
 	});
@@ -49,7 +49,7 @@ const Task: FC<TaskPropsModel> = ({
 	};
 
 	const handleDelete = () => {
-		dispatch(deleteTask({ boardid, columnId, taskId: id }))
+		dispatch(deleteTask({ boardId, columnId, taskId: id }))
 			.then(() => {
 				handleDeleteModal(null, false);
 				handleDetailedModal(null, false);
@@ -63,7 +63,7 @@ const Task: FC<TaskPropsModel> = ({
 			columnId,
 		};
 		dispatch(updateTask({
-			boardid, columnId, taskId: id, body,
+			boardId, columnId, taskId: id, body,
 		})).then(() => {
 			handleDetailedModal(null, false);
 		});
@@ -71,17 +71,6 @@ const Task: FC<TaskPropsModel> = ({
 
 	return (
 		<>
-			{/* <StyledTask
-				onClick={() => { handleDetailedModal(null); }}
-			>
-				<h3>{ title }</h3>
-				<p>{description}</p>
-				<FlexBox justifyContent='flex-end'>
-					<IconButton aria-label="delete" size="small" onClick={() => { handleDeleteModal(null); }}>
-						<DeleteIcon fontSize='small'/>
-					</IconButton>
-				</FlexBox>
-			</StyledTask> */}
 			<Draggable draggableId={id} index={index} key={id}>
 				{(provided) => (
 					<StyledTask

@@ -5,7 +5,7 @@ import {
 } from '@reduxjs/toolkit';
 import { toast } from 'react-toastify';
 import {
-	TaskModel, InitialStateTaskModel, UpdateTaskPropsModel,
+	TaskModel, InitialStateTaskModel, UpdateTaskBodyModel, CreateTaskModel, UpdateTaskModel,
 } from './interfaces';
 import { BASE_URL } from '../../../config';
 import { readCookie } from '../../../utils/cookieUtilities';
@@ -48,16 +48,14 @@ export const getTasksInColumn = createAsyncThunk<
 
 
 export const createTask = createAsyncThunk<
-  TaskModel,
-  { boardid: string, columnId: string, formData: UpdateTaskPropsModel },
-  { rejectValue: string }
+  TaskModel, CreateTaskModel, { rejectValue: string }
 >('tasks/createTask', async (props, { rejectWithValue, getState }) => {
 	const state = getState() as ReturnType<Store['getState']>;
 	const userId = state.user.user.id;
 	const token = readCookie('token');
-	const { boardid, columnId, formData } = { ...props };
+	const { boardId, columnId, formData } = { ...props };
 	try {
-		const response = await fetch(`${BASE_URL}boards/${boardid}/columns/${columnId}/tasks`, {
+		const response = await fetch(`${BASE_URL}boards/${boardId}/columns/${columnId}/tasks`, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
@@ -84,13 +82,13 @@ export const createTask = createAsyncThunk<
 
 export const deleteTask = createAsyncThunk<
   TaskModel,
-  {boardid: string, columnId: string, taskId: string},
+  {boardId: string, columnId: string, taskId: string},
   { rejectValue: string }
 >('boards/deleteColumn', async (props, { rejectWithValue }) => {
 	const token = readCookie('token');
-	const { boardid, columnId, taskId } = { ...props };
+	const { boardId, columnId, taskId } = { ...props };
 	try {
-		const response = await fetch(`${BASE_URL}boards/${boardid}/columns/${columnId}/tasks/${taskId}`, {
+		const response = await fetch(`${BASE_URL}boards/${boardId}/columns/${columnId}/tasks/${taskId}`, {
 			method: 'DELETE',
 			headers: {
 				'Content-Type': 'application/json',
@@ -115,16 +113,14 @@ export const deleteTask = createAsyncThunk<
 });
 
 export const updateTask = createAsyncThunk<
-TaskModel,
-  {boardid: string, columnId: string, taskId: string, body: UpdateTaskPropsModel},
-  { rejectValue: string }
+TaskModel, UpdateTaskModel, { rejectValue: string }
 >('boards/updateColumn', async (props, { rejectWithValue }) => {
 	const token = readCookie('token');
 	const {
-		boardid, columnId, taskId, body,
+		boardId, columnId, taskId, body,
 	} = { ...props };
 	try {
-		const response = await fetch(`${BASE_URL}boards/${boardid}/columns/${columnId}/tasks/${taskId}`, {
+		const response = await fetch(`${BASE_URL}boards/${boardId}/columns/${columnId}/tasks/${taskId}`, {
 			method: 'PUT',
 			headers: {
 				'Content-Type': 'application/json',
@@ -162,7 +158,6 @@ export const tasksSlice = createSlice({
 		builder.addCase(
 			getTasksInColumn.fulfilled,
 			(state, action) => {
-				console.log(action.payload);
 				state.isLoading = false;
 				state.tasks = [...state.tasks, ...action.payload.filter(
 					(item) => state.tasks.every((elem) => elem._id !== item._id),

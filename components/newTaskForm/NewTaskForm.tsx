@@ -3,25 +3,21 @@ import {
 } from '@mui/material';
 import React, { FC, ReactElement, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { getUserBoards } from '../../redux/slices/boardSlice';
 import { BoardModel } from '../../redux/slices/boardSlice/interfaces';
+import { CreateTaskBodyModel } from '../../redux/slices/tasksSlice/interfaces';
 import { getAllUsers } from '../../redux/slices/userSlice';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import ModalUserTag from '../modal/modalUserTag/modalUserTag';
 import FlexBox from '../styled/FlexBox';
+import { NewBoardFormProps } from './interfaces';
 import StyledNewBoardForm from './StyledNewTaskForm';
 
-export interface NewBoardFormProps {
-  onSubmit: (arg0: BoardModel) => void;
-  onClose: () => void;
-}
-
-const NewTaskForm: FC<NewBoardFormProps> = ({ onSubmit, onClose, boardid }): ReactElement => {
+const NewTaskForm: FC<NewBoardFormProps> = ({ onSubmit, onClose, boardId }): ReactElement => {
 	const dispatch = useAppDispatch();
 
 	const boardUsersIds = useAppSelector((state) => {
 		if (state.boards) {
-			return (state.boards.boards.find((board) => board._id === boardid) as BoardModel).users;
+			return (state.boards.boards.find((board) => board._id === boardId) as BoardModel).users;
 		}
 		return [];
 	});
@@ -64,12 +60,12 @@ const NewTaskForm: FC<NewBoardFormProps> = ({ onSubmit, onClose, boardid }): Rea
 	};
 
 	const {
-		register, handleSubmit, formState: {
+		register, handleSubmit, getValues, formState: {
 			errors, isDirty,
 		},
-	} = useForm<BoardModel>();
+	} = useForm<CreateTaskBodyModel>();
 	return (
-		<StyledNewBoardForm onSubmit={handleSubmit(onSubmit)}>
+		<StyledNewBoardForm onSubmit={handleSubmit(() => { onSubmit(getValues()); })}>
 			<FlexBox column alignItems='stretch'>
 				<TextField label="Title" variant="outlined" {...register('title', {
 					required: 'Please enter task title',

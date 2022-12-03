@@ -5,7 +5,7 @@ export interface TaskPropsModel {
   columnId: string;
   userId: string;
   users: string[];
-  boardid: string;
+  boardId: string;
   order: number;
   index: number;
 }
@@ -14,7 +14,7 @@ export interface TaskModel {
   _id: string;
   title: string;
   order: number;
-  boardid: string;
+  boardId: string;
   columnId: string;
   description: string;
   moveTask: any;

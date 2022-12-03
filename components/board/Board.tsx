@@ -11,7 +11,9 @@ import PageHeading from '../pageHeading/PageHeading';
 import FlexBox from '../styled/FlexBox';
 import BoardPropsModel from './interfaces';
 import { useAppSelector, useAppDispatch } from '../../redux/store';
-import { createColumn, getBoardById, getBoardColumns, updateColumn } from '../../redux/slices/columnSlice';
+import {
+	createColumn, getBoardById, getBoardColumns, updateColumn,
+} from '../../redux/slices/columnSlice';
 import { getUserBoards } from '../../redux/slices/boardSlice';
 import ModalWindow from '../modal/ModalWindow';
 import { ModalWindowStateModel } from '../modal/interfaces';
