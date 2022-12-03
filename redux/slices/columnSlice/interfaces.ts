@@ -2,7 +2,7 @@ export interface ColumnModel {
   _id: string;
   title: string;
   order: number;
-  boardId: string;
+  boardId: string | string[] | undefined;
 }
 
 export interface InitialStateColumnModel {
@@ -20,7 +20,7 @@ export interface NewColumnPropsModel {
 }
 
 export interface UpdateColumnPropsModel {
-  title: string;
-  order: number;
+  title?: string;
+  order?: number;
 }
 

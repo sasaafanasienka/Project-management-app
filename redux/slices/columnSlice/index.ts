@@ -17,6 +17,36 @@ const initialState: InitialStateColumnModel = {
 	error: '',
 };
 
+export const getBoardColumns = createAsyncThunk<
+	ColumnModel[],
+	{boardId: string},
+	{ rejectValue: string }
+	>('columns/getBoardColumns', async (boardId, { rejectWithValue }) => {
+		const token = readCookie('token');
+		const URL: string = `${BASE_URL}boards/${boardId}/columns`;
+
+		try {
+			const response = await fetch(URL, {
+				method: 'GET',
+				headers: {
+					'Content-Type': 'application/json',
+					Authorization: `Bearer ${token}`,
+				},
+			});
+			if (!response.ok) {
+				const { statusCode, message } = await response.json();
+				throw new Error(`${statusCode} ${message}`);
+			}
+			const data = await response.json();
+			return data;
+		} catch (error) {
+			if (error instanceof Error) {
+				return rejectWithValue(`${error.message}`);
+			}
+			return rejectWithValue('Unknown Error! Try to refresh the page');
+		}
+	});
+
 export const getBoardById = createAsyncThunk<
 	ColumnModel,
 	{ rejectValue: string }
@@ -52,12 +82,12 @@ export const getBoardById = createAsyncThunk<
 
 export const createColumn = createAsyncThunk<
   ColumnModel,
-  { boardid: string, formData: UpdateColumnPropsModel },
+  { boardid: string, formData: UpdateColumnPropsModel, order: number },
   { rejectValue: string }
 >('boards/createColumn', async (props, { rejectWithValue, getState }) => {
 	const state = getState() as ReturnType<Store['getState']>;
 	const { token } = state.user.user;
-	const { boardid, formData } = { ...props };
+	const { boardid, formData, order } = { ...props };
 	try {
 		const response = await fetch(`${BASE_URL}boards/${boardid}/columns`, {
 			method: 'POST',
@@ -65,7 +95,7 @@ export const createColumn = createAsyncThunk<
 				'Content-Type': 'application/json',
 				Authorization: `Bearer ${token}`,
 			},
-			body: JSON.stringify({ ...formData, order: 0 }),
+			body: JSON.stringify({ ...formData, order }),
 		});
 		if (!response.ok) {
 			const { statusCode, message } = await response.json();
@@ -155,21 +185,36 @@ export const columnSlice = createSlice({
 	reducers: {
 	},
 	extraReducers: (builder) => {
-		builder.addCase(getBoardById.pending, (state) => {
-			state.status = 'loaded';
+		// builder.addCase(getBoardById.pending, (state) => {
+		// 	state.status = 'loaded';
+		// 	state.isLoading = true;
+		// 	state.error = '';
+		// });
+		// builder.addCase(
+		// 	getBoardById.fulfilled,
+		// 	(state, action) => {
+		// 		state.status = 'loaded';
+		// 		state.isLoading = false;
+		// 		state.columns = action.payload;
+		// 	},
+		// );
+		// builder.addCase(getBoardById.rejected, (state, action) => {
+		// 	state.status = 'loaded';
+		// 	state.isLoading = false;
+		// 	state.error = action.payload as string;
+		// });
+		builder.addCase(getBoardColumns.pending, (state) => {
 			state.isLoading = true;
 			state.error = '';
 		});
 		builder.addCase(
-			getBoardById.fulfilled,
-			(state, action) => {
-				state.status = 'loaded';
+			getBoardColumns.fulfilled,
+			(state, action: PayloadAction<ColumnModel[]>) => {
 				state.isLoading = false;
 				state.columns = action.payload;
 			},
 		);
-		builder.addCase(getBoardById.rejected, (state, action) => {
-			state.status = 'loaded';
+		builder.addCase(getBoardColumns.rejected, (state, action) => {
 			state.isLoading = false;
 			state.error = action.payload as string;
 		});
@@ -214,6 +259,7 @@ export const columnSlice = createSlice({
 				state.columns = state.columns.map((item) => {
 					if (item._id === action.payload._id) {
 						item.title = action.payload.title;
+						item.order = action.payload.order;
 					}
 					return item;
 				});
