@@ -156,7 +156,6 @@ const Column: FC<ColumnPropsModel> = (props): ReactElement => {
 					</StyledColumn>
 				)}
 			</Draggable>
-
 			<ModalWindow
 				title={`Are you sure to delete the column "${title}"?`}
 				description="This action cannot be undone"

@@ -29,6 +29,7 @@ const BoardLink: FC<BoardLinkPropsModel> = (props): ReactElement => {
 
 	const handleOpenModal = (event: SyntheticEvent, name: ModalNameModel) => {
 		event.stopPropagation();
+		event.preventDefault();
 		dispatch(openModal(name));
 	};
 

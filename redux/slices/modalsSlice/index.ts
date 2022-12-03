@@ -8,6 +8,8 @@ const initialState: InitialStateModalsModel = {
 	detailsTask: false,
 	deleteColumn: false,
 	createColumn: false,
+	deleteBoard: false,
+	editBoard: false,
 };
 
 export const modalsSlice = createSlice({
