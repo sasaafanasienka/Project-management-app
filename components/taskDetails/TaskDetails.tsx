@@ -83,7 +83,7 @@ const TaskDetails: FC<TaskDetailsPropsModel> = ({
 						<Select
 							labelId="demo-simple-select-label"
 							id="demo-simple-select"
-							value={taskOwner._id}
+							value='f'
 							label="Owner:"
 							onChange={(event) => setTaskOwner(boardUsers.find(
 								(user) => user._id === event.target.value,

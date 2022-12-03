@@ -17,6 +17,7 @@ const initialState: InitialStateTaskModel = {
 };
 
 export const getTasksInColumn = createAsyncThunk<
+	TaskModel[],
 	{ boardid: string, columnId: string },
 	{ rejectValue: string }
 	>('tasks/getTasksInColumn', async (props, { rejectWithValue }) => {

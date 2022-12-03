@@ -7,6 +7,7 @@ export interface TaskPropsModel {
   users: string[];
   boardid: string;
   order: number;
+  index: number;
 }
 
 export interface TaskModel {

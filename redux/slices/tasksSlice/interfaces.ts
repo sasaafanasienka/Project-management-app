@@ -1,8 +1,12 @@
 export interface TaskModel {
-  _id: string;
-  title: string;
-  order: number;
-  boardId: string;
+  _id:string;
+  title:string;
+  order:number;
+  boardId:string;
+  columnId:string;
+  description:string;
+  userId:string;
+  users: Array<string>;
 }
 
 export interface InitialStateTaskModel {
