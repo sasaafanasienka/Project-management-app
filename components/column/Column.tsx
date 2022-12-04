@@ -16,31 +16,32 @@ import ModalWindow from '../modal/ModalWindow';
 import { ColumnPropsModel } from './interfaces';
 import { ModalWindowStateModel } from '../modal/interfaces';
 import { ItemTypes } from '../board/interfaces';
-import { TaskModel } from '../task/interfaces';
 import StyledTaskList from './StyledTaskList';
 import StyledColumnTitle from './StyledColumnTitle';
 import UpdateTitleInput from './updateTitleInput/UpdateTitleInput';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { deleteColumn, updateColumn } from '../../redux/slices/columnSlice';
-import { createTask, getTasksInColumn } from '../../redux/slices/tasksSlice';
+import { createTask, getTasksInBoard, getTasksInColumn } from '../../redux/slices/tasksSlice';
 import NewTaskForm from '../newTaskForm/NewTaskForm';
+import { TaskModel } from '../../redux/slices/tasksSlice/interfaces';
 
 const Column: FC<ColumnPropsModel> = (props): ReactElement => {
 	const {
 		title, index, id, boardId,
 	} = { ...props };
 
-	const tasks = useAppSelector((state) => state.tasks.tasks.filter(
-		(task) => task.columnId === id,
-	));
+	// const tasks = useAppSelector((state) => state.tasks.tasks.filter(
+	// 	(task) => task.columnId === id,
+	// ));
 
-	console.log(tasks);
+	const columnTasks = useAppSelector((state) => state.tasks.boardTasks)[id] || [];
 
 	const dispatch = useAppDispatch();
 
 	useEffect(() => {
-		dispatch(getTasksInColumn({ boardid: boardId, columnId: id }));
-	}, []);
+		// dispatch(getTasksInColumn({ boardid: boardId, columnId: id }));
+		dispatch(getTasksInBoard({ boardId }));
+	}, [boardId, dispatch]);
 
 	const [isDelModalOpened, setDelModalOpened] = useState<ModalWindowStateModel>(false);
 	const [isCreateModalOpened, setCreateModalOpened] = useState<ModalWindowStateModel>(false);
@@ -85,7 +86,9 @@ const Column: FC<ColumnPropsModel> = (props): ReactElement => {
 
 	const handleSubmit = (formData: TaskModel) => {
 		if (formData) {
-			dispatch(createTask({ boardId, columnId: id, formData }))
+			dispatch(createTask({
+				boardid: boardId, columnId: id, formData, order: columnTasks.length,
+			}))
 				.unwrap()
 				.then(() => {
 					handleCreateModal();
@@ -115,7 +118,7 @@ const Column: FC<ColumnPropsModel> = (props): ReactElement => {
 									<EditIcon color='secondary' />
 									<h3>
 										{title.toUpperCase()}
-										{tasks.length && <span>{tasks.length}</span>}
+										{(columnTasks || []).length && <span>{(columnTasks || []).length}</span>}
 									</h3>
 								</StyledColumnTitle>
 							}
@@ -150,7 +153,7 @@ const Column: FC<ColumnPropsModel> = (props): ReactElement => {
 									ref={provided.innerRef}
 									{...provided.droppableProps}
 								>
-									{tasks.map((task, idx) => <Task
+									{(columnTasks || []).map((task, idx) => <Task
 										key={task._id}
 										index={idx}
 										description={task.description}

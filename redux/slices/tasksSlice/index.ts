@@ -5,7 +5,11 @@ import {
 } from '@reduxjs/toolkit';
 import { toast } from 'react-toastify';
 import {
-	TaskModel, InitialStateTaskModel, UpdateTaskPropsModel,
+	TaskModel,
+	InitialStateTaskModel,
+	UpdateTaskPropsModel,
+	UpdateTaskPropsModelFull,
+	BoardTasksModel,
 } from './interfaces';
 import { BASE_URL } from '../../../config';
 import { readCookie } from '../../../utils/cookieUtilities';
@@ -13,6 +17,7 @@ import { readCookie } from '../../../utils/cookieUtilities';
 const initialState: InitialStateTaskModel = {
 	isLoading: false,
 	tasks: [],
+	boardTasks: {},
 	error: '',
 };
 
@@ -46,16 +51,47 @@ export const getTasksInColumn = createAsyncThunk<
 		}
 	});
 
+export const getTasksInBoard = createAsyncThunk<
+	TaskModel[],
+	{ boardId: string },
+	{ rejectValue: string }
+	>('tasks/getTasksInBoard', async ({ boardId }, { rejectWithValue }) => {
+		const token = readCookie('token');
+		const URL: string = `${BASE_URL}tasksSet/${boardId}`;
+		try {
+			const response = await fetch(URL, {
+				method: 'GET',
+				headers: {
+					'Content-Type': 'application/json',
+					Authorization: `Bearer ${token}`,
+				},
+			});
+			if (!response.ok) {
+				const { statusCode, message } = await response.json();
+				throw new Error(`${statusCode} ${message}`);
+			}
+			const data = await response.json();
+			return data;
+		} catch (error) {
+			if (error instanceof Error) {
+				return rejectWithValue(`${error.message}`);
+			}
+			return rejectWithValue('Unknown Error! Try to refresh the page');
+		}
+	});
+
 
 export const createTask = createAsyncThunk<
   TaskModel,
-  { boardid: string, columnId: string, formData: UpdateTaskPropsModel },
+  { boardid: string, columnId: string, formData: UpdateTaskPropsModel, order: number },
   { rejectValue: string }
 >('tasks/createTask', async (props, { rejectWithValue, getState }) => {
 	const state = getState() as ReturnType<Store['getState']>;
 	const userId = state.user.user.id;
 	const token = readCookie('token');
-	const { boardid, columnId, formData } = { ...props };
+	const {
+		boardid, columnId, formData, order,
+	} = { ...props };
 	try {
 		const response = await fetch(`${BASE_URL}boards/${boardid}/columns/${columnId}/tasks`, {
 			method: 'POST',
@@ -63,7 +99,7 @@ export const createTask = createAsyncThunk<
 				'Content-Type': 'application/json',
 				Authorization: `Bearer ${token}`,
 			},
-			body: JSON.stringify({ ...formData, order: 0, userId }),
+			body: JSON.stringify({ ...formData, order, userId }),
 		});
 		if (!response.ok) {
 			const { statusCode, message } = await response.json();
@@ -86,7 +122,7 @@ export const deleteTask = createAsyncThunk<
   TaskModel,
   {boardid: string, columnId: string, taskId: string},
   { rejectValue: string }
->('boards/deleteColumn', async (props, { rejectWithValue }) => {
+>('tasks/deleteTask', async (props, { rejectWithValue }) => {
 	const token = readCookie('token');
 	const { boardid, columnId, taskId } = { ...props };
 	try {
@@ -116,9 +152,9 @@ export const deleteTask = createAsyncThunk<
 
 export const updateTask = createAsyncThunk<
 TaskModel,
-  {boardid: string, columnId: string, taskId: string, body: UpdateTaskPropsModel},
+  {boardid: string, columnId: string, taskId: string, body: UpdateTaskPropsModelFull},
   { rejectValue: string }
->('boards/updateColumn', async (props, { rejectWithValue }) => {
+>('tasks/updateTask', async (props, { rejectWithValue }) => {
 	const token = readCookie('token');
 	const {
 		boardid, columnId, taskId, body,
@@ -173,6 +209,30 @@ export const tasksSlice = createSlice({
 			state.isLoading = false;
 			state.error = action.payload as string;
 		});
+		builder.addCase(getTasksInBoard.rejected, (state, action) => {
+			state.isLoading = false;
+			state.error = action.payload as string;
+		});
+		builder.addCase(getTasksInBoard.pending, (state) => {
+			state.isLoading = true;
+			state.error = '';
+		});
+		builder.addCase(
+			getTasksInBoard.fulfilled,
+			(state, action) => {
+				state.isLoading = false;
+				state.boardTasks = action.payload.reduce<BoardTasksModel>((acc, curr) => {
+					if (!acc[curr.columnId]) {
+						acc[curr.columnId] = [];
+						acc[curr.columnId].push(curr);
+					} else {
+						acc[curr.columnId].push(curr);
+					}
+					acc[curr.columnId].sort((a, b) => a.order - b.order);
+					return acc;
+				}, {});
+			},
+		);
 		builder.addCase(createTask.pending, (state) => {
 			state.isLoading = true;
 			state.error = '';
@@ -181,7 +241,12 @@ export const tasksSlice = createSlice({
 			createTask.fulfilled,
 			(state, action: PayloadAction<TaskModel>) => {
 				state.isLoading = false;
-				state.tasks.push(action.payload);
+				if (state.boardTasks[action.payload.columnId]) {
+					state.boardTasks[action.payload.columnId].push(action.payload);
+				} else {
+					state.boardTasks[action.payload.columnId] = [];
+					state.boardTasks[action.payload.columnId].push(action.payload);
+				}
 			},
 		);
 		builder.addCase(createTask.rejected, (state, action) => {
@@ -197,6 +262,8 @@ export const tasksSlice = createSlice({
 			(state, action: PayloadAction<TaskModel>) => {
 				state.isLoading = false;
 				state.tasks = state.tasks.filter((item) => item._id !== action.payload._id);
+				state.boardTasks[action.payload.columnId] = state.boardTasks[action.payload.columnId]
+					.filter((task) => task._id !== action.payload._id);
 			},
 		);
 		builder.addCase(deleteTask.rejected, (state, action) => {
@@ -217,6 +284,14 @@ export const tasksSlice = createSlice({
 					}
 					return item;
 				});
+				state.boardTasks[action.payload.columnId] = state.boardTasks[action.payload.columnId]
+					.map((task) => {
+						if (task._id === action.payload._id) {
+							return action.payload;
+						}
+						return task;
+					});
+				state.boardTasks[action.payload.columnId].sort((a, b) => a.order - b.order);
 			},
 		);
 		builder.addCase(updateTask.rejected, (state, action) => {

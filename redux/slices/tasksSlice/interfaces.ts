@@ -9,9 +9,14 @@ export interface TaskModel {
   users: Array<string>;
 }
 
+export interface BoardTasksModel {
+  [K: string]: TaskModel[]
+}
+
 export interface InitialStateTaskModel {
   isLoading: boolean;
   tasks: TaskModel[];
+  boardTasks: BoardTasksModel;
   error: string,
 }
 
@@ -25,5 +30,15 @@ export interface NewTaskPropsModel {
 export interface UpdateTaskPropsModel {
   title: string;
   order: number;
+  description: string;
+}
+
+export interface UpdateTaskPropsModelFull {
+  title: string,
+  order: number,
+  description: string,
+  columnId: string,
+  userId: string,
+  users: string[]
 }
 
