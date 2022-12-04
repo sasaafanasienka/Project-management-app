@@ -1,6 +1,13 @@
 import {
 	Button,
-	FormControl, InputLabel, MenuItem, OutlinedInput, Select, SelectChangeEvent, TextareaAutosize,
+	FormControl,
+	InputLabel,
+	MenuItem,
+	OutlinedInput,
+	Select,
+	SelectChangeEvent,
+	TextareaAutosize,
+	Typography,
 } from '@mui/material';
 import {
 	FC, ReactElement, useRef, useState,
@@ -12,7 +19,7 @@ import { TaskDetailsPropsModel, TaskUpdateFormModel } from './interfaces';
 import StyledTaskDetails from './StyledTaskDetails';
 
 const TaskDetails: FC<TaskDetailsPropsModel> = ({
-	title, description, users, handleDelete, handleUpdate, boardUsers, userId,
+	title, description, users, handleDelete, handleUpdate, boardUsers, userId, isOwn,
 }): ReactElement => {
 	const owner = boardUsers.find((user) => user._id === userId) as UserResponceModel;
 
@@ -126,9 +133,12 @@ const TaskDetails: FC<TaskDetailsPropsModel> = ({
 						</Select>
 					</FormControl>
 					<FlexBox justifyContent='right'>
-						<Button onClick={handleDelete} variant='outlined' autoFocus>
-								Delete
-						</Button>
+						{isOwn
+							? <Button onClick={handleDelete} variant='outlined' autoFocus>
+									Delete
+							</Button>
+							: <Typography>{'You can\'t delete a board that isn\'t your own'}</Typography>
+						}
 						<Button color='info' onClick={update} variant='contained'>
 								Update
 						</Button>

@@ -31,6 +31,13 @@ const Task: FC<TaskPropsModel> = ({
 	));
 	const deleteTaskModalState = useAppSelector((state) => state.modals.deleteTask);
 	const detailsTaskModalState = useAppSelector((state) => state.modals.detailsTask);
+	const currentUserId = useAppSelector((state) => state.user.user.id);
+
+	const owner = boardUsers
+		? boardUsers.find((user) => user._id === userId)?.login
+		: '';
+
+	const isOwn = currentUserId === userId;
 
 	const dispatch = useAppDispatch();
 
@@ -75,13 +82,18 @@ const Task: FC<TaskPropsModel> = ({
 					>
 						<h3>{ title }</h3>
 						<p>{description}</p>
-						<FlexBox justifyContent='flex-end'>
-							<IconButton
-								aria-label="delete"
-								size="small"
-								onClick={(event) => { handleOpenModal(event, 'deleteTask'); }}>
-								<DeleteIcon fontSize='small'/>
-							</IconButton>
+						<FlexBox justifyContent='space-between' wrap='no-wrap'>
+							<p>{`Owner: ${owner}`}</p>
+							{owner && isOwn
+								? <IconButton
+									aria-label="delete"
+									size="small"
+									onClick={(event) => { handleOpenModal(event, 'deleteTask'); }}
+								>
+									<DeleteIcon fontSize='small'/>
+								</IconButton>
+								: null
+							}
 						</FlexBox>
 					</StyledTask>
 				)}
@@ -111,6 +123,7 @@ const Task: FC<TaskPropsModel> = ({
 					handleUpdate={handleUpdate}
 					boardUsers={boardUsers}
 					userId={userId}
+					isOwn={!!(isOwn && owner)}
 				/>
 			</ModalWindow>
 		</>
