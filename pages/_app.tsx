@@ -16,14 +16,15 @@ import {
 } from '../redux/slices/userSlice';
 import ErrorBoundary from '../components/errorBoundary/ErrorBoundary';
 import { getUserBoards } from '../redux/slices/boardSlice';
+import { readCookie } from '../utils/cookieUtilities';
 
 function App({ Component, pageProps }: AppProps) {
 	const dispatch = useAppDispatch();
 	const interval = useRef<ReturnType<typeof setTimeout>>();
 
 	useEffect(() => {
-		if (document.cookie.match(/token=/)) {
-			const token = document.cookie.split('token=')[1].split(';')[0];
+		const token = readCookie('token');
+		if (token) {
 			const { id, login, exp } = decodeToken(token);
 			dispatch(restoreUserToken({ id, login, token }));
 			dispatch(getUserById());
