@@ -1,10 +1,11 @@
 /* eslint-disable no-underscore-dangle */
-import { Button } from '@mui/material';
 import {
 	FC, ReactElement, useEffect, useState,
 } from 'react';
 import { toast } from 'react-toastify';
 import AddIcon from '@mui/icons-material/Add';
+import { Button, Breadcrumbs, Typography } from '@mui/material';
+import Link from 'next/link';
 import { createBoard, getUserBoards } from '../../redux/slices/boardSlice';
 import { BoardModel, BoardUserModel } from '../../redux/slices/boardSlice/interfaces';
 import { getAllUsers } from '../../redux/slices/userSlice';
@@ -13,7 +14,6 @@ import AddBoard from '../addBoard/AddBoard';
 import BoardLink from '../boardLink/BoardLink';
 import ModalWindow from '../modal/ModalWindow';
 import NewBoardForm from '../newBoardForm/NewBoardForm';
-import PageHeading from '../pageHeading/PageHeading';
 import FlexBox from '../styled/FlexBox';
 import BoardFilterBar from './boardFilterBar/BoardFilterBar';
 import { FilterOptionsModel } from './boardFilterBar/interfaces';
@@ -67,7 +67,10 @@ const Boards: FC = (): ReactElement => {
 
 	return (
 		<FlexBox column alignItems='left'>
-			<PageHeading text="Boards"></PageHeading>
+			<Breadcrumbs aria-label="breadcrumb" separator="›" sx={{ fontWeight: 700, fontSize: '20px' }}>
+				<Link href="/">Home</Link>
+				<Typography sx={{ fontWeight: 700, fontSize: '20px' }} color="text.primary">Boards</Typography>
+			</Breadcrumbs>
 			<FlexBox justifyContent='space-between'>
 				<BoardFilterBar onChange={handleFilterBoards} />
 				<Button color='secondary' aria-label="add-new" size="small" onClick={handleModal}>
