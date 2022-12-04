@@ -1,6 +1,6 @@
 import {
 	Button,
-	FormControl, InputLabel, MenuItem, OutlinedInput, Select, TextareaAutosize,
+	FormControl, InputLabel, MenuItem, OutlinedInput, Select, SelectChangeEvent, TextareaAutosize,
 } from '@mui/material';
 import {
 	FC, ReactElement, useRef, useState,
@@ -16,8 +16,10 @@ const TaskDetails: FC<TaskDetailsPropsModel> = ({
 }): ReactElement => {
 	const owner = boardUsers.find((user) => user._id === userId) as UserResponceModel;
 
+	console.log(users);
+
 	const [taskOwner, setTaskOwner] = useState<UserResponceModel>(owner);
-	const [taskUsers, setTaskUsers] = useState(users);
+	const [taskUsers, setTaskUsers] = useState<string[]>(users);
 	const [isTextAreaOpen, setIsTextAreaOpen] = useState(false);
 	const [descriptionState, setDescription] = useState(description);
 	const [isTextAreaTitleOpen, setIsTextAreaTitleOpen] = useState(false);
@@ -49,8 +51,11 @@ const TaskDetails: FC<TaskDetailsPropsModel> = ({
 		handleUpdate(formData);
 	};
 
-	const usersHandler = (event) => {
-		setTaskUsers(event.target.value);
+	const usersHandler = (event: SelectChangeEvent<typeof taskOwner>) => {
+		const {
+			target: { value },
+		} = event;
+		setTaskUsers(value);
 	};
 
 	return (
@@ -83,7 +88,7 @@ const TaskDetails: FC<TaskDetailsPropsModel> = ({
 						<Select
 							labelId="demo-simple-select-label"
 							id="demo-simple-select"
-							value='f'
+							value={taskOwner._id}
 							label="Owner:"
 							onChange={(event) => setTaskOwner(boardUsers.find(
 								(user) => user._id === event.target.value,
