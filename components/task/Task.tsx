@@ -36,7 +36,7 @@ const Task: FC<TaskPropsModel> = ({
 
 	const handleOpenModal = (event: SyntheticEvent, name: ModalNameModel) => {
 		event.stopPropagation();
-		dispatch(openModal(name));
+		dispatch(openModal({ name, id }));
 	};
 
 	const handleCloseModals = () => {
@@ -89,7 +89,7 @@ const Task: FC<TaskPropsModel> = ({
 			<ModalWindow
 				title={`Are you sure to delete the task "${title}"?`}
 				description="This action cannot be undone"
-				isOpened={deleteTaskModalState}
+				isOpened={deleteTaskModalState === id}
 			>
 				<Button onClick={handleCloseModals}>Cancel</Button>
 				<Button onClick={handleDelete} variant='outlined' autoFocus>
@@ -102,7 +102,7 @@ const Task: FC<TaskPropsModel> = ({
 					firstRow={`Task ID: ${id}`}
 					secondRow={`Owner: ${userId}`}
 				/>}
-				isOpened={detailsTaskModalState}
+				isOpened={detailsTaskModalState === id}
 			>
 				<TaskDetails
 					title={title}

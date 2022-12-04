@@ -7,12 +7,14 @@ export type ModalNameModel =
   | 'editBoard'
   | 'deleteBoard'
 
+export type ModalStateModel = string | null
+
 export interface InitialStateModalsModel {
-  newTask: boolean,
-  deleteTask: boolean,
-  detailsTask: boolean,
-  deleteColumn: boolean,
-  createColumn: boolean,
-  editBoard: boolean,
-  deleteBoard: boolean,
+  newTask: ModalStateModel,
+  deleteTask: ModalStateModel,
+  detailsTask: ModalStateModel,
+  deleteColumn: ModalStateModel,
+  createColumn: ModalStateModel,
+  editBoard: ModalStateModel,
+  deleteBoard: ModalStateModel,
 }

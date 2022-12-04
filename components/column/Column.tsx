@@ -38,7 +38,7 @@ const Column: FC<ColumnPropsModel> = (props): ReactElement => {
 
 	const handleOpenModal = (event: SyntheticEvent, name: ModalNameModel) => {
 		event.stopPropagation();
-		dispatch(openModal(name));
+		dispatch(openModal({ name, id }));
 	};
 
 	const handleCloseModals = () => {
@@ -159,7 +159,7 @@ const Column: FC<ColumnPropsModel> = (props): ReactElement => {
 			<ModalWindow
 				title={`Are you sure to delete the column "${title}"?`}
 				description="This action cannot be undone"
-				isOpened={deleteColumnModalState}
+				isOpened={deleteColumnModalState === id}
 			>
 				<Button onClick={handleCloseModals}>Cancel</Button>
 				<Button onClick={deleteItem} variant='contained' autoFocus>
@@ -168,7 +168,7 @@ const Column: FC<ColumnPropsModel> = (props): ReactElement => {
 			</ModalWindow>
 			<ModalWindow
 				title={'Create new Task'}
-				isOpened={newTaskModalState}
+				isOpened={newTaskModalState === id}
 			>
 				<NewTaskForm
 					onSubmit={handleSubmit}

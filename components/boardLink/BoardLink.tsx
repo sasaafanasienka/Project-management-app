@@ -30,7 +30,7 @@ const BoardLink: FC<BoardLinkPropsModel> = (props): ReactElement => {
 	const handleOpenModal = (event: SyntheticEvent, name: ModalNameModel) => {
 		event.stopPropagation();
 		event.preventDefault();
-		dispatch(openModal(name));
+		dispatch(openModal({ name, id }));
 	};
 
 	const handleCloseModals = () => {
@@ -78,7 +78,7 @@ const BoardLink: FC<BoardLinkPropsModel> = (props): ReactElement => {
 			<ModalWindow
 				title={`Are you sure to delete the board "${title}"?`}
 				description="This action cannot be undone"
-				isOpened={deleteBoardModalState}
+				isOpened={deleteBoardModalState === id}
 			>
 				<Button onClick={handleCloseModals}>Cancel</Button>
 				<Button onClick={handleDeleteBoard} variant='contained' autoFocus>
@@ -87,7 +87,7 @@ const BoardLink: FC<BoardLinkPropsModel> = (props): ReactElement => {
 			</ModalWindow>
 			<ModalWindow
 				title={`Udpate Board "${title}"`}
-				isOpened={editBoardModalState}
+				isOpened={editBoardModalState === id}
 			>
 				<NewBoardForm
 					updateMode={{ assignedUsers: users, currentTitle: title }}
