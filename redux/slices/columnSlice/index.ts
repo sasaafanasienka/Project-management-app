@@ -150,7 +150,7 @@ export const deleteColumn = createAsyncThunk<
 
 export const updateColumn = createAsyncThunk<
 	ColumnModel, UpdateColumnModel, { rejectValue: string }
->('boards/updateColumn', async (props, { rejectWithValue }) => {
+>('columns/updateColumn', async (props, { rejectWithValue }) => {
 	const token = readCookie('token');
 	const { boardId, columnId, body } = { ...props };
 	try {
