@@ -14,6 +14,7 @@ export interface LangLayoutModel {
   teamTitle: string;
   technologiesTitle: string;
   homeBtn: string;
+  homeBtnBoards: string;
   navProfile: string;
   navBoards: string;
   navHome: string;
