@@ -11,8 +11,11 @@ import '@fontsource/roboto/700.css';
 import { useAppDispatch, wrapper } from '../redux/store';
 import Layout from '../components/layout/Layout';
 import decodeToken from '../utils/decodeToken';
-import { getUserById, logOut, restoreUserToken } from '../redux/slices/userSlice';
+import {
+	getAllUsers, getUserById, logOut, restoreUserToken,
+} from '../redux/slices/userSlice';
 import ErrorBoundary from '../components/errorBoundary/ErrorBoundary';
+import { getUserBoards } from '../redux/slices/boardSlice';
 
 function App({ Component, pageProps }: AppProps) {
 	const dispatch = useAppDispatch();
@@ -24,6 +27,8 @@ function App({ Component, pageProps }: AppProps) {
 			const { id, login, exp } = decodeToken(token);
 			dispatch(restoreUserToken({ id, login, token }));
 			dispatch(getUserById());
+			dispatch(getUserBoards());
+			dispatch(getAllUsers());
 			interval.current = setTimeout(() => {
 				dispatch(logOut());
 			}, exp * 1000 - Date.now());

@@ -1,11 +1,9 @@
 import {
 	Button, FormControl, InputLabel, MenuItem, OutlinedInput, Select, SelectChangeEvent, TextField,
 } from '@mui/material';
-import React, { FC, ReactElement, useEffect } from 'react';
+import React, { FC, ReactElement } from 'react';
 import { useForm } from 'react-hook-form';
-import { BoardModel } from '../../redux/slices/boardSlice/interfaces';
 import { CreateTaskBodyModel } from '../../redux/slices/tasksSlice/interfaces';
-import { getAllUsers } from '../../redux/slices/userSlice';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import ModalUserTag from '../modal/modalUserTag/modalUserTag';
 import FlexBox from '../styled/FlexBox';
@@ -17,7 +15,8 @@ const NewTaskForm: FC<NewBoardFormProps> = ({ onSubmit, onClose, boardId }): Rea
 
 	const boardUsersIds = useAppSelector((state) => {
 		if (state.boards) {
-			return (state.boards.boards.find((board) => board._id === boardId) as BoardModel).users;
+			const currentBoard = state.boards.boards.find((board) => board._id === boardId);
+			return currentBoard ? currentBoard.users : [];
 		}
 		return [];
 	});
@@ -25,10 +24,6 @@ const NewTaskForm: FC<NewBoardFormProps> = ({ onSubmit, onClose, boardId }): Rea
 	const boardUsers = useAppSelector((state) => state.user.usersAll.filter(
 		(user) => boardUsersIds.includes(user._id),
 	));
-
-	useEffect(() => {
-		dispatch(getAllUsers());
-	}, [dispatch]);
 
 	const [personName, setPersonName] = React.useState<string[]>([]);
 
