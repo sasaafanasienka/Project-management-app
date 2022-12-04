@@ -19,6 +19,7 @@ import ModalWindow from '../modal/ModalWindow';
 import { ModalWindowStateModel } from '../modal/interfaces';
 import NewColumnForm from '../newColumnForm/NewColumnForm';
 import { ColumnModel } from '../../redux/slices/columnSlice/interfaces';
+import { getTasksInBoard, updateTask } from '../../redux/slices/tasksSlice';
 
 
 const Board: FC<BoardPropsModel> = (): ReactElement => {
@@ -27,24 +28,26 @@ const Board: FC<BoardPropsModel> = (): ReactElement => {
 	const router = useRouter();
 	const { boardid } = router.query;
 
-	const boards = useAppSelector((state) => state.boards);
+	const tasks = useAppSelector((state) => state.tasks.boardTasks);
+	// const boards = useAppSelector((state) => state.boards);
 	const columns = useAppSelector((state) => state.columns.columns);
 
 	const currentBoard = boards.boards.find((el) => el._id === boardid);
 
-	const [colsToDisplay, setColsToDisplay] = useState<ColumnModel[]>(columns);
+	// const [colsToDisplay, setColsToDisplay] = useState<ColumnModel[]>(columns);
 
-	useEffect(() => {
-		if (columns.length) {
-			const newOrder = columns.slice().sort((a, b) => a.order - b.order);
-			setColsToDisplay(newOrder);
-		}
-	}, [columns]);
+	// useEffect(() => {
+	// 	if (columns.length) {
+	// 		const newOrder = columns.slice().sort((a, b) => a.order - b.order);
+	// 		setColsToDisplay(newOrder);
+	// 	}
+	// }, [columns]);
 
 	const dispatch = useAppDispatch();
 
 	useEffect(() => {
 		dispatch(getBoardColumns(boardid as string));
+		dispatch(getTasksInBoard(boardid as string));
 	}, [boardid, dispatch]);
 
 	// useEffect(() => {
@@ -87,15 +90,40 @@ const Board: FC<BoardPropsModel> = (): ReactElement => {
 			const newColsOrder = columns.slice();
 			newColsOrder.splice(source.index, 1);
 			newColsOrder.splice(destination.index, 0, ...colToUpdate);
-			for (let i = 0; i < newColsOrder.length - 1; i += 1) {
-				console.log(newColsOrder[i]);
+			for (let i = 0; i <= newColsOrder.length - 1; i += 1) {
 				dispatch(updateColumn({
 					boardid,
 					columnId: newColsOrder[i]._id,
 					body: { title: newColsOrder[i].title, order: i },
 				}));
 			}
-			console.log(newColsOrder);
+		}
+		if (type === 'task') {
+			if (destination.droppableId === source.droppableId) {
+				const columnTasks = tasks[source.droppableId];
+				console.log(columnTasks);
+				const taskToUpdate = columnTasks.filter((task) => task._id === draggableId);
+				const newTasksOrder = columnTasks.slice();
+				newTasksOrder.splice(source.index, 1);
+				newTasksOrder.splice(destination.index, 0, ...taskToUpdate);
+				console.log(newTasksOrder);
+				for (let i = 0; i <= newTasksOrder.length - 1; i += 1) {
+					dispatch(updateTask({
+						boardid,
+						columnId: source.droppableId,
+						taskId: newTasksOrder[i]._id,
+						body: {
+							title: newTasksOrder[i].title,
+							description: newTasksOrder[i].description,
+							columnId: newTasksOrder[i].columnId,
+							order: i,
+							userId: newTasksOrder[i].userId,
+							users: newTasksOrder[i].users,
+						},
+					}));
+				}
+			}
+			// console.log(destination, source, draggableId);
 		}
 	};
 
@@ -113,7 +141,7 @@ const Board: FC<BoardPropsModel> = (): ReactElement => {
 								{...provided.droppableProps}
 								ref={provided.innerRef}
 								justifyContent='left' wrap='no-wrap'>
-								{(colsToDisplay || []).map((column, index) => <Column
+								{(columns || []).map((column, index) => <Column
 									title={column.title}
 									id={column._id}
 									key={column._id}

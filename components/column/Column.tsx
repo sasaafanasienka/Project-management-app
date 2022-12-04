@@ -13,16 +13,19 @@ import StyledColumn from './StyledColumn';
 import Task from '../task/Task';
 import ModalWindow from '../modal/ModalWindow';
 import { ColumnPropsModel } from './interfaces';
+import { ModalWindowStateModel } from '../modal/interfaces';
+import { ItemTypes } from '../board/interfaces';
 import StyledTaskList from './StyledTaskList';
 import StyledColumnTitle from './StyledColumnTitle';
 import UpdateTitleInput from './updateTitleInput/UpdateTitleInput';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { deleteColumn, updateColumn } from '../../redux/slices/columnSlice';
-import { createTask, getTasksInColumn } from '../../redux/slices/tasksSlice';
+import { createTask, getTasksInBoard, getTasksInColumn } from '../../redux/slices/tasksSlice';
 import NewTaskForm from '../newTaskForm/NewTaskForm';
 import { CreateTaskBodyModel } from '../../redux/slices/tasksSlice/interfaces';
 import { ModalNameModel } from '../../redux/slices/modalsSlice/interfaces';
 import { closeModals, openModal } from '../../redux/slices/modalsSlice';
+import { TaskModel } from '../../redux/slices/tasksSlice/interfaces';
 
 const Column: FC<ColumnPropsModel> = (props): ReactElement => {
 	const dispatch = useAppDispatch();
@@ -30,9 +33,6 @@ const Column: FC<ColumnPropsModel> = (props): ReactElement => {
 		title, index, id, boardId,
 	} = { ...props };
 
-	const tasks = useAppSelector((state) => state.tasks.tasks.filter(
-		(task) => task.columnId === id,
-	));
 	const deleteColumnModalState = useAppSelector((state) => state.modals.deleteColumn);
 	const newTaskModalState = useAppSelector((state) => state.modals.newTask);
 
@@ -40,14 +40,20 @@ const Column: FC<ColumnPropsModel> = (props): ReactElement => {
 		event.stopPropagation();
 		dispatch(openModal({ name, id }));
 	};
+	// const tasks = useAppSelector((state) => state.tasks.tasks.filter(
+	// 	(task) => task.columnId === id,
+	// ));
+
+	const columnTasks = useAppSelector((state) => state.tasks.boardTasks)[id] || [];
 
 	const handleCloseModals = () => {
 		dispatch(closeModals());
 	};
 
 	useEffect(() => {
-		dispatch(getTasksInColumn({ boardid: boardId, columnId: id }));
-	}, []);
+		// dispatch(getTasksInColumn({ boardid: boardId, columnId: id }));
+		dispatch(getTasksInBoard({ boardId }));
+	}, [boardId, dispatch]);
 
 	const [isTitleUpdate, setIsTitleUpdate] = useState<boolean>(false);
 	const [titleCurrent, setTitleCurrent] = useState<string>(title);
@@ -82,7 +88,9 @@ const Column: FC<ColumnPropsModel> = (props): ReactElement => {
 
 	const handleSubmit = (formData: CreateTaskBodyModel) => {
 		if (formData) {
-			dispatch(createTask({ boardId, columnId: id, formData }))
+			dispatch(createTask({
+				boardid: boardId, columnId: id, formData, order: columnTasks.length,
+			}))
 				.unwrap()
 				.then(() => {
 					dispatch(closeModals());
@@ -112,7 +120,7 @@ const Column: FC<ColumnPropsModel> = (props): ReactElement => {
 									<EditIcon color='secondary' />
 									<h3>
 										{title.toUpperCase()}
-										{tasks.length && <span>{tasks.length}</span>}
+										{(columnTasks || []).length && <span>{(columnTasks || []).length}</span>}
 									</h3>
 								</StyledColumnTitle>
 							}
@@ -137,7 +145,7 @@ const Column: FC<ColumnPropsModel> = (props): ReactElement => {
 									ref={provided.innerRef}
 									{...provided.droppableProps}
 								>
-									{tasks.map((task, idx) => <Task
+									{(columnTasks || []).map((task, idx) => <Task
 										key={task._id}
 										index={idx}
 										description={task.description}

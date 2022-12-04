@@ -20,11 +20,15 @@ export interface CreateTaskModel {
   boardId: string,
   columnId: string,
   formData: CreateTaskBodyModel,
+
+export interface BoardTasksModel {
+  [K: string]: TaskModel[]
 }
 
 export interface InitialStateTaskModel {
   isLoading: boolean;
   tasks: TaskModel[];
+  boardTasks: BoardTasksModel;
   error: string,
 }
 
@@ -38,5 +42,19 @@ export interface UpdateTaskModel {
   columnId: string,
   taskId: string,
   body: UpdateTaskBodyModel
+
+export interface UpdateTaskPropsModel {
+  title: string;
+  order: number;
+  description: string;
+}
+
+export interface UpdateTaskPropsModelFull {
+  title: string,
+  order: number,
+  description: string,
+  columnId: string,
+  userId: string,
+  users: string[]
 }
 
