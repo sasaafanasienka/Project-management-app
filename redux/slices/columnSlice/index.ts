@@ -211,7 +211,7 @@ export const columnSlice = createSlice({
 			getBoardColumns.fulfilled,
 			(state, action: PayloadAction<ColumnModel[]>) => {
 				state.isLoading = false;
-				state.columns = action.payload;
+				state.columns = action.payload.sort((a, b) => a.order - b.order);
 			},
 		);
 		builder.addCase(getBoardColumns.rejected, (state, action) => {
@@ -262,7 +262,7 @@ export const columnSlice = createSlice({
 						item.order = action.payload.order;
 					}
 					return item;
-				});
+				}).sort((a, b) => a.order - b.order);
 			},
 		);
 		builder.addCase(updateColumn.rejected, (state, action) => {
