@@ -5,7 +5,11 @@ import {
 } from '@reduxjs/toolkit';
 import { toast } from 'react-toastify';
 import {
-	ColumnModel, InitialStateColumnModel, UpdateColumnPropsModel,
+	ColumnModel,
+	DeleteColumnModel,
+	InitialStateColumnModel,
+	UpdateColumnModel,
+	UpdateColumnPropsModel,
 } from './interfaces';
 import { BASE_URL } from '../../../config';
 import { readCookie } from '../../../utils/cookieUtilities';
@@ -115,14 +119,12 @@ export const createColumn = createAsyncThunk<
 });
 
 export const deleteColumn = createAsyncThunk<
-  ColumnModel,
-  {boardid: string, columnId: string},
-  { rejectValue: string }
+  ColumnModel, DeleteColumnModel, { rejectValue: string }
 >('boards/deleteColumn', async (props, { rejectWithValue }) => {
 	const token = readCookie('token');
-	const { boardid, columnId } = { ...props };
+	const { boardId, columnId } = { ...props };
 	try {
-		const response = await fetch(`${BASE_URL}boards/${boardid}/columns/${columnId}`, {
+		const response = await fetch(`${BASE_URL}boards/${boardId}/columns/${columnId}`, {
 			method: 'DELETE',
 			headers: {
 				'Content-Type': 'application/json',
@@ -147,14 +149,12 @@ export const deleteColumn = createAsyncThunk<
 });
 
 export const updateColumn = createAsyncThunk<
-ColumnModel,
-  {boardid: string, columnId: string, body: UpdateColumnPropsModel},
-  { rejectValue: string }
+	ColumnModel, UpdateColumnModel, { rejectValue: string }
 >('boards/updateColumn', async (props, { rejectWithValue }) => {
 	const token = readCookie('token');
-	const { boardid, columnId, body } = { ...props };
+	const { boardId, columnId, body } = { ...props };
 	try {
-		const response = await fetch(`${BASE_URL}boards/${boardid}/columns/${columnId}`, {
+		const response = await fetch(`${BASE_URL}boards/${boardId}/columns/${columnId}`, {
 			method: 'PUT',
 			headers: {
 				'Content-Type': 'application/json',
@@ -185,24 +185,6 @@ export const columnSlice = createSlice({
 	reducers: {
 	},
 	extraReducers: (builder) => {
-		// builder.addCase(getBoardById.pending, (state) => {
-		// 	state.status = 'loaded';
-		// 	state.isLoading = true;
-		// 	state.error = '';
-		// });
-		// builder.addCase(
-		// 	getBoardById.fulfilled,
-		// 	(state, action) => {
-		// 		state.status = 'loaded';
-		// 		state.isLoading = false;
-		// 		state.columns = action.payload;
-		// 	},
-		// );
-		// builder.addCase(getBoardById.rejected, (state, action) => {
-		// 	state.status = 'loaded';
-		// 	state.isLoading = false;
-		// 	state.error = action.payload as string;
-		// });
 		builder.addCase(getBoardColumns.pending, (state) => {
 			state.isLoading = true;
 			state.error = '';

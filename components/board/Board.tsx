@@ -32,6 +32,8 @@ const Board: FC<BoardPropsModel> = (): ReactElement => {
 	// const boards = useAppSelector((state) => state.boards);
 	const columns = useAppSelector((state) => state.columns.columns);
 
+	const currentBoard = boards.boards.find((el) => el._id === boardid);
+
 	// const [colsToDisplay, setColsToDisplay] = useState<ColumnModel[]>(columns);
 
 	// useEffect(() => {
@@ -128,7 +130,9 @@ const Board: FC<BoardPropsModel> = (): ReactElement => {
 	return (
 		<>
 			<DragDropContext onDragEnd={handleDragEnd}>
-				<PageHeading text='Boards > Board name'></PageHeading>
+				<PageHeading
+					text={`Boards > ${currentBoard ? currentBoard.title : ''}`}
+				/>
 				<FlexBox justifyContent='flex-start' alignItems='flex-start' wrap='nowrap'>
 					<Droppable droppableId='all-columns' direction='horizontal' type='columns' >
 						{(provided) => (

@@ -54,7 +54,7 @@ export interface LangLayoutModel {
 	singInMessage: string,
 }
 
-export interface InitialStateModel {
+export interface InitialLangStateModel {
   currentLang: LangOption;
   text: LangLayoutModel;
 }

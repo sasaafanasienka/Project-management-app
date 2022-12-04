@@ -9,6 +9,18 @@ export interface TaskModel {
   users: Array<string>;
 }
 
+export interface CreateTaskBodyModel {
+  title: string;
+  boardid: string;
+  description: string;
+  users: Array<string>;
+}
+
+export interface CreateTaskModel {
+  boardId: string,
+  columnId: string,
+  formData: CreateTaskBodyModel,
+
 export interface BoardTasksModel {
   [K: string]: TaskModel[]
 }
@@ -20,12 +32,16 @@ export interface InitialStateTaskModel {
   error: string,
 }
 
-export interface NewTaskPropsModel {
+export interface UpdateTaskBodyModel {
   title: string;
-  boardid: string;
-  // owner: string;
-  // users: Array<string>;
+  order: number;
 }
+
+export interface UpdateTaskModel {
+  boardId: string,
+  columnId: string,
+  taskId: string,
+  body: UpdateTaskBodyModel
 
 export interface UpdateTaskPropsModel {
   title: string;

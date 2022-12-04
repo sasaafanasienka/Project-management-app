@@ -1,4 +1,4 @@
-import { FC, ReactElement, useState } from 'react';
+import { FC, ReactElement, SyntheticEvent } from 'react';
 import DeleteIcon from '@mui/icons-material/Delete';
 import IconButton from '@mui/material/IconButton';
 import { Button } from '@mui/material';
@@ -7,20 +7,21 @@ import FlexBox from '../styled/FlexBox';
 import { TaskPropsModel } from './interfaces';
 import StyledTask from './StyledTask';
 import ModalWindow from '../modal/ModalWindow';
-import { ModalWindowStateModel } from '../modal/interfaces';
 import TaskDetails from '../taskDetails/TaskDetails';
 import ModalTitleNode from '../modal/modalTitleNode/ModalTitleNode';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { deleteTask, updateTask } from '../../redux/slices/tasksSlice';
+import { openModal, closeModals } from '../../redux/slices/modalsSlice';
 import { BoardModel } from '../../redux/slices/boardSlice/interfaces';
 import { TaskUpdateFormModel } from '../taskDetails/interfaces';
+import { ModalNameModel } from '../../redux/slices/modalsSlice/interfaces';
 
 const Task: FC<TaskPropsModel> = ({
-	title, description, id, columnId, userId, users, boardid, order, index,
+	title, description, id, columnId, userId, users, boardId, order, index,
 }): ReactElement => {
 	const boardUsersIds = useAppSelector((state) => {
 		if (state.boards) {
-			return (state.boards.boards.find((board) => board._id === boardid) as BoardModel)?.users;
+			return (state.boards.boards.find((board) => board._id === boardId) as BoardModel)?.users;
 		}
 		return [];
 	});
@@ -28,31 +29,24 @@ const Task: FC<TaskPropsModel> = ({
 	const boardUsers = useAppSelector((state) => state.user.usersAll.filter(
 		(user) => boardUsersIds?.includes(user._id),
 	));
+	const deleteTaskModalState = useAppSelector((state) => state.modals.deleteTask);
+	const detailsTaskModalState = useAppSelector((state) => state.modals.detailsTask);
 
 	const dispatch = useAppDispatch();
 
-	const [isDeleteOpened, setDeleteOpened] = useState<ModalWindowStateModel>(false);
-	const [isDetailedOpened, setIsDetailedOpened] = useState<ModalWindowStateModel>(false);
-
-	const handleDetailedModal = (event: MouseEvent | null, value: boolean = !isDetailedOpened) => {
-		if (event) {
-			event.stopPropagation();
-		}
-		setIsDetailedOpened(value);
+	const handleOpenModal = (event: SyntheticEvent, name: ModalNameModel) => {
+		event.stopPropagation();
+		dispatch(openModal({ name, id }));
 	};
 
-	const handleDeleteModal = (event: MouseEvent | null, value: boolean = !isDeleteOpened) => {
-		if (event) {
-			event.stopPropagation();
-		}
-		setDeleteOpened(value);
+	const handleCloseModals = () => {
+		dispatch(closeModals());
 	};
 
 	const handleDelete = () => {
-		dispatch(deleteTask({ boardid, columnId, taskId: id }))
+		dispatch(deleteTask({ boardId, columnId, taskId: id }))
 			.then(() => {
-				handleDeleteModal(null, false);
-				handleDetailedModal(null, false);
+				handleCloseModals();
 			});
 	};
 
@@ -63,37 +57,29 @@ const Task: FC<TaskPropsModel> = ({
 			columnId,
 		};
 		dispatch(updateTask({
-			boardid, columnId, taskId: id, body,
+			boardId, columnId, taskId: id, body,
 		})).then(() => {
-			handleDetailedModal(null, false);
+			dispatch(closeModals());
 		});
 	};
 
 	return (
 		<>
-			{/* <StyledTask
-				onClick={() => { handleDetailedModal(null); }}
-			>
-				<h3>{ title }</h3>
-				<p>{description}</p>
-				<FlexBox justifyContent='flex-end'>
-					<IconButton aria-label="delete" size="small" onClick={() => { handleDeleteModal(null); }}>
-						<DeleteIcon fontSize='small'/>
-					</IconButton>
-				</FlexBox>
-			</StyledTask> */}
 			<Draggable draggableId={id} index={index} key={id}>
 				{(provided) => (
 					<StyledTask
 						ref={provided.innerRef}
 						{...provided.draggableProps}
 						{...provided.dragHandleProps}
-						onClick={() => { handleDetailedModal(null); }}
+						onClick={(event) => { handleOpenModal(event, 'detailsTask'); }}
 					>
 						<h3>{ title }</h3>
 						<p>{description}</p>
 						<FlexBox justifyContent='flex-end'>
-							<IconButton aria-label="delete" size="small" onClick={() => { handleDeleteModal(null); }}>
+							<IconButton
+								aria-label="delete"
+								size="small"
+								onClick={(event) => { handleOpenModal(event, 'deleteTask'); }}>
 								<DeleteIcon fontSize='small'/>
 							</IconButton>
 						</FlexBox>
@@ -103,22 +89,20 @@ const Task: FC<TaskPropsModel> = ({
 			<ModalWindow
 				title={`Are you sure to delete the task "${title}"?`}
 				description="This action cannot be undone"
-				isOpened={isDeleteOpened}
-				closeFunc={() => { handleDeleteModal(null, false); }}
+				isOpened={deleteTaskModalState === id}
 			>
-				<Button onClick={() => { handleDeleteModal(null); }}>Cancel</Button>
+				<Button onClick={handleCloseModals}>Cancel</Button>
 				<Button onClick={handleDelete} variant='outlined' autoFocus>
             Delete
 				</Button>
 			</ModalWindow>
 			<ModalWindow
 				title={<ModalTitleNode
-					closeFn={() => { handleDetailedModal(null, false); }}
+					closeFn={handleCloseModals}
 					firstRow={`Task ID: ${id}`}
 					secondRow={`Owner: ${userId}`}
 				/>}
-				isOpened={isDetailedOpened}
-				closeFunc={() => { handleDetailedModal(null, false); }}
+				isOpened={detailsTaskModalState === id}
 			>
 				<TaskDetails
 					title={title}

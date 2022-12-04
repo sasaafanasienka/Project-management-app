@@ -14,13 +14,22 @@ export interface InitialStateColumnModel {
 
 export interface NewColumnPropsModel {
   title: string;
-  boardid: string;
-  // owner: string;
-  // users: Array<string>;
+  boardId: string;
 }
 
 export interface UpdateColumnPropsModel {
   title?: string;
   order?: number;
+}
+
+export interface UpdateColumnModel {
+  boardId: string;
+  columnId: string;
+  body: UpdateColumnPropsModel
+}
+
+export interface DeleteColumnModel {
+  boardId: string,
+  columnId: string
 }
 

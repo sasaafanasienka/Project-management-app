@@ -1,21 +1,21 @@
 import {
-	FC, ReactElement, useState, MouseEvent,
+	FC, ReactElement, SyntheticEvent,
 } from 'react';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import IconButton from '@mui/material/IconButton';
 import Button from '@mui/material/Button';
 import Link from 'next/link';
-import { toast } from 'react-toastify';
 import StyledBoardLink from './StyledBoardLink';
 import { BoardLinkPropsModel } from './interfaces';
 import FlexBox from '../styled/FlexBox';
 import ModalWindow from '../modal/ModalWindow';
-import { ModalWindowStateModel } from '../modal/interfaces';
-import { useAppDispatch } from '../../redux/store';
+import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { deleteBoard, updateBoard } from '../../redux/slices/boardSlice';
 import NewBoardForm from '../newBoardForm/NewBoardForm';
 import { BoardModel } from '../../redux/slices/boardSlice/interfaces';
+import { closeModals, openModal } from '../../redux/slices/modalsSlice';
+import { ModalNameModel } from '../../redux/slices/modalsSlice/interfaces';
 
 
 const BoardLink: FC<BoardLinkPropsModel> = (props): ReactElement => {
@@ -24,46 +24,33 @@ const BoardLink: FC<BoardLinkPropsModel> = (props): ReactElement => {
 	} = { ...props.board };
 	const dispatch = useAppDispatch();
 
-	const [isDeleteModalOpened, setDeleteModalOpened] = useState<ModalWindowStateModel>(false);
-	const [isEditModalOpened, setEditModalOpened] = useState<boolean>(false);
+	const editBoardModalState = useAppSelector((state) => state.modals.editBoard);
+	const deleteBoardModalState = useAppSelector((state) => state.modals.deleteBoard);
 
-	const openDeleteModal = (event: MouseEvent): void => {
+	const handleOpenModal = (event: SyntheticEvent, name: ModalNameModel) => {
+		event.stopPropagation();
 		event.preventDefault();
-		setDeleteModalOpened(true);
+		dispatch(openModal({ name, id }));
 	};
 
-	const closeDeleteModal = (): void => {
-		setDeleteModalOpened(false);
+	const handleCloseModals = () => {
+		dispatch(closeModals());
 	};
 
 	const handleDeleteBoard = (): void => {
 		dispatch(deleteBoard({ boardId: id }))
 			.unwrap()
 			.then(() => {
-				toast.success(`Board ${title} has been successfully deleted`);
-				closeDeleteModal();
-			})
-			.catch((error) => toast.error(`An error has occured: ${error}`));
-	};
-
-	const openEditModal = (event: MouseEvent): void => {
-		event.preventDefault();
-		setEditModalOpened(true);
-	};
-
-	const closeEditModal = (): void => {
-		setEditModalOpened(false);
+				dispatch(closeModals());
+			});
 	};
 
 	const handleUpdate = (data: BoardModel) => {
 		dispatch(updateBoard({ boardId: id, body: data }))
 			.unwrap()
-			.then((responseData) => {
-				toast.success(`The Board "${responseData.title}" was successfully updated`);
-				console.log(responseData);
-				closeEditModal();
-			})
-			.catch((error) => toast.error(`An error has occured: ${error}`));
+			.then(() => {
+				dispatch(closeModals());
+			});
 	};
 
 	return (
@@ -72,10 +59,16 @@ const BoardLink: FC<BoardLinkPropsModel> = (props): ReactElement => {
 				<StyledBoardLink owned={invited}>
 					<h3>{ title }</h3>
 					<FlexBox justifyContent='flex-end' gap='0'>
-						<IconButton aria-label="delete" size="small" onClick={openEditModal}>
+						<IconButton
+							aria-label="delete"
+							size="small"
+							onClick={(event) => { handleOpenModal(event, 'editBoard'); }}>
 							<EditIcon fontSize='small' color='disabled' />
 						</IconButton>
-						<IconButton aria-label="delete" size="small" onClick={openDeleteModal}>
+						<IconButton
+							aria-label="delete"
+							size="small"
+							onClick={(event) => { handleOpenModal(event, 'deleteBoard'); }}>
 							<DeleteIcon fontSize='small' color='disabled' />
 						</IconButton>
 					</FlexBox>
@@ -85,23 +78,21 @@ const BoardLink: FC<BoardLinkPropsModel> = (props): ReactElement => {
 			<ModalWindow
 				title={`Are you sure to delete the board "${title}"?`}
 				description="This action cannot be undone"
-				isOpened={isDeleteModalOpened}
-				closeFunc={closeDeleteModal}
+				isOpened={deleteBoardModalState === id}
 			>
-				<Button onClick={closeDeleteModal}>Cancel</Button>
+				<Button onClick={handleCloseModals}>Cancel</Button>
 				<Button onClick={handleDeleteBoard} variant='contained' autoFocus>
             Delete
 				</Button>
 			</ModalWindow>
 			<ModalWindow
 				title={`Udpate Board "${title}"`}
-				isOpened={isEditModalOpened}
-				closeFunc={closeEditModal}
+				isOpened={editBoardModalState === id}
 			>
 				<NewBoardForm
 					updateMode={{ assignedUsers: users, currentTitle: title }}
 					onSubmit={handleUpdate}
-					onClose={closeEditModal} />
+					onClose={handleCloseModals} />
 			</ModalWindow>
 		</>
 	);

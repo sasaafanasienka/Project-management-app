@@ -1,27 +1,22 @@
 import {
 	Button, FormControl, InputLabel, MenuItem, OutlinedInput, Select, SelectChangeEvent, TextField,
 } from '@mui/material';
-import React, { FC, ReactElement, useEffect } from 'react';
+import React, { FC, ReactElement } from 'react';
 import { useForm } from 'react-hook-form';
-import { getUserBoards } from '../../redux/slices/boardSlice';
-import { BoardModel } from '../../redux/slices/boardSlice/interfaces';
-import { getAllUsers } from '../../redux/slices/userSlice';
+import { CreateTaskBodyModel } from '../../redux/slices/tasksSlice/interfaces';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import ModalUserTag from '../modal/modalUserTag/modalUserTag';
 import FlexBox from '../styled/FlexBox';
+import { NewBoardFormProps } from './interfaces';
 import StyledNewBoardForm from './StyledNewTaskForm';
 
-export interface NewBoardFormProps {
-  onSubmit: (arg0: BoardModel) => void;
-  onClose: () => void;
-}
-
-const NewTaskForm: FC<NewBoardFormProps> = ({ onSubmit, onClose, boardid }): ReactElement => {
+const NewTaskForm: FC<NewBoardFormProps> = ({ onSubmit, onClose, boardId }): ReactElement => {
 	const dispatch = useAppDispatch();
 
 	const boardUsersIds = useAppSelector((state) => {
 		if (state.boards) {
-			return (state.boards.boards.find((board) => board._id === boardid) as BoardModel).users;
+			const currentBoard = state.boards.boards.find((board) => board._id === boardId);
+			return currentBoard ? currentBoard.users : [];
 		}
 		return [];
 	});
@@ -29,10 +24,6 @@ const NewTaskForm: FC<NewBoardFormProps> = ({ onSubmit, onClose, boardid }): Rea
 	const boardUsers = useAppSelector((state) => state.user.usersAll.filter(
 		(user) => boardUsersIds.includes(user._id),
 	));
-
-	useEffect(() => {
-		dispatch(getAllUsers());
-	}, [dispatch]);
 
 	const [personName, setPersonName] = React.useState<string[]>([]);
 
@@ -64,12 +55,12 @@ const NewTaskForm: FC<NewBoardFormProps> = ({ onSubmit, onClose, boardid }): Rea
 	};
 
 	const {
-		register, handleSubmit, formState: {
+		register, handleSubmit, getValues, formState: {
 			errors, isDirty,
 		},
-	} = useForm<BoardModel>();
+	} = useForm<CreateTaskBodyModel>();
 	return (
-		<StyledNewBoardForm onSubmit={handleSubmit(onSubmit)}>
+		<StyledNewBoardForm onSubmit={handleSubmit(() => { onSubmit(getValues()); })}>
 			<FlexBox column alignItems='stretch'>
 				<TextField label="Title" variant="outlined" {...register('title', {
 					required: 'Please enter task title',

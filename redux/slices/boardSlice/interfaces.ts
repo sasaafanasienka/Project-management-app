@@ -3,6 +3,7 @@ export interface BoardModel {
   title: string;
   owner: string;
   users: Array<string>;
+  boarId?: string;
 }
 
 export interface BoardUserModel extends BoardModel{
