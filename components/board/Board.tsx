@@ -128,40 +128,47 @@ const Board: FC<BoardPropsModel> = (): ReactElement => {
 	return (
 		<>
 			<DragDropContext onDragEnd={handleDragEnd}>
-				<PageHeading
-					text={`Boards > ${currentBoard ? currentBoard.title : ''}`}
-				/>
-				<FlexBox
-					justifyContent='flex-start'
-					alignItems='flex-start'
-					wrap='nowrap'
-					width='max-content'
-				>
-					<Droppable droppableId='all-columns' direction='horizontal' type='columns' >
-						{(provided) => (
-							<FlexBox
-								width='max-content'
-								alignItems='stretch'
-								{...provided.droppableProps}
-								ref={provided.innerRef}
-								justifyContent='left' wrap='no-wrap'>
-								{(columns || []).map((column, index) => <Column
-									title={column.title}
-									id={column._id}
-									key={column._id}
-									index={index}
-									boardId={boardid}
-								/>)}
-								{provided.placeholder}
-							</FlexBox>
-						)}
-					</Droppable>
-					<Button color='info' onClick={handleModal}>
-						<FlexBox alignItems='center' justifyContent='center' gap='0'>
-							<AddIcon fontSize='small' />
+				<FlexBox column alignItems='left'>
+					<PageHeading
+						text={`Boards > ${currentBoard ? currentBoard.title : ''}`}
+					/>
+					<FlexBox justifyContent='flex-end'>
+						<Button color='secondary' aria-label="add-new" size="small" onClick={handleModal}>
+							<AddIcon fontSize='small' color='secondary' /> Add new Column
+						</Button>
+					</FlexBox>
+					<FlexBox
+						justifyContent='flex-start'
+						alignItems='flex-start'
+						wrap='nowrap'
+						width='max-content'
+					>
+						<Droppable droppableId='all-columns' direction='horizontal' type='columns' >
+							{(provided) => (
+								<FlexBox
+									width='max-content'
+									alignItems='stretch'
+									{...provided.droppableProps}
+									ref={provided.innerRef}
+									justifyContent='left' wrap='no-wrap'>
+									{(columns || []).map((column, index) => <Column
+										title={column.title}
+										id={column._id}
+										key={column._id}
+										index={index}
+										boardId={boardid}
+									/>)}
+									{provided.placeholder}
+								</FlexBox>
+							)}
+						</Droppable>
+						<Button color='info' onClick={handleModal}>
+							<FlexBox alignItems='center' justifyContent='center' gap='0'>
+								<AddIcon fontSize='small' />
 						Add new column
-						</FlexBox>
-					</Button>
+							</FlexBox>
+						</Button>
+					</FlexBox>
 				</FlexBox>
 			</DragDropContext>
 			<ModalWindow
