@@ -40,7 +40,8 @@ export const getAllUsers = createAsyncThunk('user/getAllUsers', async (_, { reje
 			const { statusCode, message } = await response.json();
   			throw new Error(`${statusCode} ${message}`);
 		}
-		return await response.json();
+		const data = await response.json();
+		return data;
 	} catch (err) {
 		if (err instanceof Error) {
   			return rejectWithValue(`${err.message}`);

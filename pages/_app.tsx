@@ -28,8 +28,8 @@ function App({ Component, pageProps }: AppProps) {
 			const { id, login, exp } = decodeToken(token);
 			dispatch(restoreUserToken({ id, login, token }));
 			dispatch(getUserById());
-			dispatch(getUserBoards());
 			dispatch(getAllUsers());
+			dispatch(getUserBoards());
 			interval.current = setTimeout(() => {
 				dispatch(logOut());
 			}, exp * 1000 - Date.now());

@@ -25,16 +25,17 @@ const Task: FC<TaskPropsModel> = ({
 		}
 		return [];
 	});
-
-	const boardUsers = useAppSelector((state) => state.user.usersAll.filter(
+	const usersAll = useAppSelector((state) => state.user.usersAll);
+	const boardUsers = usersAll.filter(
 		(user) => boardUsersIds?.includes(user._id),
-	));
+	);
+
 	const deleteTaskModalState = useAppSelector((state) => state.modals.deleteTask);
 	const detailsTaskModalState = useAppSelector((state) => state.modals.detailsTask);
 	const currentUserId = useAppSelector((state) => state.user.user.id);
 
-	const owner = boardUsers
-		? boardUsers.find((user) => user._id === userId)?.login
+	const owner = usersAll
+		? usersAll.find((user) => user._id === userId)?.login
 		: '';
 
 	const isOwn = currentUserId === userId;
