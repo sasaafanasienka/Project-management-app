@@ -14,7 +14,7 @@ const UpdateTitleInput: FC<UpdateTitleInputProps> = ({
 }): ReactElement => (
 	<StyledUpdateTitleInputs>
 		<TextareaAutosize value={value} onChange={onChange} style={{ width: '100%' }} />
-		<FlexBox wrap='no-wrap' noFullWidth gap='0'>
+		<FlexBox wrap='no-wrap' width='auto' gap='0'>
 			<IconButton onClick={onConfirm} aria-label="confirm" size="small">
 				<CheckIcon color='success' />
 			</IconButton>

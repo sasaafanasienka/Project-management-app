@@ -131,10 +131,16 @@ const Board: FC<BoardPropsModel> = (): ReactElement => {
 				<PageHeading
 					text={`Boards > ${currentBoard ? currentBoard.title : ''}`}
 				/>
-				<FlexBox justifyContent='flex-start' alignItems='flex-start' wrap='nowrap'>
+				<FlexBox
+					justifyContent='flex-start'
+					alignItems='flex-start'
+					wrap='nowrap'
+					width='max-content'
+				>
 					<Droppable droppableId='all-columns' direction='horizontal' type='columns' >
 						{(provided) => (
 							<FlexBox
+								width='max-content'
 								alignItems='stretch'
 								{...provided.droppableProps}
 								ref={provided.innerRef}
