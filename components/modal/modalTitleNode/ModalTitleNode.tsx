@@ -15,9 +15,11 @@ const ModalTitleNode: FC<ModalTitleNodeProps> = ({
 			<span>
 				{firstRow}
 			</span>
-			<span>
+			{secondRow
+			&& <span>
 				{secondRow}
 			</span>
+			}
 		</FlexBox>
 		<IconButton onClick={closeFn}
 			color="secondary"

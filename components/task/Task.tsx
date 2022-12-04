@@ -100,7 +100,6 @@ const Task: FC<TaskPropsModel> = ({
 				title={<ModalTitleNode
 					closeFn={handleCloseModals}
 					firstRow={`Task ID: ${id}`}
-					secondRow={`Owner: ${userId}`}
 				/>}
 				isOpened={detailsTaskModalState === id}
 			>
