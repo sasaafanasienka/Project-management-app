@@ -5,7 +5,7 @@ import {
 } from '@reduxjs/toolkit';
 import { toast } from 'react-toastify';
 import {
-	TaskModel, InitialStateTaskModel, UpdateTaskBodyModel, CreateTaskModel, UpdateTaskModel, BoardTasksModel
+	TaskModel, InitialStateTaskModel, UpdateTaskBodyModel, CreateTaskModel, UpdateTaskModel, BoardTasksModel, UpdateTaskPropsModel,
 } from './interfaces';
 import { BASE_URL } from '../../../config';
 import { readCookie } from '../../../utils/cookieUtilities';
@@ -79,14 +79,14 @@ export const getTasksInBoard = createAsyncThunk<
 
 export const createTask = createAsyncThunk<
   TaskModel,
-  { boardid: string, columnId: string, formData: UpdateTaskPropsModel, order: number },
+  { boardId: string, columnId: string, formData: UpdateTaskPropsModel, order: number },
   { rejectValue: string }
 >('tasks/createTask', async (props, { rejectWithValue, getState }) => {
 	const state = getState() as ReturnType<Store['getState']>;
 	const userId = state.user.user.id;
 	const token = readCookie('token');
 	const {
-		boardid, columnId, formData, order,
+		boardId, columnId, formData, order,
 	} = { ...props };
 	try {
 		const response = await fetch(`${BASE_URL}boards/${boardId}/columns/${columnId}/tasks`, {

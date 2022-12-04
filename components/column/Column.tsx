@@ -22,10 +22,10 @@ import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { deleteColumn, updateColumn } from '../../redux/slices/columnSlice';
 import { createTask, getTasksInBoard, getTasksInColumn } from '../../redux/slices/tasksSlice';
 import NewTaskForm from '../newTaskForm/NewTaskForm';
-import { CreateTaskBodyModel } from '../../redux/slices/tasksSlice/interfaces';
+import { CreateTaskBodyModel, TaskModel } from '../../redux/slices/tasksSlice/interfaces';
 import { ModalNameModel } from '../../redux/slices/modalsSlice/interfaces';
 import { closeModals, openModal } from '../../redux/slices/modalsSlice';
-import { TaskModel } from '../../redux/slices/tasksSlice/interfaces';
+
 
 const Column: FC<ColumnPropsModel> = (props): ReactElement => {
 	const dispatch = useAppDispatch();
@@ -89,7 +89,7 @@ const Column: FC<ColumnPropsModel> = (props): ReactElement => {
 	const handleSubmit = (formData: CreateTaskBodyModel) => {
 		if (formData) {
 			dispatch(createTask({
-				boardid: boardId, columnId: id, formData, order: columnTasks.length,
+				boardId, columnId: id, formData, order: columnTasks.length,
 			}))
 				.unwrap()
 				.then(() => {
