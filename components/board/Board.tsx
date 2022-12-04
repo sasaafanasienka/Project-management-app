@@ -29,7 +29,7 @@ const Board: FC<BoardPropsModel> = (): ReactElement => {
 	const { boardid } = router.query;
 
 	const tasks = useAppSelector((state) => state.tasks.boardTasks);
-	// const boards = useAppSelector((state) => state.boards);
+	const boards = useAppSelector((state) => state.boards);
 	const columns = useAppSelector((state) => state.columns.columns);
 
 	const currentBoard = boards.boards.find((el) => el._id === boardid);
