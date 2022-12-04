@@ -11,13 +11,15 @@ import PageHeading from '../pageHeading/PageHeading';
 import FlexBox from '../styled/FlexBox';
 import BoardPropsModel from './interfaces';
 import { useAppSelector, useAppDispatch } from '../../redux/store';
-import { createColumn, getBoardById, getBoardColumns, updateColumn } from '../../redux/slices/columnSlice';
+import {
+	createColumn, getBoardById, getBoardColumns, updateColumn,
+} from '../../redux/slices/columnSlice';
 import { getUserBoards } from '../../redux/slices/boardSlice';
 import ModalWindow from '../modal/ModalWindow';
 import { ModalWindowStateModel } from '../modal/interfaces';
 import NewColumnForm from '../newColumnForm/NewColumnForm';
 import { ColumnModel } from '../../redux/slices/columnSlice/interfaces';
-import { getTasksInBoard } from '../../redux/slices/tasksSlice';
+import { getTasksInBoard, updateTask } from '../../redux/slices/tasksSlice';
 
 
 const Board: FC<BoardPropsModel> = (): ReactElement => {
@@ -83,11 +85,9 @@ const Board: FC<BoardPropsModel> = (): ReactElement => {
 		}
 		if (type === 'columns') {
 			const colToUpdate = columns.filter((col) => col._id === draggableId);
-			console.log(source.index, destination.index);
 			const newColsOrder = columns.slice();
 			newColsOrder.splice(source.index, 1);
 			newColsOrder.splice(destination.index, 0, ...colToUpdate);
-			console.log(newColsOrder);
 			for (let i = 0; i <= newColsOrder.length - 1; i += 1) {
 				dispatch(updateColumn({
 					boardid,
@@ -97,7 +97,30 @@ const Board: FC<BoardPropsModel> = (): ReactElement => {
 			}
 		}
 		if (type === 'task') {
-			console.log(tasks);
+			if (destination.droppableId === source.droppableId) {
+				const columnTasks = tasks[source.droppableId];
+				console.log(columnTasks);
+				const taskToUpdate = columnTasks.filter((task) => task._id === draggableId);
+				const newTasksOrder = columnTasks.slice();
+				newTasksOrder.splice(source.index, 1);
+				newTasksOrder.splice(destination.index, 0, ...taskToUpdate);
+				console.log(newTasksOrder);
+				for (let i = 0; i <= newTasksOrder.length - 1; i += 1) {
+					dispatch(updateTask({
+						boardid,
+						columnId: source.droppableId,
+						taskId: newTasksOrder[i]._id,
+						body: {
+							title: newTasksOrder[i].title,
+							description: newTasksOrder[i].description,
+							columnId: newTasksOrder[i].columnId,
+							order: i,
+							userId: newTasksOrder[i].userId,
+							users: newTasksOrder[i].users,
+						},
+					}));
+				}
+			}
 			// console.log(destination, source, draggableId);
 		}
 	};
