@@ -19,7 +19,7 @@ import ModalWindow from '../modal/ModalWindow';
 import { ModalWindowStateModel } from '../modal/interfaces';
 import NewColumnForm from '../newColumnForm/NewColumnForm';
 import { ColumnModel } from '../../redux/slices/columnSlice/interfaces';
-import { getTasksInBoard, updateTask } from '../../redux/slices/tasksSlice';
+import { deleteWhileMoving, getTasksInBoard, pushWhileMoving, updateTask } from '../../redux/slices/tasksSlice';
 
 
 const Board: FC<BoardPropsModel> = (): ReactElement => {
@@ -46,8 +46,10 @@ const Board: FC<BoardPropsModel> = (): ReactElement => {
 	const dispatch = useAppDispatch();
 
 	useEffect(() => {
-		dispatch(getBoardColumns(boardid as string));
-		dispatch(getTasksInBoard(boardid as string));
+		if (boardid) {
+			dispatch(getBoardColumns(boardid as string));
+			dispatch(getTasksInBoard(boardid as string));
+		}
 	}, [boardid, dispatch]);
 
 	// useEffect(() => {
@@ -101,12 +103,10 @@ const Board: FC<BoardPropsModel> = (): ReactElement => {
 		if (type === 'task') {
 			if (destination.droppableId === source.droppableId) {
 				const columnTasks = tasks[source.droppableId];
-				console.log(columnTasks);
 				const taskToUpdate = columnTasks.filter((task) => task._id === draggableId);
 				const newTasksOrder = columnTasks.slice();
 				newTasksOrder.splice(source.index, 1);
 				newTasksOrder.splice(destination.index, 0, ...taskToUpdate);
-				console.log(newTasksOrder);
 				for (let i = 0; i <= newTasksOrder.length - 1; i += 1) {
 					dispatch(updateTask({
 						boardid,
@@ -122,8 +122,61 @@ const Board: FC<BoardPropsModel> = (): ReactElement => {
 						},
 					}));
 				}
+			} else {
+				const sourceColumnTasks = (tasks[source.droppableId] || []).slice();
+				const column = columns.filter((col) => col._id === source.droppableId);
+				const taskToUpdate = tasks[source.droppableId].filter((task) => task._id === draggableId);
+				const destinationColumnTasks = (tasks[destination.droppableId] || []).slice();
+				sourceColumnTasks.splice(source.index, 1);
+				destinationColumnTasks.splice(destination.index, 0, ...taskToUpdate);
+				dispatch(deleteWhileMoving({ sourceColumnId: source.droppableId, taskId: draggableId }));
+				dispatch(pushWhileMoving({ destColumnId: destination.droppableId, task: taskToUpdate[0] }));
+				for (let i = 0; i <= sourceColumnTasks.length - 1; i += 1) {
+					dispatch(updateTask({
+						boardid,
+						columnId: source.droppableId,
+						taskId: sourceColumnTasks[i]._id,
+						body: {
+							title: sourceColumnTasks[i].title,
+							description: sourceColumnTasks[i].description,
+							columnId: source.droppableId,
+							order: i,
+							userId: sourceColumnTasks[i].userId,
+							users: sourceColumnTasks[i].users,
+						},
+					}));
+				}
+				for (let i = 0; i <= destinationColumnTasks.length - 1; i += 1) {
+					if (destinationColumnTasks[i]._id === draggableId) {
+						dispatch(updateTask({
+							boardid,
+							columnId: source.droppableId,
+							taskId: destinationColumnTasks[i]._id,
+							body: {
+								title: destinationColumnTasks[i].title,
+								description: destinationColumnTasks[i].description,
+								columnId: destination.droppableId,
+								order: i,
+								userId: destinationColumnTasks[i].userId,
+								users: destinationColumnTasks[i].users,
+							},
+						}));
+					}
+					dispatch(updateTask({
+						boardid,
+						columnId: destination.droppableId,
+						taskId: destinationColumnTasks[i]._id,
+						body: {
+							title: destinationColumnTasks[i].title,
+							description: destinationColumnTasks[i].description,
+							columnId: destination.droppableId,
+							order: i,
+							userId: destinationColumnTasks[i].userId,
+							users: destinationColumnTasks[i].users,
+						},
+					}));
+				}
 			}
-			// console.log(destination, source, draggableId);
 		}
 	};
 
