@@ -5,6 +5,7 @@ const StyledMain = styled.main`
   width: 100%;
   overflow: auto;
   padding: 22px 20px;
+  position: relative;
 `;
 
 export default StyledMain;

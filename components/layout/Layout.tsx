@@ -7,9 +7,15 @@ import Main from '../main/main';
 import MainContent from '../mainСontent/MainСontent';
 import { LayoutPropsModel } from './interfaces';
 import 'react-toastify/dist/ReactToastify.css';
+import Loader from '../loader/Loader';
+import { useAppSelector } from '../../redux/store';
 
 const Layout: FC<LayoutPropsModel> = (props): ReactElement => {
 	const { children } = { ...props };
+	const isBoardsLoading = useAppSelector((state) => state.boards.isLoading);
+	const isColumnsLoading = useAppSelector((state) => state.columns.isLoading);
+	const isTasksLoading = useAppSelector((state) => state.tasks.isLoading);
+	const isUserLoading = useAppSelector((state) => state.user.isLoading);
 
 	return (
 		<>
@@ -17,7 +23,12 @@ const Layout: FC<LayoutPropsModel> = (props): ReactElement => {
 			<MainContent>
 				<Aside></Aside>
 				<Main>
-					{children}
+					{ (isBoardsLoading || isColumnsLoading || isTasksLoading || isUserLoading)
+						&& <Loader />
+					}
+
+					{ children }
+
 					<ToastContainer
 						position="bottom-right"
 						autoClose={3000}
