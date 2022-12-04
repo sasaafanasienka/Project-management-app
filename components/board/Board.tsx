@@ -6,7 +6,6 @@ import { Button } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import { DragDropContext, Droppable, DropResult } from 'react-beautiful-dnd';
 import Column from '../column/Column';
-import { ColumnPropsModel } from '../column/interfaces';
 import PageHeading from '../pageHeading/PageHeading';
 import FlexBox from '../styled/FlexBox';
 import BoardPropsModel from './interfaces';
@@ -14,7 +13,6 @@ import { useAppSelector, useAppDispatch } from '../../redux/store';
 import {
 	createColumn, getBoardById, getBoardColumns, updateColumn,
 } from '../../redux/slices/columnSlice';
-import { getUserBoards } from '../../redux/slices/boardSlice';
 import ModalWindow from '../modal/ModalWindow';
 import { ModalWindowStateModel } from '../modal/interfaces';
 import NewColumnForm from '../newColumnForm/NewColumnForm';
@@ -92,7 +90,7 @@ const Board: FC<BoardPropsModel> = (): ReactElement => {
 			newColsOrder.splice(destination.index, 0, ...colToUpdate);
 			for (let i = 0; i <= newColsOrder.length - 1; i += 1) {
 				dispatch(updateColumn({
-					boardid,
+					boardId: boardid,
 					columnId: newColsOrder[i]._id,
 					body: { title: newColsOrder[i].title, order: i },
 				}));
@@ -109,7 +107,7 @@ const Board: FC<BoardPropsModel> = (): ReactElement => {
 				console.log(newTasksOrder);
 				for (let i = 0; i <= newTasksOrder.length - 1; i += 1) {
 					dispatch(updateTask({
-						boardid,
+						boardId: boardid,
 						columnId: source.droppableId,
 						taskId: newTasksOrder[i]._id,
 						body: {

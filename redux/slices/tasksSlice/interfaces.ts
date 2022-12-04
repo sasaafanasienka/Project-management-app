@@ -19,7 +19,8 @@ export interface CreateTaskBodyModel {
 export interface CreateTaskModel {
   boardId: string,
   columnId: string,
-  formData: CreateTaskBodyModel,
+  formData: CreateTaskBodyModel
+}
 
 export interface BoardTasksModel {
   [K: string]: TaskModel[]
@@ -42,6 +43,7 @@ export interface UpdateTaskModel {
   columnId: string,
   taskId: string,
   body: UpdateTaskBodyModel
+}
 
 export interface UpdateTaskPropsModel {
   title: string;
