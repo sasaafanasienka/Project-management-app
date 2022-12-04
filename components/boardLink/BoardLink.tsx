@@ -62,13 +62,13 @@ const BoardLink: FC<BoardLinkPropsModel> = (props): ReactElement => {
 						<IconButton
 							aria-label="delete"
 							size="small"
-							onClick={(event) => { handleOpenModal(event, 'deleteBoard'); }}>
+							onClick={(event) => { handleOpenModal(event, 'editBoard'); }}>
 							<EditIcon fontSize='small' color='disabled' />
 						</IconButton>
 						<IconButton
 							aria-label="delete"
 							size="small"
-							onClick={(event) => { handleOpenModal(event, 'editBoard'); }}>
+							onClick={(event) => { handleOpenModal(event, 'deleteBoard'); }}>
 							<DeleteIcon fontSize='small' color='disabled' />
 						</IconButton>
 					</FlexBox>
