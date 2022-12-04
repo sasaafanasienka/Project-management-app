@@ -17,10 +17,10 @@ export interface TaskModel {
   boardid: string;
   columnId: string;
   description: string;
-  moveTask: any;
-  id: string;
-  index: number;
-  columnIndex: number;
+  // moveTask: any;
+  // id: string;
+  // index: number;
+  // columnIndex: number;
   userId: number;
   users: Array<string>;
 }
