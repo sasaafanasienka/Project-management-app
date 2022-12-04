@@ -6,6 +6,11 @@ export const StyledFormWrapper = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
+  position: absolute;
+  top: 0;
+  left: -20px;
+  background-color: rgba(255, 255, 255, 0.8);
+  z-index: 10;
 `;
 
 export const StyledFormContent = styled.div`
