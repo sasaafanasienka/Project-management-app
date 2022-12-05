@@ -30,7 +30,7 @@ const Layout: FC<LayoutPropsModel> = (props): ReactElement => {
 
 					<ToastContainer
 						position="bottom-right"
-						autoClose={3000}
+						autoClose={1800}
 						hideProgressBar={false}
 						newestOnTop={false}
 						closeOnClick
