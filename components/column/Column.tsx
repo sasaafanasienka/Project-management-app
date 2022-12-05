@@ -26,6 +26,15 @@ import { closeModals, openModal } from '../../redux/slices/modalsSlice';
 
 
 const Column: FC<ColumnPropsModel> = (props): ReactElement => {
+	const {
+		addTaskBtn,
+		cancelBtn,
+		deleteBtn,
+		confirmationDeleteColumn,
+		confirmationDescription,
+		createTaskHeader,
+	} = useAppSelector((state) => state.lang.text);
+
 	const dispatch = useAppDispatch();
 	const {
 		title, index, id, boardId,
@@ -133,7 +142,7 @@ const Column: FC<ColumnPropsModel> = (props): ReactElement => {
 							onClick={(event) => { handleOpenModal(event, 'newTask'); }}>
 							<FlexBox alignItems='center' justifyContent='center' gap='0'>
 								<AddIcon fontSize='small' />
-							Add new task
+								{addTaskBtn}
 							</FlexBox>
 						</Button>
 						<Droppable droppableId={id} type='task' key={id}>
@@ -162,17 +171,17 @@ const Column: FC<ColumnPropsModel> = (props): ReactElement => {
 				)}
 			</Draggable>
 			<ModalWindow
-				title={`Are you sure to delete the column "${title}"?`}
-				description="This action cannot be undone"
+				title={`${confirmationDeleteColumn} "${title}"?`}
+				description={confirmationDescription}
 				isOpened={deleteColumnModalState === id}
 			>
-				<Button onClick={handleCloseModals}>Cancel</Button>
+				<Button onClick={handleCloseModals}>{cancelBtn}</Button>
 				<Button onClick={deleteItem} variant='contained' autoFocus>
-            Delete
+					{deleteBtn}
 				</Button>
 			</ModalWindow>
 			<ModalWindow
-				title={'Create new Task'}
+				title={createTaskHeader}
 				isOpened={newTaskModalState === id}
 			>
 				<NewTaskForm

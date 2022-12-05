@@ -2,10 +2,17 @@ import { ToggleButtonGroup, ToggleButton } from '@mui/material';
 import {
 	FC, ReactElement, useState, MouseEvent,
 } from 'react';
+import { useAppSelector } from '../../../redux/store';
 import { BoardFilterBarProps, FilterOptionsModel } from './interfaces';
 import StyledSideLine from './StyledSideLine';
 
 const BoardFilterBar: FC<BoardFilterBarProps> = ({ onChange }): ReactElement => {
+	const {
+		filterAllBoards,
+		filterOwnBoards,
+		filterGuestBoards,
+	} = useAppSelector((state) => state.lang.text);
+
 	const [alignment, setAlignment] = useState<FilterOptionsModel>(FilterOptionsModel.all);
 
 	const handleChange = (
@@ -25,11 +32,13 @@ const BoardFilterBar: FC<BoardFilterBarProps> = ({ onChange }): ReactElement => 
 			aria-label="Board owner filtering"
 			size='small'
 		>
-			<ToggleButton value={FilterOptionsModel.all}>All</ToggleButton>
+			<ToggleButton value={FilterOptionsModel.all}>{filterAllBoards}</ToggleButton>
 			<ToggleButton value={FilterOptionsModel.own}><StyledSideLine owned />
-				Own Boards
+				{filterOwnBoards}
 			</ToggleButton>
-			<ToggleButton value={FilterOptionsModel.guest}><StyledSideLine /> Guest Boards</ToggleButton>
+			<ToggleButton value={FilterOptionsModel.guest}>
+				<StyledSideLine />{filterGuestBoards}
+			</ToggleButton>
 		</ToggleButtonGroup>
 	);
 };

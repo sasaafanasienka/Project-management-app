@@ -22,7 +22,14 @@ import { ModalNameModel } from '../../redux/slices/modalsSlice/interfaces';
 
 
 const BoardLink: FC<BoardLinkPropsModel> = (props): ReactElement => {
-	const { cannotDelete } = useAppSelector((state) => state.lang.text);
+	const {
+		cannotDelete,
+		confirmationDeleteBoard,
+		confirmationDescription,
+		cancelBtn,
+		deleteBtn,
+		updateBoardHeader,
+	} = useAppSelector((state) => state.lang.text);
 
 	const {
 		title, _id: id, invited, users,
@@ -76,7 +83,7 @@ const BoardLink: FC<BoardLinkPropsModel> = (props): ReactElement => {
 							<InfoIcon fontSize='small' color='disabled' />
 						</IconButton>
 						<Tooltip
-							title={invited ? "you can't delete a board that isn't your own" : null} arrow placement='top'
+							title={invited ? cannotDelete : null} arrow placement='top'
 							followCursor
 						>
 							<IconButton
@@ -91,17 +98,17 @@ const BoardLink: FC<BoardLinkPropsModel> = (props): ReactElement => {
 				</StyledBoardLink>
 			</Link>
 			<ModalWindow
-				title={`Are you sure to delete the board "${title}"?`}
-				description="This action cannot be undone"
+				title={`${confirmationDeleteBoard} "${title}"?`}
+				description={confirmationDescription}
 				isOpened={deleteBoardModalState === id}
 			>
-				<Button onClick={handleCloseModals}>Cancel</Button>
+				<Button onClick={handleCloseModals}>{cancelBtn}</Button>
 				<Button onClick={handleDeleteBoard} variant='contained' autoFocus>
-            Delete
+					{deleteBtn}
 				</Button>
 			</ModalWindow>
 			<ModalWindow
-				title={`Udpate Board "${title}"`}
+				title={`${updateBoardHeader} "${title}"`}
 				isOpened={editBoardModalState === id}
 			>
 				<NewBoardForm
