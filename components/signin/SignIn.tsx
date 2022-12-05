@@ -12,21 +12,23 @@ import ValidationForm from '../validationForm/ValidationForm';
 const SignIn: FC = (): ReactElement => {
 	const formActionText = useAppSelector((state) => state.lang.text.singIn);
 	const bottomLinkTxt = useAppSelector((state) => state.lang.text.noAccount);
-	const linkTo = useAppSelector((state) => state.lang.text.singUp).split(' ').join('');
+	const linkTo = useAppSelector((state) => state.lang.text.singUp);
 	const headerText = useAppSelector((state) => state.lang.text.singInGreet);
 	const headerMessage = useAppSelector((state) => state.lang.text.singInMessage);
 	const dispatch = useAppDispatch();
 	const router = useRouter();
+	const toastSuccess = useAppSelector((state) => state.lang.text.toastSuccessLogIn);
+	const toastFailure = useAppSelector((state) => state.lang.text.toastFailureLogIn);
 
 	const onSubmit = (data: UserUpdateFormDataModel) => {
 		dispatch(logInUser(data))
 			.unwrap()
 			.then(() => {
-				toast.success('Successfully Logged In');
+				toast.success(`${toastSuccess}`);
 				dispatch(getUserById());
 				router.push('/boards', undefined, { shallow: true });
 			})
-			.catch((err) => toast.error(`An error has occured: ${err}`));
+			.catch(() => toast.error(`${toastFailure}`));
 	};
 
 	return (
@@ -39,7 +41,7 @@ const SignIn: FC = (): ReactElement => {
 				onSubmit={onSubmit}
 				isSigningIn
 			/>
-			<BottomLink text={bottomLinkTxt} linkTo={linkTo}/>
+			<BottomLink text={bottomLinkTxt} linkTo='signup' linkText={linkTo}/>
 		</FormWrapper>
 	);
 };

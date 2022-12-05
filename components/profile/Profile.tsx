@@ -24,6 +24,14 @@ const Profile: FC = (): ReactElement => {
 	const modalDescrLang = useAppSelector((state) => state.lang.text.confirmation);
 	const cancelBtnLang = useAppSelector((state) => state.lang.text.cancelBtn);
 
+	const toastSuccess = useAppSelector((state) => state.lang.text.toastProfileUpdatedSuccess);
+	const toastFailure = useAppSelector((state) => state.lang.text.toastProfileUpdatedFailure);
+	const toastFailureLogin = useAppSelector(
+		(state) => state.lang.text.toastProfileUpdatedFailureLogin,
+	);
+	const toastDeleteSuccess = useAppSelector((state) => state.lang.text.toastDeleteUserSuccess);
+	const toastDeleteFailure = useAppSelector((state) => state.lang.text.toastDeleteUserFailure);
+
 	const dispatch = useAppDispatch();
 
 	const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
@@ -33,11 +41,22 @@ const Profile: FC = (): ReactElement => {
 			.unwrap()
 			.then((responseData) => {
 				setIsModalOpen(false);
-				toast.success(`${responseData.name}, your account is updated`);
+				toast.success(`${responseData.name}, ${toastSuccess}`);
 				dispatch(logOut());
+				router.push('/signin', undefined, { shallow: true });
 			})
-			.catch((err) => toast.error(`An error has occured: ${err}`))
-			.finally(() => router.push('/signin', undefined, { shallow: true }));
+			.catch((err) => {
+				switch (err) {
+				case '409':
+					toast.error(`${toastFailureLogin}`);
+					break;
+				case '400':
+					toast.error(`${toastFailure}`);
+					break;
+				default:
+					break;
+				}
+			});
 	};
 
 	const handleDeleteUser = () => {
@@ -45,12 +64,12 @@ const Profile: FC = (): ReactElement => {
 			.unwrap()
 			.then((responseData) => {
 				setIsModalOpen(false);
-				toast.success(`${responseData.name}, your account has been deleted`);
+				toast.success(`${responseData.name}, ${toastDeleteSuccess}`);
 				dispatch(logOut());
 				router.push('/', undefined, { shallow: true });
 			})
 			.catch((err) => {
-				toast.error(`An error has occured: ${err.message}`);
+				toast.error(`${toastDeleteFailure}`);
 				setIsModalOpen(false);
 			});
 	};
