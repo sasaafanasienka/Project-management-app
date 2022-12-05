@@ -25,12 +25,11 @@ export const getBoardColumns = createAsyncThunk<
 	ColumnModel[],
 	{boardId: string},
 	{ rejectValue: string }
-	>('columns/getBoardColumns', async (boardId, { rejectWithValue, getState }) => {
+	>('columns/getBoardColumns', async (props, { rejectWithValue, getState }) => {
+		const { boardId } = { ...props };
 		const state = getState() as ReturnType<Store['getState']>;
-		const messages = state.lang.text;
 		const token = readCookie('token');
 		const URL: string = `${BASE_URL}boards/${boardId}/columns`;
-
 		try {
 			const response = await fetch(URL, {
 				method: 'GET',
@@ -90,15 +89,18 @@ export const getBoardById = createAsyncThunk<
 
 export const createColumn = createAsyncThunk<
   ColumnModel,
-  { boardid: string, formData: UpdateColumnPropsModel, order: number },
+  { boardId: string, formData: UpdateColumnPropsModel, order: number },
   { rejectValue: string }
 >('boards/createColumn', async (props, { rejectWithValue, getState }) => {
 	const state = getState() as ReturnType<Store['getState']>;
 	const messages = state.lang.text;
 	const { token } = state.user.user;
-	const { boardid, formData, order } = { ...props };
+	console.log(props);
+	const { boardId, formData, order } = { ...props };
+	console.log(boardId);
+	console.log(`${BASE_URL}boards/${boardId}/columns`);
 	try {
-		const response = await fetch(`${BASE_URL}boards/${boardid}/columns`, {
+		const response = await fetch(`${BASE_URL}boards/${boardId}/columns`, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',

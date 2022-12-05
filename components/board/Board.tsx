@@ -11,7 +11,7 @@ import FlexBox from '../styled/FlexBox';
 import BoardPropsModel from './interfaces';
 import { useAppSelector, useAppDispatch } from '../../redux/store';
 import {
-	createColumn, getBoardById, getBoardColumns, updateColumn,
+	createColumn, getBoardColumns, updateColumn,
 } from '../../redux/slices/columnSlice';
 import ModalWindow from '../modal/ModalWindow';
 import { ModalWindowStateModel } from '../modal/interfaces';
@@ -42,19 +42,19 @@ const Board: FC<BoardPropsModel> = (): ReactElement => {
 
 	useEffect(() => {
 		if (boardid) {
-			dispatch(getBoardColumns(boardid as string));
-			dispatch(getTasksInBoard(boardid as string));
+			dispatch(getBoardColumns({ boardId: boardid as string }));
+			dispatch(getTasksInBoard({ boardId: boardid as string }));
 		}
 	}, [boardid, dispatch]);
 
-	const handleModal = (event, value: boolean = !isModalOpened) => {
+	const handleModal = (value: boolean = !isModalOpened) => {
 		setIsModalOpened(value);
 	};
 	// const handleSubmit = (formData: BoardModel) => {
 	const handleSubmit = (formData: ColumnModel) => {
 		if (formData) {
 			const order = columns.length;
-			dispatch(createColumn({ boardid, formData, order }))
+			dispatch(createColumn({ boardId: boardid as string, formData, order }))
 				.then(() => {
 					handleModal(false);
 				});
@@ -80,7 +80,7 @@ const Board: FC<BoardPropsModel> = (): ReactElement => {
 			newColsOrder.splice(destination.index, 0, ...colToUpdate);
 			for (let i = 0; i <= newColsOrder.length - 1; i += 1) {
 				dispatch(updateColumn({
-					boardId: boardid,
+					boardId: boardid as string,
 					columnId: newColsOrder[i]._id,
 					body: { title: newColsOrder[i].title, order: i },
 				}));
@@ -95,7 +95,7 @@ const Board: FC<BoardPropsModel> = (): ReactElement => {
 				newTasksOrder.splice(destination.index, 0, ...taskToUpdate);
 				for (let i = 0; i <= newTasksOrder.length - 1; i += 1) {
 					dispatch(updateTask({
-						boardId: boardid,
+						boardId: boardid as string,
 						columnId: source.droppableId,
 						taskId: newTasksOrder[i]._id,
 						body: {
@@ -119,7 +119,7 @@ const Board: FC<BoardPropsModel> = (): ReactElement => {
 				dispatch(pushWhileMoving({ destColumnId: destination.droppableId, task: taskToUpdate[0] }));
 				for (let i = 0; i <= sourceColumnTasks.length - 1; i += 1) {
 					dispatch(updateTask({
-						boardid,
+						boardId: boardid as string,
 						columnId: source.droppableId,
 						taskId: sourceColumnTasks[i]._id,
 						body: {
@@ -135,7 +135,7 @@ const Board: FC<BoardPropsModel> = (): ReactElement => {
 				for (let i = 0; i <= destinationColumnTasks.length - 1; i += 1) {
 					if (destinationColumnTasks[i]._id === draggableId) {
 						dispatch(updateTask({
-							boardid,
+							boardId: boardid as string,
 							columnId: source.droppableId,
 							taskId: destinationColumnTasks[i]._id,
 							body: {
@@ -149,7 +149,7 @@ const Board: FC<BoardPropsModel> = (): ReactElement => {
 						}));
 					}
 					dispatch(updateTask({
-						boardid,
+						boardId: boardid as string,
 						columnId: destination.droppableId,
 						taskId: destinationColumnTasks[i]._id,
 						body: {
@@ -176,7 +176,12 @@ const Board: FC<BoardPropsModel> = (): ReactElement => {
 						<Typography sx={{ fontWeight: 700, fontSize: '20px' }} color="text.primary">{currentBoard ? currentBoard.title : ''}</Typography>
 					</Breadcrumbs>
 					<FlexBox justifyContent='flex-end'>
-						<Button color='secondary' aria-label="add-new" size="small" onClick={handleModal}>
+						<Button
+							color='secondary'
+							aria-label="add-new"
+							size="small"
+							onClick={() => { handleModal(); }}
+						>
 							<AddIcon fontSize='small' color='secondary' /> {addColumnBtn}
 						</Button>
 					</FlexBox>
@@ -199,13 +204,13 @@ const Board: FC<BoardPropsModel> = (): ReactElement => {
 										id={column._id}
 										key={column._id}
 										index={index}
-										boardId={boardid}
+										boardId={boardid as string}
 									/>)}
 									{provided.placeholder}
 								</FlexBox>
 							)}
 						</Droppable>
-						<Button color='info' onClick={handleModal}>
+						<Button color='info' onClick={() => { handleModal(); }}>
 							<FlexBox alignItems='center' justifyContent='center' gap='0'>
 								<AddIcon fontSize='small' />
 								{addColumnBtn}
@@ -217,7 +222,7 @@ const Board: FC<BoardPropsModel> = (): ReactElement => {
 			<ModalWindow
 				title={createColumnHeader}
 				isOpened={isModalOpened}
-				closeFunc={handleModal}
+				// closeFunc={() => { handleModal(); }}
 			>
 				<NewColumnForm onSubmit={handleSubmit} onClose={handleModal} />
 			</ModalWindow>
