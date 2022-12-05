@@ -7,6 +7,9 @@ import { toast } from 'react-toastify';
 import {
 	TaskModel,
 	InitialStateTaskModel,
+	UpdateTaskBodyModel,
+	CreateTaskModel,
+	UpdateTaskModel,
 	BoardTasksModel,
 	CreateTaskBodyModel,
 	UpdateTaskPropsModelFull,
@@ -157,10 +160,10 @@ TaskModel,
 >('tasks/updateTask', async (props, { rejectWithValue }) => {
 	const token = readCookie('token');
 	const {
-		boardId, columnId, taskId, body,
+		boardid, columnId, taskId, body,
 	} = { ...props };
 	try {
-		const response = await fetch(`${BASE_URL}boards/${boardId}/columns/${columnId}/tasks/${taskId}`, {
+		const response = await fetch(`${BASE_URL}boards/${boardid}/columns/${columnId}/tasks/${taskId}`, {
 			method: 'PUT',
 			headers: {
 				'Content-Type': 'application/json',
@@ -189,6 +192,15 @@ export const tasksSlice = createSlice({
 	name: 'tasks',
 	initialState,
 	reducers: {
+		deleteWhileMoving: (state, action: PayloadAction<{taskId: string; sourceColumnId: string}>) => {
+			const { taskId, sourceColumnId } = action.payload;
+			state.boardTasks[sourceColumnId] = state.boardTasks[sourceColumnId]
+				.filter((task) => task._id !== taskId);
+		},
+		pushWhileMoving: (state, action: PayloadAction<{task: TaskModel; destColumnId: string}>) => {
+			const { task, destColumnId } = action.payload;
+			state.boardTasks[destColumnId].push(task);
+		},
 	},
 	extraReducers: (builder) => {
 		builder.addCase(getTasksInColumn.pending, (state) => {
@@ -220,6 +232,7 @@ export const tasksSlice = createSlice({
 			getTasksInBoard.fulfilled,
 			(state, action) => {
 				state.isLoading = false;
+				state.tasks = action.payload;
 				state.boardTasks = action.payload.reduce<BoardTasksModel>((acc, curr) => {
 					if (!acc[curr.columnId]) {
 						acc[curr.columnId] = [];
@@ -277,12 +290,12 @@ export const tasksSlice = createSlice({
 			updateTask.fulfilled,
 			(state, action: PayloadAction<TaskModel>) => {
 				state.isLoading = false;
-				state.tasks = state.tasks.map((item) => {
-					if (item._id === action.payload._id) {
-						return action.payload;
-					}
-					return item;
-				});
+				// state.tasks = state.tasks.map((item) => {
+				// 	if (item._id === action.payload._id) {
+				// 		return action.payload;
+				// 	}
+				// 	return item;
+				// });
 				state.boardTasks[action.payload.columnId] = state.boardTasks[action.payload.columnId]
 					.map((task) => {
 						if (task._id === action.payload._id) {
@@ -290,6 +303,21 @@ export const tasksSlice = createSlice({
 						}
 						return task;
 					});
+				// if (!state.boardTasks[action.payload.columnId]) {
+				// 	state.boardTasks[action.payload.columnId] = [];
+				// 	state.boardTasks[action.payload.columnId].push(action.payload);
+				// } else if (state.boardTasks[action.payload.columnId]
+				// 	.map((task) => task._id).includes(action.payload._id)) {
+				// 	state.boardTasks[action.payload.columnId] = state.boardTasks[action.payload.columnId]
+				// 		.map((task) => {
+				// 			if (task._id === action.payload._id) {
+				// 				return action.payload;
+				// 			}
+				// 			return task;
+				// 		});
+				// } else {
+				// 	state.boardTasks[action.payload.columnId].push(action.payload);
+				// }
 				state.boardTasks[action.payload.columnId].sort((a, b) => a.order - b.order);
 			},
 		);
@@ -299,3 +327,5 @@ export const tasksSlice = createSlice({
 		});
 	},
 });
+
+export const { deleteWhileMoving, pushWhileMoving } = tasksSlice.actions;
