@@ -4,6 +4,7 @@ import {
 import { Tooltip } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
+import InfoIcon from '@mui/icons-material/Info';
 import IconButton from '@mui/material/IconButton';
 import Button from '@mui/material/Button';
 import Link from 'next/link';
@@ -17,6 +18,7 @@ import NewBoardForm from '../newBoardForm/NewBoardForm';
 import { BoardModel } from '../../redux/slices/boardSlice/interfaces';
 import { closeModals, openModal } from '../../redux/slices/modalsSlice';
 import { ModalNameModel } from '../../redux/slices/modalsSlice/interfaces';
+import { toast } from 'react-toastify';
 
 
 const BoardLink: FC<BoardLinkPropsModel> = (props): ReactElement => {
@@ -31,6 +33,9 @@ const BoardLink: FC<BoardLinkPropsModel> = (props): ReactElement => {
 	const handleOpenModal = (event: SyntheticEvent, name: ModalNameModel) => {
 		event.stopPropagation();
 		event.preventDefault();
+		if (invited) {
+			toast.warn('You cannot delete/edit boards you have been invited to');
+		}
 		if (!invited) {
 			dispatch(openModal({ name, id }));
 		}
@@ -66,7 +71,7 @@ const BoardLink: FC<BoardLinkPropsModel> = (props): ReactElement => {
 							aria-label="delete"
 							size="small"
 							onClick={(event) => { handleOpenModal(event, 'editBoard'); }}>
-							<EditIcon fontSize='small' color='disabled' />
+							<InfoIcon fontSize='small' color='disabled' />
 						</IconButton>
 						<Tooltip
 							title={invited ? "you can't delete a board that isn't your own" : null} arrow placement='top'
