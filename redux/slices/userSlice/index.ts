@@ -64,8 +64,8 @@ export const createUser = createAsyncThunk<
   			body: JSON.stringify(body),
   		});
   		if (!res.ok) {
-  			const { statusCode, message } = await res.json();
-  			throw new Error(`${statusCode} ${message}`);
+  			const { statusCode } = await res.json();
+  			throw new Error(`${statusCode}`);
   		}
   		return await res.json();
   	} catch (err) {

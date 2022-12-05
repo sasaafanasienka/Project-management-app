@@ -48,6 +48,11 @@ export const engLayout: LangLayoutModel = {
 	singUpMessage: 'Please create an account and we are set to go',
 	singInGreet: 'Welcome back',
 	singInMessage: 'Please sign in to go back to work',
+	toastSuccessLogIn: 'Congrats! You are successfully logged in',
+	toastFailureLogIn: 'Authorization error. Please make sure you have an account or check your login and password',
+	toastSuccessSignUp: 'welcome! Please Log In to proceed!',
+	toastFailureSignUpHasAccount: 'You already have an account, please sign in',
+	toastFailureSignUp: 'Authorization error! Please try again',
 };
 
 export const rusLayout: LangLayoutModel = {
@@ -98,4 +103,9 @@ export const rusLayout: LangLayoutModel = {
 	singUpMessage: 'Создать аккаунт - все что требуется для старта',
 	singInGreet: 'С возвращением',
 	singInMessage: 'Пожалуйста, авторизируйтесь, чтобы вернуться к работе',
+	toastSuccessLogIn: 'Ура! Вход в аккаунт выполнен!',
+	toastFailureLogIn: 'Ошибка авторизации. Проверьте введенные данные или зарегистрируйтесь',
+	toastSuccessSignUp: 'добро пожаловать! Пожалуйста, выполните вход в аккаунт!',
+	toastFailureSignUpHasAccount: 'У вас уже есть аккаунт, пожалуйста авторизируйтесь',
+	toastFailureSignUp: 'Ошибка авторизации! Пожалуйста, поробуйте снова',
 };

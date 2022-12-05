@@ -48,11 +48,16 @@ export interface LangLayoutModel {
   deleteUser: string;
   successCreated: string;
   successDeleted: string;
-  editProfile: string,
-  singUpGreet: string,
-	singUpMessage: string,
-	singInGreet: string,
-	singInMessage: string,
+  editProfile: string;
+  singUpGreet: string;
+	singUpMessage: string;
+	singInGreet: string;
+	singInMessage: string;
+  toastSuccessLogIn: string;
+  toastFailureLogIn: string;
+  toastSuccessSignUp: string;
+	toastFailureSignUpHasAccount: string;
+	toastFailureSignUp: string;
 }
 
 export interface InitialLangStateModel {

@@ -17,16 +17,18 @@ const SignIn: FC = (): ReactElement => {
 	const headerMessage = useAppSelector((state) => state.lang.text.singInMessage);
 	const dispatch = useAppDispatch();
 	const router = useRouter();
+	const toastSuccess = useAppSelector((state) => state.lang.text.toastSuccessLogIn);
+	const toastFailure = useAppSelector((state) => state.lang.text.toastFailureLogIn);
 
 	const onSubmit = (data: UserUpdateFormDataModel) => {
 		dispatch(logInUser(data))
 			.unwrap()
 			.then(() => {
-				toast.success('Successfully Logged In');
+				toast.success(`${toastSuccess}`);
 				dispatch(getUserById());
 				router.push('/boards', undefined, { shallow: true });
 			})
-			.catch((err) => toast.error(`An error has occured: ${err}`));
+			.catch(() => toast.error(`${toastFailure}`));
 	};
 
 	return (
