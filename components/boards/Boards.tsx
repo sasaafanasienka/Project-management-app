@@ -45,7 +45,6 @@ const Boards: FC = (): ReactElement => {
 	};
 
 	const handleFilterBoards = (option: FilterOptionsModel) => {
-		console.log(boards, boardsToDisplay);
 		switch (option) {
 		case FilterOptionsModel.all:
 			setBoardsToDisplay(boards);
