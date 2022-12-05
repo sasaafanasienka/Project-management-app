@@ -12,7 +12,7 @@ import ValidationForm from '../validationForm/ValidationForm';
 const SignUp: FC = (): ReactElement => {
 	const formActionText = useAppSelector((state) => state.lang.text.singUp);
 	const bottomLinkTxt = useAppSelector((state) => state.lang.text.hasAccount);
-	const linkTo = useAppSelector((state) => state.lang.text.singIn).split(' ').join('');
+	const linkTo = useAppSelector((state) => state.lang.text.singIn);
 	const headerText = useAppSelector((state) => state.lang.text.singUpGreet);
 	const headerMessage = useAppSelector((state) => state.lang.text.singUpMessage);
 
@@ -40,7 +40,7 @@ const SignUp: FC = (): ReactElement => {
 				resetForm
 				submitBtnTxt={formActionText}
 				onSubmit={onSubmit}/>
-			<BottomLink text={bottomLinkTxt} linkTo={linkTo}/>
+			<BottomLink text={bottomLinkTxt} linkTo='signin' linkText={linkTo}/>
 		</FormWrapper>
 	);
 };

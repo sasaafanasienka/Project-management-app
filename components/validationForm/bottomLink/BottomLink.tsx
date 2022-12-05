@@ -3,10 +3,10 @@ import { FC, ReactElement } from 'react';
 import { BottomLinkProps } from './interfaces';
 import StyledBottomLink from './StyledBottomLink';
 
-const BottomLink: FC<BottomLinkProps> = ({ text, linkTo }): ReactElement => (
+const BottomLink: FC<BottomLinkProps> = ({ text, linkTo, linkText }): ReactElement => (
 	<StyledBottomLink>
 		{text}
-		<Link color={'red'} href={`/${linkTo.toLowerCase()}`}>{linkTo}</Link>
+		<Link href={`/${linkTo}`}>{linkText}</Link>
 	</StyledBottomLink>
 );
 
