@@ -11,6 +11,7 @@ import {
 	CreateTaskModel,
 	UpdateTaskModel,
 	BoardTasksModel,
+	CreateTaskBodyModel,
 	UpdateTaskPropsModelFull,
 } from './interfaces';
 import { BASE_URL } from '../../../config';
@@ -25,12 +26,12 @@ const initialState: InitialStateTaskModel = {
 
 export const getTasksInColumn = createAsyncThunk<
 	TaskModel[],
-	{ boardid: string, columnId: string },
+	{ boardId: string, columnId: string },
 	{ rejectValue: string }
 	>('tasks/getTasksInColumn', async (props, { rejectWithValue }) => {
-		const { boardid, columnId } = { ...props };
+		const { boardId, columnId } = { ...props };
 		const token = readCookie('token');
-		const URL: string = `${BASE_URL}boards/${boardid}/columns/${columnId}/tasks`;
+		const URL: string = `${BASE_URL}boards/${boardId}/columns/${columnId}/tasks`;
 		try {
 			const response = await fetch(URL, {
 				method: 'GET',
@@ -85,14 +86,14 @@ export const getTasksInBoard = createAsyncThunk<
 
 export const createTask = createAsyncThunk<
   TaskModel,
-  { boardid: string, columnId: string, formData: UpdateTaskPropsModel, order: number },
+  { boardId: string, columnId: string, formData: CreateTaskBodyModel, order: number },
   { rejectValue: string }
 >('tasks/createTask', async (props, { rejectWithValue, getState }) => {
 	const state = getState() as ReturnType<Store['getState']>;
 	const userId = state.user.user.id;
 	const token = readCookie('token');
 	const {
-		boardid, columnId, formData, order,
+		boardId, columnId, formData, order,
 	} = { ...props };
 	try {
 		const response = await fetch(`${BASE_URL}boards/${boardId}/columns/${columnId}/tasks`, {
@@ -154,7 +155,7 @@ export const deleteTask = createAsyncThunk<
 
 export const updateTask = createAsyncThunk<
 TaskModel,
-  {boardid: string, columnId: string, taskId: string, body: UpdateTaskPropsModelFull},
+  {boardId: string, columnId: string, taskId: string, body: UpdateTaskPropsModelFull},
   { rejectValue: string }
 >('tasks/updateTask', async (props, { rejectWithValue }) => {
 	const token = readCookie('token');
