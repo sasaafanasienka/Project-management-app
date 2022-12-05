@@ -64,6 +64,7 @@ export interface LangLayoutModel {
   toastDeleteUserSuccess: string;
 	toastDeleteUserFailure: string;
   notFound: string;
+  errorBoundary: string;
 }
 
 export interface InitialLangStateModel {

@@ -59,6 +59,7 @@ export const engLayout: LangLayoutModel = {
 	toastDeleteUserSuccess: 'Account has been deleted',
 	toastDeleteUserFailure: 'A server error has occured',
 	notFound: 'Page was not found',
+	errorBoundary: 'Ooops.. Something went wrong',
 };
 
 export const rusLayout: LangLayoutModel = {
@@ -120,4 +121,5 @@ export const rusLayout: LangLayoutModel = {
 	toastDeleteUserSuccess: 'Аккаунт был удален',
 	toastDeleteUserFailure: 'Ошибка сервера, пожалуйста попробуйте снова',
 	notFound: 'страница не найдена',
+	errorBoundary: 'Упс... Что-то пошло не так',
 };

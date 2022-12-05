@@ -1,5 +1,6 @@
 import { Button, Link } from '@mui/material';
 import React, { Component, ErrorInfo } from 'react';
+import { useAppSelector } from '../../redux/store';
 import { ErrorBoundaryPropsModel, ErrorBoundaryStateModel } from './interfaces';
 import StyledErrorBoundary from './StyledErrorBoundary';
 
@@ -10,6 +11,10 @@ class ErrorBoundary extends Component<ErrorBoundaryPropsModel, ErrorBoundaryStat
 			hasError: false,
 		};
 	}
+
+	title = useAppSelector((state) => state.lang.text.errorBoundary);
+
+	btn = useAppSelector((state) => state.lang.text.navHome);
 
 	public static getDerivedStateFromError(): ErrorBoundaryStateModel {
 		// Update state so the next render will show the fallback UI.
@@ -25,9 +30,9 @@ class ErrorBoundary extends Component<ErrorBoundaryPropsModel, ErrorBoundaryStat
 		if (this.state.hasError) {
 			return (
 				<StyledErrorBoundary>
-					<h1>Ooops.. Something went wrong</h1>
+					<h1>{this.title}</h1>
 					<Link href='/'>
-						<Button variant="contained">GO TO HOME PAGE</Button>
+						<Button variant="contained">{this.btn}</Button>
 					</Link>
 				</StyledErrorBoundary>
 			);
