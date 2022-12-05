@@ -22,6 +22,8 @@ import StyledTaskDetails from './StyledTaskDetails';
 const TaskDetails: FC<TaskDetailsPropsModel> = ({
 	title, description, users, handleDelete, handleUpdate, boardUsers, userId, isOwn,
 }): ReactElement => {
+	const usersAll = useAppSelector((state) => state.user.usersAll);
+
 	const {
 		noTitleText,
 		noDescriptionText,
@@ -31,7 +33,7 @@ const TaskDetails: FC<TaskDetailsPropsModel> = ({
 		updateBtn,
 	} = useAppSelector((state) => state.lang.text);
 
-	const owner = boardUsers.find((user) => user._id === userId) as UserResponceModel;
+	const owner = usersAll.find((user) => user._id === userId) as UserResponceModel;
 
 	const [taskOwner, setTaskOwner] = useState<UserResponceModel>(owner);
 	const [taskUsers, setTaskUsers] = useState<string[]>(users);
