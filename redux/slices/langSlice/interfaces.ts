@@ -42,6 +42,9 @@ export interface LangLayoutModel {
   changeUser: string;
   assignTo: string;
   confirmation: string;
+  confirmationDeleteTask: string;
+  confirmationDeleteColumn: string;
+  confirmationDescription: string;
   deleteColumn: string;
   deleteTask: string;
   deleteBoard: string;
@@ -53,6 +56,8 @@ export interface LangLayoutModel {
 	singUpMessage: string,
 	singInGreet: string,
 	singInMessage: string,
+  ownerText: string,
+  taskIdText: string,
 }
 
 export interface InitialLangStateModel {

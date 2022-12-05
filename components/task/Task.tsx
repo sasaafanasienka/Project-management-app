@@ -17,8 +17,18 @@ import { TaskUpdateFormModel } from '../taskDetails/interfaces';
 import { ModalNameModel } from '../../redux/slices/modalsSlice/interfaces';
 
 const Task: FC<TaskPropsModel> = ({
+
 	title, description, id, columnId, userId, users, boardId, order, index,
 }): ReactElement => {
+	const {
+		ownerText,
+		confirmationDeleteTask,
+		confirmationDescription,
+		cancelBtn,
+		deleteBtn,
+		taskIdText,
+	} = useAppSelector((state) => state.lang.text);
+
 	const boardUsersIds = useAppSelector((state) => {
 		if (state.boards) {
 			return (state.boards.boards.find((board) => board._id === boardId) as BoardModel)?.users;
@@ -85,7 +95,7 @@ const Task: FC<TaskPropsModel> = ({
 						<h3>{ title }</h3>
 						<p>{description}</p>
 						<FlexBox justifyContent='space-between' wrap='no-wrap'>
-							<p>{`Owner: ${owner}`}</p>
+							<p>{`${ownerText}: ${owner}`}</p>
 							{owner && isOwn
 								? <IconButton
 									aria-label="delete"
@@ -101,19 +111,19 @@ const Task: FC<TaskPropsModel> = ({
 				)}
 			</Draggable>
 			<ModalWindow
-				title={`Are you sure to delete the task "${title}"?`}
-				description="This action cannot be undone"
+				title={`${confirmationDeleteTask} "${title}"?`}
+				description={confirmationDescription}
 				isOpened={deleteTaskModalState === id}
 			>
-				<Button onClick={handleCloseModals}>Cancel</Button>
+				<Button onClick={handleCloseModals}>{cancelBtn}</Button>
 				<Button onClick={handleDelete} variant='outlined' autoFocus>
-            Delete
+					{deleteBtn}
 				</Button>
 			</ModalWindow>
 			<ModalWindow
 				title={<ModalTitleNode
 					closeFn={handleCloseModals}
-					firstRow={`Task ID: ${id}`}
+					firstRow={`${taskIdText}: ${id}`}
 				/>}
 				isOpened={detailsTaskModalState === id}
 			>

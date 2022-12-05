@@ -37,6 +37,9 @@ export const engLayout: LangLayoutModel = {
 	changeUser: 'Change User',
 	assignTo: 'Assigned To: ',
 	confirmation: 'Are you sure? That action cannot be undone',
+	confirmationDeleteTask: 'Are you sureto delete the task',
+	confirmationDeleteColumn: 'Are you sureto delete the column',
+	confirmationDescription: 'That action cannot be undone',
 	deleteColumn: 'Column and assigned tasks will be deleted',
 	deleteTask: 'Task will be deleted',
 	deleteBoard: 'Board and assigned tasks will be deleted',
@@ -48,6 +51,9 @@ export const engLayout: LangLayoutModel = {
 	singUpMessage: 'Please create an account and we are set to go',
 	singInGreet: 'Welcome back',
 	singInMessage: 'Please sign in to go back to work',
+	ownerText: 'Owner',
+	taskIdText: 'Task ID',
+
 };
 
 export const rusLayout: LangLayoutModel = {
@@ -87,6 +93,9 @@ export const rusLayout: LangLayoutModel = {
 	changeUser: 'Сменить пользователя',
 	assignTo: 'Назначена: ',
 	confirmation: 'Вы уверены? Упущенного не вернуть назад',
+	confirmationDeleteTask: 'Вы уверены, что хотите удалить задачу',
+	confirmationDeleteColumn: 'Вы уверены, что хотите удалить задачу',
+	confirmationDescription: 'Упущенного не вернуть назад',
 	deleteColumn: 'Колонка и все привязанные задачи будут удалены',
 	deleteTask: 'Задача будет удалена',
 	deleteBoard: 'Доска и все привязанные задачи будут удалены',
@@ -98,4 +107,6 @@ export const rusLayout: LangLayoutModel = {
 	singUpMessage: 'Создать аккаунт - все что требуется для старта',
 	singInGreet: 'С возвращением',
 	singInMessage: 'Пожалуйста, авторизируйтесь, чтобы вернуться к работе',
+	ownerText: 'Владелец',
+	taskIdText: 'ID задачи',
 };
