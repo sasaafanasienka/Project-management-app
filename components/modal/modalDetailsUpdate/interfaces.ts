@@ -1,4 +1,5 @@
 import { ReactNode } from 'react';
+import { BoardModel } from '../../../redux/slices/boardSlice/interfaces';
 
 export interface TaskDetailsPropsModel {
   children?: ReactNode;

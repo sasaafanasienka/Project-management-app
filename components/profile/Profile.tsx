@@ -23,14 +23,6 @@ const Profile: FC = (): ReactElement => {
 	const modalDescrLang = useAppSelector((state) => state.lang.text.confirmation);
 	const cancelBtnLang = useAppSelector((state) => state.lang.text.cancelBtn);
 
-	const toastSuccess = useAppSelector((state) => state.lang.text.toastProfileUpdatedSuccess);
-	const toastFailure = useAppSelector((state) => state.lang.text.toastProfileUpdatedFailure);
-	const toastFailureLogin = useAppSelector(
-		(state) => state.lang.text.toastProfileUpdatedFailureLogin,
-	);
-	const toastDeleteSuccess = useAppSelector((state) => state.lang.text.toastDeleteUserSuccess);
-	const toastDeleteFailure = useAppSelector((state) => state.lang.text.toastDeleteUserFailure);
-
 	const dispatch = useAppDispatch();
 
 	const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
@@ -77,7 +69,7 @@ const Profile: FC = (): ReactElement => {
 			<ModalWindow
 				title={modalTitleLang}
 				description={modalDescrLang}
-				closeFunc={handleModal}
+				// closeFunc={handleModal}
 				isOpened={isModalOpen}>
 				<Button onClick={handleModal}>{cancelBtnLang}</Button>
 				<Button onClick={handleDeleteUser} variant='contained' autoFocus>

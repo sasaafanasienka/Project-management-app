@@ -22,12 +22,12 @@ const NewColumnForm: FC<NewBoardFormProps> = ({ onSubmit, onClose }): ReactEleme
 	} = useAppSelector((state) => state.lang.text);
 
 	const {
-		register, handleSubmit, formState: {
+		register, handleSubmit, getValues, formState: {
 			errors, isDirty,
 		},
-	} = useForm<BoardModel>();
+	} = useForm<ColumnModel>();
 	return (
-		<StyledNewBoardForm onSubmit={handleSubmit(onSubmit)}>
+		<StyledNewBoardForm onSubmit={handleSubmit(() => { onSubmit(getValues()); })}>
 			<FlexBox column alignItems='stretch'>
 				<TextField label={createNewFormTitle} variant="outlined" {...register('title', {
 					required: pleaseEnterTitle,

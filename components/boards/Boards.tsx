@@ -90,7 +90,7 @@ const Boards: FC = (): ReactElement => {
 			<ModalWindow
 				title={createBoardHeader}
 				isOpened={isModalOpened}
-				closeFunc={handleModal}
+				// closeFunc={handleModal}
 			>
 				<NewBoardForm onSubmit={handleSubmit} onClose={handleModal} />
 			</ModalWindow>
