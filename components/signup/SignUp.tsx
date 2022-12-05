@@ -1,6 +1,5 @@
 import { FC, ReactElement } from 'react';
 import { useRouter } from 'next/router';
-import { toast } from 'react-toastify';
 import { createUser } from '../../redux/slices/userSlice';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import BottomLink from '../validationForm/bottomLink/BottomLink';
@@ -24,12 +23,10 @@ const SignUp: FC = (): ReactElement => {
 		dispatch(createUser(data))
 			.unwrap()
 			.then((resolveRes) => {
-				toast.success(`${resolveRes.name.toUpperCase()}, welcome! Please Log In to proceed!`);
 				new Promise((resolve) => {
 					setTimeout(() => resolve('resolved'), 500);
 				}).then(() => router.push('/signin', undefined, { shallow: true }));
-			})
-			.catch((err) => toast.error(`An error has occured: ${err}`));
+			});
 	};
 
 	return (

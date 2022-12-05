@@ -23,6 +23,7 @@ export const createBoard = createAsyncThunk<
 >('boards/createBoard', async (body, { rejectWithValue, getState }) => {
 	const state = getState() as ReturnType<Store['getState']>;
 	const { token, id } = state.user.user;
+	const messages = state.lang.text;
 	const bodyWithOwner = { ...body, owner: id, users: [...body.users, id] };
 	try {
 		const response = await fetch(`${BASE_URL}boards`, {
@@ -38,14 +39,14 @@ export const createBoard = createAsyncThunk<
 			throw new Error(`${statusCode} ${message}`);
 		}
 		const newBoard = await response.json();
-		toast.success(`Board ${newBoard.title} successfully created`);
+		toast.success(`${messages.boardTxt} ${newBoard.title} ${messages.scsCreated}`);
 		return Object.assign(newBoard, { invited: false });
 	} catch (error) {
 		if (error instanceof Error) {
-			toast.error(error.message);
+			toast.error(`${messages.errorOccured} ${error.message}`);
 			return rejectWithValue(`${error.message}`);
 		}
-		toast.error('Unknown Error! Try to refresh the page');
+		toast.error(`${messages.toastUnknownError}`);
 		return rejectWithValue('Unknown Error! Try to refresh the page');
 	}
 });
@@ -56,6 +57,7 @@ export const deleteBoard = createAsyncThunk<
   { rejectValue: string }
 >('boards/deleteBoard', async ({ boardId }, { rejectWithValue, getState }) => {
 	const state = getState() as ReturnType<Store['getState']>;
+	const messages = state.lang.text;
 	const { token } = state.user.user;
 	try {
 		const response = await fetch(`${BASE_URL}boards/${boardId}`, {
@@ -70,12 +72,14 @@ export const deleteBoard = createAsyncThunk<
 			throw new Error(`${statusCode} ${message}`);
 		}
 		const data = await response.json();
-		toast.success(`Board ${data.title} successfully deleted`);
+		toast.success(`${messages.boardTxt} ${data.title} ${messages.scsDeleted}`);
 		return data;
 	} catch (error) {
 		if (error instanceof Error) {
+			toast.error(`${messages.errorOccured} ${error.message}`);
 			return rejectWithValue(`${error.message}`);
 		}
+		toast.error(`${messages.toastUnknownError}`);
 		return rejectWithValue('Unknown Error! Try to refresh the page');
 	}
 });
@@ -87,6 +91,7 @@ export const updateBoard = createAsyncThunk<
 >('boards/updateBoard', async ({ boardId, body }, { rejectWithValue, getState }) => {
 	const state = getState() as ReturnType<Store['getState']>;
 	const { token, id } = state.user.user;
+	const messages = state.lang.text;
 	const bodyWithOwner = Object.assign(body, { owner: id });
 	try {
 		const response = await fetch(`${BASE_URL}boards/${boardId}`, {
@@ -102,14 +107,14 @@ export const updateBoard = createAsyncThunk<
 			throw new Error(`${statusCode} ${message}`);
 		}
 		const data = await response.json();
-		toast.success(`Board ${data.title} successfully updated`);
+		toast.success(`${messages.boardTxt} ${data.title} ${messages.scsUpdated}`);
 		return data;
 	} catch (error) {
 		if (error instanceof Error) {
-			toast.error(error.message);
+			toast.error(`${messages.errorOccured} ${error.message}`);
 			return rejectWithValue(`${error.message}`);
 		}
-		toast.error('Unknown Error! Try to refresh the page');
+		toast.error(`${messages.toastUnknownError}`);
 		return rejectWithValue('Unknown Error! Try to refresh the page');
 	}
 });

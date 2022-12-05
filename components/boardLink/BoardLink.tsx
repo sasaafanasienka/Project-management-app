@@ -8,6 +8,7 @@ import InfoIcon from '@mui/icons-material/Info';
 import IconButton from '@mui/material/IconButton';
 import Button from '@mui/material/Button';
 import Link from 'next/link';
+import { toast } from 'react-toastify';
 import StyledBoardLink from './StyledBoardLink';
 import { BoardLinkPropsModel } from './interfaces';
 import FlexBox from '../styled/FlexBox';
@@ -18,10 +19,11 @@ import NewBoardForm from '../newBoardForm/NewBoardForm';
 import { BoardModel } from '../../redux/slices/boardSlice/interfaces';
 import { closeModals, openModal } from '../../redux/slices/modalsSlice';
 import { ModalNameModel } from '../../redux/slices/modalsSlice/interfaces';
-import { toast } from 'react-toastify';
 
 
 const BoardLink: FC<BoardLinkPropsModel> = (props): ReactElement => {
+	const { cannotDelete } = useAppSelector((state) => state.lang.text);
+
 	const {
 		title, _id: id, invited, users,
 	} = { ...props.board };
@@ -34,7 +36,7 @@ const BoardLink: FC<BoardLinkPropsModel> = (props): ReactElement => {
 		event.stopPropagation();
 		event.preventDefault();
 		if (invited) {
-			toast.warn('You cannot delete/edit boards you have been invited to');
+			toast.warn(cannotDelete);
 		}
 		if (!invited) {
 			dispatch(openModal({ name, id }));

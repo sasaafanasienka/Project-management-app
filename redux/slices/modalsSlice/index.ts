@@ -22,7 +22,6 @@ export const modalsSlice = createSlice({
 			);
 		},
 		openModal: (state, action) => {
-			console.log(action.payload);
 			Object.keys(state).forEach(
 				(key: ModalNameModel) => state[key] = action.payload.name === key
 					? action.payload.id

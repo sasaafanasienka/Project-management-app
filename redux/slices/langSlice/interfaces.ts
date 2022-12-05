@@ -58,6 +58,20 @@ export interface LangLayoutModel {
 	singInMessage: string,
   ownerText: string,
   taskIdText: string,
+  toastUnknownError: string,
+  boardTxt: string,
+	columnTxt: string,
+  taskTxt: string,
+  userTxt: string,
+	scsCreated: string,
+	scsDeleted: string,
+	scsUpdated: string,
+	usrDeleted: string,
+  usrUpdated: string,
+  errorOccured: string,
+  cannotDelete: string
+  successfullyLogged: string,
+	successfullyRegistered: string,
 }
 
 export interface InitialLangStateModel {

@@ -3,7 +3,6 @@ import {
 	FC, ReactElement, useState,
 } from 'react';
 import { useRouter } from 'next/router';
-import { toast } from 'react-toastify';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import ModalWindow from '../modal/ModalWindow';
 import FormWrapper from '../validationForm/formWrapper/FormWrapper';
@@ -33,10 +32,8 @@ const Profile: FC = (): ReactElement => {
 			.unwrap()
 			.then((responseData) => {
 				setIsModalOpen(false);
-				toast.success(`${responseData.name}, your account is updated`);
 				dispatch(logOut());
 			})
-			.catch((err) => toast.error(`An error has occured: ${err}`))
 			.finally(() => router.push('/signin', undefined, { shallow: true }));
 	};
 
@@ -45,12 +42,11 @@ const Profile: FC = (): ReactElement => {
 			.unwrap()
 			.then((responseData) => {
 				setIsModalOpen(false);
-				toast.success(`${responseData.name}, your account has been deleted`);
 				dispatch(logOut());
 				router.push('/', undefined, { shallow: true });
 			})
 			.catch((err) => {
-				toast.error(`An error has occured: ${err.message}`);
+			// toast.error(`An error has occured: ${err.message}`);
 				setIsModalOpen(false);
 			});
 	};

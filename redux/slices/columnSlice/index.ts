@@ -25,7 +25,9 @@ export const getBoardColumns = createAsyncThunk<
 	ColumnModel[],
 	{boardId: string},
 	{ rejectValue: string }
-	>('columns/getBoardColumns', async (boardId, { rejectWithValue }) => {
+	>('columns/getBoardColumns', async (boardId, { rejectWithValue, getState }) => {
+		const state = getState() as ReturnType<Store['getState']>;
+		const messages = state.lang.text;
 		const token = readCookie('token');
 		const URL: string = `${BASE_URL}boards/${boardId}/columns`;
 
@@ -54,7 +56,9 @@ export const getBoardColumns = createAsyncThunk<
 export const getBoardById = createAsyncThunk<
 	ColumnModel,
 	{ rejectValue: string }
-	>('columns/getBoardById', async (location, { rejectWithValue }) => {
+	>('columns/getBoardById', async (location, { rejectWithValue, getState }) => {
+		const state = getState() as ReturnType<Store['getState']>;
+		const messages = state.lang.text;
 		const token = readCookie('token');
 		const URL: string = `${BASE_URL}boards/${location}/columns`;
 		if (location) {
@@ -90,6 +94,7 @@ export const createColumn = createAsyncThunk<
   { rejectValue: string }
 >('boards/createColumn', async (props, { rejectWithValue, getState }) => {
 	const state = getState() as ReturnType<Store['getState']>;
+	const messages = state.lang.text;
 	const { token } = state.user.user;
 	const { boardid, formData, order } = { ...props };
 	try {
@@ -106,78 +111,82 @@ export const createColumn = createAsyncThunk<
 			throw new Error(`${statusCode} ${message}`);
 		}
 		const data = await response.json();
-		toast.success(`Column ${data.title} successfully created`);
+		toast.success(`${messages.columnTxt} ${data.title} ${messages.scsCreated}`);
 		return data;
 	} catch (error) {
 		if (error instanceof Error) {
-			toast.error(error.message);
+			toast.error(`${messages.errorOccured} ${error.message}`);
 			return rejectWithValue(`${error.message}`);
 		}
-		toast.error('Unknown Error! Try to refresh the page');
+		toast.error(`${messages.toastUnknownError}`);
 		return rejectWithValue('Unknown Error! Try to refresh the page');
 	}
 });
 
 export const deleteColumn = createAsyncThunk<
   ColumnModel, DeleteColumnModel, { rejectValue: string }
->('boards/deleteColumn', async (props, { rejectWithValue }) => {
-	const token = readCookie('token');
-	const { boardId, columnId } = { ...props };
-	try {
-		const response = await fetch(`${BASE_URL}boards/${boardId}/columns/${columnId}`, {
-			method: 'DELETE',
-			headers: {
-				'Content-Type': 'application/json',
-				Authorization: `Bearer ${token}`,
-			},
-		});
-		if (!response.ok) {
-			const { statusCode, message } = await response.json();
-			throw new Error(`${statusCode} ${message}`);
+	>('boards/deleteColumn', async (props, { rejectWithValue, getState }) => {
+		const state = getState() as ReturnType<Store['getState']>;
+		const messages = state.lang.text;
+		const token = readCookie('token');
+		const { boardId, columnId } = { ...props };
+		try {
+			const response = await fetch(`${BASE_URL}boards/${boardId}/columns/${columnId}`, {
+				method: 'DELETE',
+				headers: {
+					'Content-Type': 'application/json',
+					Authorization: `Bearer ${token}`,
+				},
+			});
+			if (!response.ok) {
+				const { statusCode, message } = await response.json();
+				throw new Error(`${statusCode} ${message}`);
+			}
+			const data = await response.json();
+			toast.success(`${messages.columnTxt} ${data.title} ${messages.scsDeleted}`);
+			return data;
+		} catch (error) {
+			if (error instanceof Error) {
+				toast.error(`${messages.errorOccured} ${error.message}`);
+				return rejectWithValue(`${error.message}`);
+			}
+			toast.error(`${messages.toastUnknownError}`);
+			return rejectWithValue('Unknown Error! Try to refresh the page');
 		}
-		const data = await response.json();
-		toast.success(`Column ${data.title} successfully deleted`);
-		return data;
-	} catch (error) {
-		if (error instanceof Error) {
-			toast.error(error.message);
-			return rejectWithValue(`${error.message}`);
-		}
-		toast.error('Unknown Error! Try to refresh the page');
-		return rejectWithValue('Unknown Error! Try to refresh the page');
-	}
-});
+	});
 
 export const updateColumn = createAsyncThunk<
 	ColumnModel, UpdateColumnModel, { rejectValue: string }
->('columns/updateColumn', async (props, { rejectWithValue }) => {
-	const token = readCookie('token');
-	const { boardId, columnId, body } = { ...props };
-	try {
-		const response = await fetch(`${BASE_URL}boards/${boardId}/columns/${columnId}`, {
-			method: 'PUT',
-			headers: {
-				'Content-Type': 'application/json',
-				Authorization: `Bearer ${token}`,
-			},
-			body: JSON.stringify(body),
-		});
-		if (!response.ok) {
-			const { statusCode, message } = await response.json();
-			throw new Error(`${statusCode} ${message}`);
+	>('columns/updateColumn', async (props, { rejectWithValue, getState }) => {
+		const state = getState() as ReturnType<Store['getState']>;
+		const messages = state.lang.text;
+		const token = readCookie('token');
+		const { boardId, columnId, body } = { ...props };
+		try {
+			const response = await fetch(`${BASE_URL}boards/${boardId}/columns/${columnId}`, {
+				method: 'PUT',
+				headers: {
+					'Content-Type': 'application/json',
+					Authorization: `Bearer ${token}`,
+				},
+				body: JSON.stringify(body),
+			});
+			if (!response.ok) {
+				const { statusCode, message } = await response.json();
+				throw new Error(`${statusCode} ${message}`);
+			}
+			const data = await response.json();
+			toast.success(`${messages.columnTxt} ${data.title} ${messages.scsUpdated}`);
+			return data;
+		} catch (error) {
+			if (error instanceof Error) {
+				toast.error(`${messages.errorOccured} ${error.message}`);
+				return rejectWithValue(`${error.message}`);
+			}
+			toast.error(`${messages.toastUnknownError}`);
+			return rejectWithValue('Unknown Error! Try to refresh the page');
 		}
-		const data = await response.json();
-		toast.success(`Column ${data.title} successfully renamed`);
-		return data;
-	} catch (error) {
-		if (error instanceof Error) {
-			toast.error(error.message);
-			return rejectWithValue(`${error.message}`);
-		}
-		toast.error('Unknown Error! Try to refresh the page');
-		return rejectWithValue('Unknown Error! Try to refresh the page');
-	}
-});
+	});
 
 export const columnSlice = createSlice({
 	name: 'columns',

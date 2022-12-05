@@ -2,7 +2,6 @@
 import {
 	FC, ReactElement, useEffect, useState,
 } from 'react';
-import { toast } from 'react-toastify';
 import AddIcon from '@mui/icons-material/Add';
 import { Button, Breadcrumbs, Typography } from '@mui/material';
 import Link from 'next/link';
@@ -37,10 +36,8 @@ const Boards: FC = (): ReactElement => {
 			dispatch(createBoard(formData))
 				.unwrap()
 				.then(({ title }) => {
-					toast.success(`Board "${title}" successfully created`);
 					handleModal();
-				})
-				.catch((err) => toast.error(`An error has occured: ${err}`));
+				});
 		}
 	};
 
