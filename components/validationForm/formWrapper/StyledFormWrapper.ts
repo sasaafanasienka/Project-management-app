@@ -1,14 +1,19 @@
 import styled from 'styled-components';
 
-export const StyledFormWrapper = styled.div`
+export interface StyledFormWrapperModel {
+  fixed?: boolean;
+}
+
+export const StyledFormWrapper = styled.div<StyledFormWrapperModel>`
   width: 100%;
   height: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
-  position: absolute;
+  position: ${(props) => (props.fixed ? 'fixed' : 'absolute')};
   top: 0;
-  left: -20px;
+  right: 0;
+  left: 0;
   background-color: rgba(255, 255, 255, 0.8);
   z-index: 10;
 `;

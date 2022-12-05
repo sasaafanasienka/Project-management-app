@@ -3,7 +3,7 @@ import { StyledFormWrapper } from '../validationForm/formWrapper/StyledFormWrapp
 import styles from './loader.module.scss';
 
 const Loader: FC = (): ReactElement => (
-	<StyledFormWrapper>
+	<StyledFormWrapper fixed>
 		<span className={styles.loader}></span>
 	</StyledFormWrapper>
 );

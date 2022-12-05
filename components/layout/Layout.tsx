@@ -26,7 +26,6 @@ const Layout: FC<LayoutPropsModel> = (props): ReactElement => {
 					{ (isBoardsLoading || isColumnsLoading || isTasksLoading || isUserLoading)
 						&& <Loader />
 					}
-
 					{ children }
 
 					<ToastContainer
