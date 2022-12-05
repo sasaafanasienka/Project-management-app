@@ -11,6 +11,15 @@ import { NewBoardFormProps } from './interfaces';
 import StyledNewBoardForm from './StyledNewTaskForm';
 
 const NewTaskForm: FC<NewBoardFormProps> = ({ onSubmit, onClose, boardId }): ReactElement => {
+	const {
+		createNewFormTitle,
+		createNewFormDescr,
+		pleaseEnterTitle,
+		pleaseEnterDescr,
+		invitedUsersText,
+		cancelBtn,
+		createBtn,
+	} = useAppSelector((state) => state.lang.text);
 	const dispatch = useAppDispatch();
 
 	const boardUsersIds = useAppSelector((state) => {
@@ -62,14 +71,14 @@ const NewTaskForm: FC<NewBoardFormProps> = ({ onSubmit, onClose, boardId }): Rea
 	return (
 		<StyledNewBoardForm onSubmit={handleSubmit(() => { onSubmit(getValues()); })}>
 			<FlexBox column alignItems='stretch'>
-				<TextField label="Title" variant="outlined" {...register('title', {
-					required: 'Please enter task title',
+				<TextField label={createNewFormTitle} variant="outlined" {...register('title', {
+					required: pleaseEnterTitle,
 				})}
 				error={!!errors.title}
 				helperText={errors?.title ? errors?.title.message : null}
 				/>
-				<TextField label="Description" variant="outlined" {...register('description', {
-					required: 'Please enter task description',
+				<TextField label={createNewFormDescr} variant="outlined" {...register('description', {
+					required: pleaseEnterDescr,
 				})}
 				error={!!errors.description}
 				helperText={errors?.description ? errors?.description.message : null}
@@ -79,13 +88,13 @@ const NewTaskForm: FC<NewBoardFormProps> = ({ onSubmit, onClose, boardId }): Rea
 				</FlexBox>
 				<FormControl>
 					<InputLabel id="demo-multiple-name-label"
-					>Invite users: </InputLabel>
+					>{invitedUsersText}</InputLabel>
 					<Select
 						{...register('users')}
 						labelId="demo-multiple-name-label"
 						id="demo-multiple-name"
 						multiple
-						input={<OutlinedInput label="Choose Users" />}
+						input={<OutlinedInput label={invitedUsersText} />}
 						value={personName}
 						onChange={handleChange}
 					>
@@ -100,9 +109,9 @@ const NewTaskForm: FC<NewBoardFormProps> = ({ onSubmit, onClose, boardId }): Rea
 					</Select>
 				</FormControl>
 				<FlexBox justifyContent='right'>
-					<Button onClick={onClose}>Cancel</Button>
+					<Button onClick={onClose}>{cancelBtn}</Button>
 					<Button type="submit" color='info' variant='contained' disabled={!isDirty} autoFocus>
-                    Create
+						{createBtn}
 					</Button>
 				</FlexBox>
 			</FlexBox>

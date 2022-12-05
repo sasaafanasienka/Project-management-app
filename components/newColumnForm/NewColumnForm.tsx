@@ -18,6 +18,10 @@ export interface NewBoardFormProps {
 
 const NewColumnForm: FC<NewBoardFormProps> = ({ onSubmit, onClose }): ReactElement => {
 	const {
+		createBtn, cancelBtn, pleaseEnterTitle, createNewFormTitle,
+	} = useAppSelector((state) => state.lang.text);
+
+	const {
 		register, handleSubmit, formState: {
 			errors, isDirty,
 		},
@@ -25,15 +29,15 @@ const NewColumnForm: FC<NewBoardFormProps> = ({ onSubmit, onClose }): ReactEleme
 	return (
 		<StyledNewBoardForm onSubmit={handleSubmit(onSubmit)}>
 			<FlexBox column alignItems='stretch'>
-				<TextField label="Title" variant="outlined" {...register('title', {
-					required: 'Please enter board title',
+				<TextField label={createNewFormTitle} variant="outlined" {...register('title', {
+					required: pleaseEnterTitle,
 				})}
 				error={!!errors.title} helperText={errors?.title ? errors?.title.message : null}
 				/>
 				<FlexBox justifyContent='right'>
-					<Button onClick={onClose}>Cancel</Button>
+					<Button onClick={onClose}>{cancelBtn}</Button>
 					<Button type="submit" color='info' variant='contained' disabled={!isDirty} autoFocus>
-                    Create
+						{createBtn}
 					</Button>
 				</FlexBox>
 			</FlexBox>

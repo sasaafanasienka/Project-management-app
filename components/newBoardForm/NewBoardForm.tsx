@@ -20,6 +20,16 @@ export interface NewBoardFormProps {
 }
 
 const NewBoardForm: FC<NewBoardFormProps> = ({ onSubmit, onClose, updateMode }): ReactElement => {
+	const {
+		cancelBtn,
+		createBtn,
+		updateBtn,
+		invitedUsersText,
+		pleaseEnterTitle,
+		createNewFormTitle,
+	} = useAppSelector((state) => state.lang.text);
+
+
 	const usersAll = useAppSelector((state) => state.user.usersAll);
 	const [personName, setPersonName] = React.useState<string[]>(updateMode?.assignedUsers || []);
 
@@ -58,8 +68,8 @@ const NewBoardForm: FC<NewBoardFormProps> = ({ onSubmit, onClose, updateMode }):
 	return (
 		<StyledNewBoardForm onSubmit={handleSubmit(onSubmit)}>
 			<FlexBox column alignItems='stretch'>
-				<TextField label="Title" variant="outlined" defaultValue={updateMode?.currentTitle} {...register('title', {
-					required: 'Please enter board title',
+				<TextField label={createNewFormTitle} variant="outlined" defaultValue={updateMode?.currentTitle} {...register('title', {
+					required: pleaseEnterTitle,
 				})}
 				error={!!errors.title} helperText={errors?.title ? errors?.title.message : null}
 				/>
@@ -68,13 +78,13 @@ const NewBoardForm: FC<NewBoardFormProps> = ({ onSubmit, onClose, updateMode }):
 				</FlexBox>
 				<FormControl>
 					<InputLabel id="demo-multiple-name-label"
-					>Invite users: </InputLabel>
+					>{invitedUsersText}</InputLabel>
 					<Select
 						{...register('users')}
 						labelId="demo-multiple-name-label"
 						id="demo-multiple-name"
 						multiple
-						input={<OutlinedInput label="Choose Users" />}
+						input={<OutlinedInput label={invitedUsersText}/>}
 						value={personName}
 						onChange={handleChange}
 					>
@@ -89,9 +99,9 @@ const NewBoardForm: FC<NewBoardFormProps> = ({ onSubmit, onClose, updateMode }):
 					</Select>
 				</FormControl>
 				<FlexBox justifyContent='right'>
-					<Button onClick={onClose}>Cancel</Button>
+					<Button onClick={onClose}>{cancelBtn}</Button>
 					<Button type="submit" color='info' variant='contained' disabled={!isDirty} autoFocus>
-						{updateMode ? 'Update' : 'Create' }
+						{updateMode ? updateBtn : createBtn }
 					</Button>
 				</FlexBox>
 			</FlexBox>
