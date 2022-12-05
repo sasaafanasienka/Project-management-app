@@ -37,7 +37,6 @@ const ModalDetailsUpdate: FC<TaskDetailsPropsModel> = ({
 
 	useEffect(() => {
 		const usersToAdd = updatedUsers.map((u) => u._id);
-		console.log(updatedUsers);
 
 		if (onUpdate) {
 			onUpdate({
