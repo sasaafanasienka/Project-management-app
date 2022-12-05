@@ -40,7 +40,8 @@ const ModalDetailsUpdate: FC<TaskDetailsPropsModel> = ({
 
 		if (onUpdate) {
 			onUpdate({
-				title: textAreaTitleRef.current?.value,
+				_id: '',
+				title: textAreaTitleRef.current?.value ?? '',
 				owner: user,
 				users: usersToAdd,
 			});

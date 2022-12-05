@@ -23,6 +23,7 @@ const TaskDetails: FC<TaskDetailsPropsModel> = ({
 	title, description, users, handleDelete, handleUpdate, boardUsers, userId, isOwn,
 }): ReactElement => {
 	const usersAll = useAppSelector((state) => state.user.usersAll);
+	const boardUsersIds = boardUsers.map((item) => item._id);
 
 	const {
 		noTitleText,
@@ -37,7 +38,7 @@ const TaskDetails: FC<TaskDetailsPropsModel> = ({
 	const owner = usersAll.find((user) => user._id === userId) as UserResponceModel;
 
 	const [taskOwner, setTaskOwner] = useState<UserResponceModel>(owner);
-	const [taskUsers, setTaskUsers] = useState<string[]>(users);
+	const [taskUsers, setTaskUsers] = useState<string[]>(users || [] || '');
 	const [isTextAreaOpen, setIsTextAreaOpen] = useState(false);
 	const [descriptionState, setDescription] = useState(description);
 	const [isTextAreaTitleOpen, setIsTextAreaTitleOpen] = useState(false);
@@ -51,6 +52,8 @@ const TaskDetails: FC<TaskDetailsPropsModel> = ({
 			textAreaRef.current.selectionStart = textAreaRef.current.value.length;
 		}
 	};
+
+	console.log(taskUsers);
 
 	const handleTitleUpdate = () => {
 		setIsTextAreaTitleOpen(true);
@@ -73,7 +76,7 @@ const TaskDetails: FC<TaskDetailsPropsModel> = ({
 		const {
 			target: { value },
 		} = event;
-		setTaskUsers(value);
+		setTaskUsers(value as unknown as string[]);
 	};
 
 	return (
@@ -131,12 +134,12 @@ const TaskDetails: FC<TaskDetailsPropsModel> = ({
 							multiple
 							input={<OutlinedInput label={invitedUsersText} />}
 							value={taskUsers}
-							onChange={usersHandler}
+							onChange={(event) => setTaskUsers(event.target.value as string[])}
 						>
 							{boardUsers.map((user) => (
 								<MenuItem
 									key={user._id}
-									value={user._id}
+									value={user._id as string}
 								>
 									{user.login}
 								</MenuItem>
