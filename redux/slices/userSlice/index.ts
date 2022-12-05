@@ -3,6 +3,7 @@
 import {
 	createAsyncThunk, createSlice, PayloadAction, Store,
 } from '@reduxjs/toolkit';
+import { toast } from 'react-toastify';
 import decodeToken from '../../../utils/decodeToken';
 import {
 	UserResponceModel,
@@ -27,6 +28,7 @@ const initialState: InitialStateUserModel = {
 
 export const getAllUsers = createAsyncThunk('user/getAllUsers', async (_, { rejectWithValue, getState }) => {
 	const state = getState() as ReturnType<Store['getState']>;
+	const messages = state.lang.text;
 	const { token } = state.user.user;
 	try {
 		const response = await fetch(`${BASE_URL}users`, {
@@ -54,7 +56,9 @@ export const createUser = createAsyncThunk<
   NewUserResponseModel,
   NewUserRequestPropsModel,
   { rejectValue: string }
-  >('user/createUser', async (body, { rejectWithValue }) => {
+	>('user/createUser', async (body, { rejectWithValue, getState }) => {
+		const state = getState() as ReturnType<Store['getState']>;
+		const messages = state.lang.text;
   	try {
   		const res = await fetch(`${BASE_URL}auth/signup`, {
   			method: 'POST',
@@ -64,23 +68,29 @@ export const createUser = createAsyncThunk<
   			body: JSON.stringify(body),
   		});
   		if (!res.ok) {
-  			const { statusCode } = await res.json();
-  			throw new Error(`${statusCode}`);
-  		}
-  		return await res.json();
+  			const { statusCode, message } = await res.json();
+  			throw new Error(`${statusCode} ${message}`);
+			}
+			const data = await res.json();
+			toast.success(`${data.name}, ${messages.successfullyRegistered}`);
+  		return data;
   	} catch (err) {
-  		if (err instanceof Error) {
+			if (err instanceof Error) {
+				toast.error(`${err.message}`);
   			return rejectWithValue(`${err.message}`);
-  		}
+			}
+			toast.error(`${messages.toastUnknownError}`);
   		return rejectWithValue('Unknown Error! Try to refresh the page');
     	}
-  });
+	});
 
 export const logInUser = createAsyncThunk<
   {token: string},
   Partial<NewUserRequestPropsModel>,
   { rejectValue: string }
-  >('user/logInUser', async (body, { rejectWithValue }) => {
+	>('user/logInUser', async (body, { rejectWithValue, getState }) => {
+		const state = getState() as ReturnType<Store['getState']>;
+		const messages = state.lang.text;
   	try {
   		const res = await fetch(`${BASE_URL}auth/signin`, {
   			method: 'POST',
@@ -92,18 +102,23 @@ export const logInUser = createAsyncThunk<
   		if (!res.ok) {
   			const { statusCode, message } = await res.json();
   			throw new Error(`${statusCode} ${message}`);
-  		}
-  		return await res.json();
+			}
+			const data = await res.json();
+			toast.success(messages.successfullyLogged);
+  		return data;
   	} catch (err) {
-  		if (err instanceof Error) {
+			if (err instanceof Error) {
+				toast.error(`${err.message}`);
   			return rejectWithValue(`${err.message}`);
-  		}
+			}
+			toast.error(`${messages.toastUnknownError}`);
   		return rejectWithValue('Unknown Error! Try to refresh the page');
     	}
-  });
+	});
 
 export const getUserById = createAsyncThunk('user/getUserById', async (_, { rejectWithValue, getState }) => {
 	const state = getState() as ReturnType<Store['getState']>;
+	const messages = state.lang.text;
 	const { id, token } = state.user.user;
 	try {
 		const response = await fetch(`${BASE_URL}users/${id}`, {
@@ -128,6 +143,7 @@ export const getUserById = createAsyncThunk('user/getUserById', async (_, { reje
 
 export const deleteUser = createAsyncThunk('user/deleteUser', async (_, { rejectWithValue, getState }) => {
 	const state = getState() as ReturnType<Store['getState']>;
+	const messages = state.lang.text;
 	const { id, token } = state.user.user;
 	try {
 		const response = await fetch(`${BASE_URL}users/${id}`, {
@@ -141,17 +157,22 @@ export const deleteUser = createAsyncThunk('user/deleteUser', async (_, { reject
 			const { statusCode, message } = await response.json();
   			throw new Error(`${statusCode} ${message}`);
 		}
-		return await response.json();
+		const data = await response.json();
+		toast.success(`${messages.userTxt} ${data.login} ${messages.usrDeleted}`);
+		return data;
 	} catch (err) {
 		if (err instanceof Error) {
-  			return rejectWithValue(`${err.message}`);
-  		}
-  		return rejectWithValue('Unknown Error! Try to refresh the page');
+			toast.error(`${err.message}`);
+			return rejectWithValue(`${err.message}`);
+		}
+		toast.error(`${messages.toastUnknownError}`);
+		return rejectWithValue('Unknown Error! Try to refresh the page');
 	}
 });
 
 export const updateUser = createAsyncThunk('user/updateUser', async (body: NewUserRequestPropsModel, { rejectWithValue, getState }) => {
 	const state = getState() as ReturnType<Store['getState']>;
+	const messages = state.lang.text;
 	const { id, token } = state.user.user;
 	try {
 		const response = await fetch(`${BASE_URL}users/${id}`, {
@@ -166,12 +187,16 @@ export const updateUser = createAsyncThunk('user/updateUser', async (body: NewUs
 			const { statusCode } = await response.json();
   			throw new Error(`${statusCode}`);
 		}
-		return await response.json();
+		const data = await response.json();
+		toast.success(`${messages.userTxt} ${data.login} ${messages.usrUpdated}`);
+		return data;
 	} catch (err) {
 		if (err instanceof Error) {
+			toast.error(`${err.message}`);
   			return rejectWithValue(`${err.message}`);
   		}
-  		return rejectWithValue('Unknown Error! Try to refresh the page');
+		toast.error(`${messages.toastUnknownError}`);
+		return rejectWithValue('Unknown Error! Try to refresh the page');
 	}
 });
 

@@ -7,9 +7,6 @@ import { toast } from 'react-toastify';
 import {
 	TaskModel,
 	InitialStateTaskModel,
-	UpdateTaskBodyModel,
-	CreateTaskModel,
-	UpdateTaskModel,
 	BoardTasksModel,
 	CreateTaskBodyModel,
 	UpdateTaskPropsModelFull,
@@ -90,6 +87,7 @@ export const createTask = createAsyncThunk<
   { rejectValue: string }
 >('tasks/createTask', async (props, { rejectWithValue, getState }) => {
 	const state = getState() as ReturnType<Store['getState']>;
+	const messages = state.lang.text;
 	const userId = state.user.user.id;
 	const token = readCookie('token');
 	const {
@@ -109,14 +107,14 @@ export const createTask = createAsyncThunk<
 			throw new Error(`${statusCode} ${message}`);
 		}
 		const data = await response.json();
-		toast.success(`Task ${data.title} successfully created`);
+		toast.success(`${messages.taskTxt} ${data.title} ${messages.scsCreated}`);
 		return data;
 	} catch (error) {
 		if (error instanceof Error) {
-			toast.error(error.message);
+			toast.error(`${messages.errorOccured} ${error.message}`);
 			return rejectWithValue(`${error.message}`);
 		}
-		toast.error('Unknown Error! Try to refresh the page');
+		toast.error(`${messages.toastUnknownError}`);
 		return rejectWithValue('Unknown Error! Try to refresh the page');
 	}
 });
@@ -125,68 +123,72 @@ export const deleteTask = createAsyncThunk<
   TaskModel,
   {boardId: string, columnId: string, taskId: string},
   { rejectValue: string }
->('tasks/deleteTask', async (props, { rejectWithValue }) => {
-	const token = readCookie('token');
-	const { boardId, columnId, taskId } = { ...props };
-	try {
-		const response = await fetch(`${BASE_URL}boards/${boardId}/columns/${columnId}/tasks/${taskId}`, {
-			method: 'DELETE',
-			headers: {
-				'Content-Type': 'application/json',
-				Authorization: `Bearer ${token}`,
-			},
-		});
-		if (!response.ok) {
-			const { statusCode, message } = await response.json();
-			throw new Error(`${statusCode} ${message}`);
+	>('tasks/deleteTask', async (props, { rejectWithValue, getState }) => {
+		const state = getState() as ReturnType<Store['getState']>;
+		const messages = state.lang.text;
+		const token = readCookie('token');
+		const { boardId, columnId, taskId } = { ...props };
+		try {
+			const response = await fetch(`${BASE_URL}boards/${boardId}/columns/${columnId}/tasks/${taskId}`, {
+				method: 'DELETE',
+				headers: {
+					'Content-Type': 'application/json',
+					Authorization: `Bearer ${token}`,
+				},
+			});
+			if (!response.ok) {
+				const { statusCode, message } = await response.json();
+				throw new Error(`${statusCode} ${message}`);
+			}
+			const data = await response.json();
+			toast.success(`${messages.taskTxt} ${data.title} ${messages.scsDeleted}`);
+			return data;
+		} catch (error) {
+			if (error instanceof Error) {
+				toast.error(`${messages.errorOccured} ${error.message}`);
+				return rejectWithValue(`${error.message}`);
+			}
+			toast.error(`${messages.toastUnknownError}`);
+			return rejectWithValue('Unknown Error! Try to refresh the page');
 		}
-		const data = await response.json();
-		toast.success(`Task ${data.title} successfully deleted`);
-		return data;
-	} catch (error) {
-		if (error instanceof Error) {
-			toast.error(error.message);
-			return rejectWithValue(`${error.message}`);
-		}
-		toast.error('Unknown Error! Try to refresh the page');
-		return rejectWithValue('Unknown Error! Try to refresh the page');
-	}
-});
+	});
 
 export const updateTask = createAsyncThunk<
 TaskModel,
   {boardId: string, columnId: string, taskId: string, body: UpdateTaskPropsModelFull},
   { rejectValue: string }
->('tasks/updateTask', async (props, { rejectWithValue }) => {
-	const token = readCookie('token');
-	const {
-		boardid, columnId, taskId, body,
-	} = { ...props };
-	try {
-		const response = await fetch(`${BASE_URL}boards/${boardid}/columns/${columnId}/tasks/${taskId}`, {
-			method: 'PUT',
-			headers: {
-				'Content-Type': 'application/json',
-				Authorization: `Bearer ${token}`,
-			},
-			body: JSON.stringify(body),
-		});
-		if (!response.ok) {
-			const { statusCode, message } = await response.json();
-			throw new Error(`${statusCode} ${message}`);
+	>('tasks/updateTask', async (props, { rejectWithValue, getState }) => {
+		const state = getState() as ReturnType<Store['getState']>;
+		const messages = state.lang.text;
+		const token = readCookie('token');
+		const {
+			boardId, columnId, taskId, body,
+		} = { ...props };
+		try {
+			const response = await fetch(`${BASE_URL}boards/${boardId}/columns/${columnId}/tasks/${taskId}`, {
+				method: 'PUT',
+				headers: {
+					'Content-Type': 'application/json',
+					Authorization: `Bearer ${token}`,
+				},
+				body: JSON.stringify(body),
+			});
+			if (!response.ok) {
+				const { statusCode, message } = await response.json();
+				throw new Error(`${statusCode} ${message}`);
+			}
+			const data = await response.json();
+			toast.success(`${messages.taskTxt} ${data.title} ${messages.scsUpdated}`);
+			return data;
+		} catch (error) {
+			if (error instanceof Error) {
+				toast.error(`${messages.errorOccured} ${error.message}`);
+				return rejectWithValue(`${error.message}`);
+			}
+			toast.error(`${messages.toastUnknownError}`);
+			return rejectWithValue('Unknown Error! Try to refresh the page');
 		}
-		const data = await response.json();
-		toast.success(`Task ${data.title} successfully updated`);
-		return data;
-	} catch (error) {
-		if (error instanceof Error) {
-			toast.error(error.message);
-			return rejectWithValue(`${error.message}`);
-		}
-		toast.error('Unknown Error! Try to refresh the page');
-		return rejectWithValue('Unknown Error! Try to refresh the page');
-	}
-});
+	});
 
 export const tasksSlice = createSlice({
 	name: 'tasks',
@@ -293,12 +295,6 @@ export const tasksSlice = createSlice({
 			updateTask.fulfilled,
 			(state, action: PayloadAction<TaskModel>) => {
 				state.isLoading = false;
-				// state.tasks = state.tasks.map((item) => {
-				// 	if (item._id === action.payload._id) {
-				// 		return action.payload;
-				// 	}
-				// 	return item;
-				// });
 				state.boardTasks[action.payload.columnId] = state.boardTasks[action.payload.columnId]
 					.map((task) => {
 						if (task._id === action.payload._id) {
@@ -306,21 +302,6 @@ export const tasksSlice = createSlice({
 						}
 						return task;
 					});
-				// if (!state.boardTasks[action.payload.columnId]) {
-				// 	state.boardTasks[action.payload.columnId] = [];
-				// 	state.boardTasks[action.payload.columnId].push(action.payload);
-				// } else if (state.boardTasks[action.payload.columnId]
-				// 	.map((task) => task._id).includes(action.payload._id)) {
-				// 	state.boardTasks[action.payload.columnId] = state.boardTasks[action.payload.columnId]
-				// 		.map((task) => {
-				// 			if (task._id === action.payload._id) {
-				// 				return action.payload;
-				// 			}
-				// 			return task;
-				// 		});
-				// } else {
-				// 	state.boardTasks[action.payload.columnId].push(action.payload);
-				// }
 				state.boardTasks[action.payload.columnId].sort((a, b) => a.order - b.order);
 			},
 		);

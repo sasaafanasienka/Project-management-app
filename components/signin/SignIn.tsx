@@ -1,6 +1,5 @@
 import { useRouter } from 'next/router';
 import { FC, ReactElement } from 'react';
-import { toast } from 'react-toastify';
 import { getUserById, logInUser } from '../../redux/slices/userSlice';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import BottomLink from '../validationForm/bottomLink/BottomLink';
@@ -24,11 +23,9 @@ const SignIn: FC = (): ReactElement => {
 		dispatch(logInUser(data))
 			.unwrap()
 			.then(() => {
-				toast.success(`${toastSuccess}`);
 				dispatch(getUserById());
 				router.push('/boards', undefined, { shallow: true });
-			})
-			.catch(() => toast.error(`${toastFailure}`));
+			});
 	};
 
 	return (

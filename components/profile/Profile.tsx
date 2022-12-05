@@ -3,7 +3,6 @@ import {
 	FC, ReactElement, useState,
 } from 'react';
 import { useRouter } from 'next/router';
-import { toast } from 'react-toastify';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import ModalWindow from '../modal/ModalWindow';
 import FormWrapper from '../validationForm/formWrapper/FormWrapper';
@@ -41,22 +40,10 @@ const Profile: FC = (): ReactElement => {
 			.unwrap()
 			.then((responseData) => {
 				setIsModalOpen(false);
-				toast.success(`${responseData.name}, ${toastSuccess}`);
 				dispatch(logOut());
 				router.push('/signin', undefined, { shallow: true });
 			})
-			.catch((err) => {
-				switch (err) {
-				case '409':
-					toast.error(`${toastFailureLogin}`);
-					break;
-				case '400':
-					toast.error(`${toastFailure}`);
-					break;
-				default:
-					break;
-				}
-			});
+			.finally(() => router.push('/signin', undefined, { shallow: true }));
 	};
 
 	const handleDeleteUser = () => {
@@ -64,12 +51,11 @@ const Profile: FC = (): ReactElement => {
 			.unwrap()
 			.then((responseData) => {
 				setIsModalOpen(false);
-				toast.success(`${responseData.name}, ${toastDeleteSuccess}`);
 				dispatch(logOut());
 				router.push('/', undefined, { shallow: true });
 			})
 			.catch((err) => {
-				toast.error(`${toastDeleteFailure}`);
+			// toast.error(`An error has occured: ${err.message}`);
 				setIsModalOpen(false);
 			});
 	};

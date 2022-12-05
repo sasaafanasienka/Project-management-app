@@ -31,6 +31,7 @@ export interface LangLayoutModel {
   addColumnBtn: string;
   addTaskBtn: string;
   createBoardHeader: string;
+  updateBoardHeader: string;
   createTaskHeader: string;
   createColumnHeader: string;
   createNewFormTitle: string;
@@ -39,9 +40,14 @@ export interface LangLayoutModel {
   confirmBtn: string;
   cancelBtn: string;
   deleteBtn: string;
+  updateBtn: string;
   changeUser: string;
   assignTo: string;
   confirmation: string;
+  confirmationDeleteBoard: string;
+  confirmationDeleteTask: string;
+  confirmationDeleteColumn: string;
+  confirmationDescription: string;
   deleteColumn: string;
   deleteTask: string;
   deleteBoard: string;
@@ -65,6 +71,30 @@ export interface LangLayoutModel {
 	toastDeleteUserFailure: string;
   notFound: string;
   errorBoundary: string;
+  ownerText: string,
+  taskIdText: string,
+  toastUnknownError: string,
+  boardTxt: string,
+	columnTxt: string,
+  taskTxt: string,
+  userTxt: string,
+	scsCreated: string,
+	scsDeleted: string,
+	scsUpdated: string,
+	usrDeleted: string,
+  usrUpdated: string,
+  errorOccured: string,
+  cannotDelete: string
+  successfullyLogged: string,
+  successfullyRegistered: string,
+  somethingWrong: string,
+  logoText: string,
+  noTitleText: string,
+	noDescriptionText: string,
+  invitedUsersText: string,
+  filterAllBoards: string,
+	filterOwnBoards: string,
+	filterGuestBoards: string,
 }
 
 export interface InitialLangStateModel {

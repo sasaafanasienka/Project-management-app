@@ -17,10 +17,14 @@ import ModalWindow from '../modal/ModalWindow';
 import { ModalWindowStateModel } from '../modal/interfaces';
 import NewColumnForm from '../newColumnForm/NewColumnForm';
 import { ColumnModel } from '../../redux/slices/columnSlice/interfaces';
-import { deleteWhileMoving, getTasksInBoard, pushWhileMoving, updateTask } from '../../redux/slices/tasksSlice';
+import {
+	deleteWhileMoving, getTasksInBoard, pushWhileMoving, updateTask,
+} from '../../redux/slices/tasksSlice';
 
 
 const Board: FC<BoardPropsModel> = (): ReactElement => {
+	const { navBoards, navHome } = useAppSelector((state) => state.lang.text);
+
 	const [isModalOpened, setIsModalOpened] = useState<ModalWindowStateModel>(false);
 
 	const router = useRouter();

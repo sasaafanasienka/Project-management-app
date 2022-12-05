@@ -8,6 +8,7 @@ import InfoIcon from '@mui/icons-material/Info';
 import IconButton from '@mui/material/IconButton';
 import Button from '@mui/material/Button';
 import Link from 'next/link';
+import { toast } from 'react-toastify';
 import StyledBoardLink from './StyledBoardLink';
 import { BoardLinkPropsModel } from './interfaces';
 import FlexBox from '../styled/FlexBox';
@@ -18,10 +19,18 @@ import NewBoardForm from '../newBoardForm/NewBoardForm';
 import { BoardModel } from '../../redux/slices/boardSlice/interfaces';
 import { closeModals, openModal } from '../../redux/slices/modalsSlice';
 import { ModalNameModel } from '../../redux/slices/modalsSlice/interfaces';
-import { toast } from 'react-toastify';
 
 
 const BoardLink: FC<BoardLinkPropsModel> = (props): ReactElement => {
+	const {
+		cannotDelete,
+		confirmationDeleteBoard,
+		confirmationDescription,
+		cancelBtn,
+		deleteBtn,
+		updateBoardHeader,
+	} = useAppSelector((state) => state.lang.text);
+
 	const {
 		title, _id: id, invited, users,
 	} = { ...props.board };
@@ -34,7 +43,7 @@ const BoardLink: FC<BoardLinkPropsModel> = (props): ReactElement => {
 		event.stopPropagation();
 		event.preventDefault();
 		if (invited) {
-			toast.warn('You cannot delete/edit boards you have been invited to');
+			toast.warn(cannotDelete);
 		}
 		if (!invited) {
 			dispatch(openModal({ name, id }));
@@ -74,7 +83,7 @@ const BoardLink: FC<BoardLinkPropsModel> = (props): ReactElement => {
 							<InfoIcon fontSize='small' color='disabled' />
 						</IconButton>
 						<Tooltip
-							title={invited ? "you can't delete a board that isn't your own" : null} arrow placement='top'
+							title={invited ? cannotDelete : null} arrow placement='top'
 							followCursor
 						>
 							<IconButton
@@ -89,17 +98,17 @@ const BoardLink: FC<BoardLinkPropsModel> = (props): ReactElement => {
 				</StyledBoardLink>
 			</Link>
 			<ModalWindow
-				title={`Are you sure to delete the board "${title}"?`}
-				description="This action cannot be undone"
+				title={`${confirmationDeleteBoard} "${title}"?`}
+				description={confirmationDescription}
 				isOpened={deleteBoardModalState === id}
 			>
-				<Button onClick={handleCloseModals}>Cancel</Button>
+				<Button onClick={handleCloseModals}>{cancelBtn}</Button>
 				<Button onClick={handleDeleteBoard} variant='contained' autoFocus>
-            Delete
+					{deleteBtn}
 				</Button>
 			</ModalWindow>
 			<ModalWindow
-				title={`Udpate Board "${title}"`}
+				title={`${updateBoardHeader} "${title}"`}
 				isOpened={editBoardModalState === id}
 			>
 				<NewBoardForm

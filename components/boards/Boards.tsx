@@ -2,7 +2,6 @@
 import {
 	FC, ReactElement, useEffect, useState,
 } from 'react';
-import { toast } from 'react-toastify';
 import AddIcon from '@mui/icons-material/Add';
 import { Button, Breadcrumbs, Typography } from '@mui/material';
 import Link from 'next/link';
@@ -19,6 +18,9 @@ import BoardFilterBar from './boardFilterBar/BoardFilterBar';
 import { FilterOptionsModel } from './boardFilterBar/interfaces';
 
 const Boards: FC = (): ReactElement => {
+	const { navBoards, navHome, addBoardBtn } = useAppSelector((state) => state.lang.text);
+
+
 	const dispatch = useAppDispatch();
 	const [isModalOpened, setIsModalOpened] = useState<boolean>(false);
 	const boards = useAppSelector((state) => state.boards.boards);
@@ -37,10 +39,8 @@ const Boards: FC = (): ReactElement => {
 			dispatch(createBoard(formData))
 				.unwrap()
 				.then(({ title }) => {
-					toast.success(`Board "${title}" successfully created`);
 					handleModal();
-				})
-				.catch((err) => toast.error(`An error has occured: ${err}`));
+				});
 		}
 	};
 
@@ -68,13 +68,13 @@ const Boards: FC = (): ReactElement => {
 	return (
 		<FlexBox column alignItems='left'>
 			<Breadcrumbs aria-label="breadcrumb" separator="›" sx={{ fontWeight: 700, fontSize: '20px' }}>
-				<Link href="/">Home</Link>
-				<Typography sx={{ fontWeight: 700, fontSize: '20px' }} color="text.primary">Boards</Typography>
+				<Link href="/">{navHome}</Link>
+				<Typography sx={{ fontWeight: 700, fontSize: '20px' }} color="text.primary">{navBoards}</Typography>
 			</Breadcrumbs>
 			<FlexBox justifyContent='space-between'>
 				<BoardFilterBar onChange={handleFilterBoards} />
 				<Button color='secondary' aria-label="add-new" size="small" onClick={handleModal}>
-					<AddIcon fontSize='small' color='secondary' /> Add Board
+					<AddIcon fontSize='small' color='secondary' /> {addBoardBtn}
 				</Button>
 			</FlexBox>
 			<FlexBox justifyContent='flex-start' alignItems='stretch'>

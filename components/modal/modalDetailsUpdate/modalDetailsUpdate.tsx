@@ -16,6 +16,12 @@ import { UserResponceModel } from '../../../redux/slices/userSlice/interfaces';
 const ModalDetailsUpdate: FC<TaskDetailsPropsModel> = ({
 	children, title, description, users, onUpdate,
 }): ReactElement => {
+	const {
+		noTitleText,
+		noDescriptionText,
+		invitedUsersText,
+	} = useAppSelector((state) => state.lang.text);
+
 	const [isTextAreaOpen, setIsTextAreaOpen] = useState(false);
 	const [descriptionState, setDescription] = useState(description);
 	const [isTextAreaTitleOpen, setIsTextAreaTitleOpen] = useState(false);
@@ -82,7 +88,7 @@ const ModalDetailsUpdate: FC<TaskDetailsPropsModel> = ({
 						onChange={(event) => setTitle(event?.target.value)}
 						value={titleState}
 						aria-label="empty textarea"
-						placeholder="No title"
+						placeholder={noTitleText}
 						style={{ width: '100%' }}
 					/> : <p>
 						<EditIcon color='secondary' />
@@ -97,7 +103,7 @@ const ModalDetailsUpdate: FC<TaskDetailsPropsModel> = ({
 							onChange={(event) => setDescription(event?.target.value)}
 							value={descriptionState}
 							aria-label="empty textarea"
-							placeholder="No description"
+							placeholder={noDescriptionText}
 							style={{ width: '100%' }}
 						/> : <p>{description}</p>}
 					</div>
@@ -110,11 +116,11 @@ const ModalDetailsUpdate: FC<TaskDetailsPropsModel> = ({
 				</FlexBox>
 				<FlexBox column>
 					<FormControl fullWidth>
-						<InputLabel id="demo-simple-select-label">Invite users: </InputLabel>
+						<InputLabel id="demo-simple-select-label">{invitedUsersText}</InputLabel>
 						<Select
 							labelId="demo-simple-select-label"
 							id="demo-simple-select"
-							label="Invite users: "
+							label={invitedUsersText}
 							onChange={handleSelectChoice}
 						>
 							{(toChooseFromUsers || [])

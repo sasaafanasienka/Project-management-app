@@ -13,6 +13,7 @@ import {
 	FC, ReactElement, useRef, useState,
 } from 'react';
 import { UserResponceModel } from '../../redux/slices/userSlice/interfaces';
+import { useAppSelector } from '../../redux/store';
 import Divider from '../divider/Divider';
 import FlexBox from '../styled/FlexBox';
 import { TaskDetailsPropsModel, TaskUpdateFormModel } from './interfaces';
@@ -21,6 +22,15 @@ import StyledTaskDetails from './StyledTaskDetails';
 const TaskDetails: FC<TaskDetailsPropsModel> = ({
 	title, description, users, handleDelete, handleUpdate, boardUsers, userId, isOwn,
 }): ReactElement => {
+	const {
+		noTitleText,
+		noDescriptionText,
+		invitedUsersText,
+		ownerText,
+		deleteBtn,
+		updateBtn,
+	} = useAppSelector((state) => state.lang.text);
+
 	const owner = boardUsers.find((user) => user._id === userId) as UserResponceModel;
 
 	const [taskOwner, setTaskOwner] = useState<UserResponceModel>(owner);
@@ -73,7 +83,7 @@ const TaskDetails: FC<TaskDetailsPropsModel> = ({
 						onChange={(event) => setTitle(event?.target.value)}
 						value={titleState}
 						aria-label="empty textarea"
-						placeholder="No title"
+						placeholder={noTitleText}
 						style={{ width: '100%' }}
 					/> : <p>{title}</p>}
 				</div>
@@ -83,18 +93,18 @@ const TaskDetails: FC<TaskDetailsPropsModel> = ({
 						onChange={(event) => setDescription(event?.target.value)}
 						value={descriptionState}
 						aria-label="empty textarea"
-						placeholder="No description"
+						placeholder={noDescriptionText}
 						style={{ width: '100%' }}
 					/> : <p>{description}</p>}
 				</div>
 				<FlexBox column>
 					<FormControl fullWidth>
-						<InputLabel id="demo-simple-select-label">Owner: </InputLabel>
+						<InputLabel id="demo-simple-select-label">{ownerText}</InputLabel>
 						<Select
 							labelId="demo-simple-select-label"
 							id="demo-simple-select"
 							value={taskOwner._id}
-							label="Owner:"
+							label={ownerText}
 							onChange={(event) => setTaskOwner(boardUsers.find(
 								(user) => user._id === event.target.value,
 							) as UserResponceModel)}
@@ -111,12 +121,12 @@ const TaskDetails: FC<TaskDetailsPropsModel> = ({
 					</FormControl>
 					<FormControl fullWidth>
 						<InputLabel id="demo-multiple-name-label"
-						>Invited users:</InputLabel>
+						>{invitedUsersText}</InputLabel>
 						<Select
 							labelId="demo-multiple-name-label"
 							id="demo-multiple-name"
 							multiple
-							input={<OutlinedInput label="Invited users" />}
+							input={<OutlinedInput label={invitedUsersText} />}
 							value={taskUsers}
 							onChange={usersHandler}
 						>
@@ -133,12 +143,12 @@ const TaskDetails: FC<TaskDetailsPropsModel> = ({
 					<FlexBox justifyContent='right'>
 						{isOwn
 							? <Button onClick={handleDelete} variant='outlined' autoFocus>
-									Delete
+								{deleteBtn}
 							</Button>
 							: <Typography>{'You can\'t delete a board that isn\'t your own'}</Typography>
 						}
 						<Button color='info' onClick={update} variant='contained'>
-								Update
+							{updateBtn}
 						</Button>
 					</FlexBox>
 				</FlexBox>
