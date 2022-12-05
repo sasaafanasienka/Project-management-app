@@ -46,6 +46,8 @@ const Column: FC<ColumnPropsModel> = (props): ReactElement => {
 
 	const columnTasks = useAppSelector((state) => state.tasks.boardTasks)[id] || [];
 
+	console.log(columnTasks || []);
+
 	const handleCloseModals = () => {
 		dispatch(closeModals());
 	};
@@ -120,7 +122,10 @@ const Column: FC<ColumnPropsModel> = (props): ReactElement => {
 									<EditIcon color='secondary' />
 									<h3>
 										{title.toUpperCase()}
-										{(columnTasks || []).length && <span>{(columnTasks || []).length}</span>}
+										{columnTasks && columnTasks.length
+											? <span>{columnTasks.length}</span>
+											: null
+										}
 									</h3>
 								</StyledColumnTitle>
 							}

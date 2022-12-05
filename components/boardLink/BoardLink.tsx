@@ -1,6 +1,7 @@
 import {
 	FC, ReactElement, SyntheticEvent,
 } from 'react';
+import { Tooltip } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import IconButton from '@mui/material/IconButton';
@@ -30,7 +31,9 @@ const BoardLink: FC<BoardLinkPropsModel> = (props): ReactElement => {
 	const handleOpenModal = (event: SyntheticEvent, name: ModalNameModel) => {
 		event.stopPropagation();
 		event.preventDefault();
-		dispatch(openModal({ name, id }));
+		if (!invited) {
+			dispatch(openModal({ name, id }));
+		}
 	};
 
 	const handleCloseModals = () => {
@@ -65,12 +68,17 @@ const BoardLink: FC<BoardLinkPropsModel> = (props): ReactElement => {
 							onClick={(event) => { handleOpenModal(event, 'editBoard'); }}>
 							<EditIcon fontSize='small' color='disabled' />
 						</IconButton>
-						<IconButton
-							aria-label="delete"
-							size="small"
-							onClick={(event) => { handleOpenModal(event, 'deleteBoard'); }}>
-							<DeleteIcon fontSize='small' color='disabled' />
-						</IconButton>
+						<Tooltip
+							title={invited ? "you can't delete a board that isn't your own" : null} arrow placement='top'
+							followCursor
+						>
+							<IconButton
+								aria-label="delete"
+								size="small"
+								onClick={(event) => { handleOpenModal(event, 'deleteBoard'); }}>
+								<DeleteIcon fontSize='small' color='disabled' />
+							</IconButton>
+						</Tooltip>
 					</FlexBox>
 					<span></span>
 				</StyledBoardLink>

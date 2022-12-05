@@ -2,11 +2,11 @@ import {
 	FC, ReactElement, useEffect, useState,
 } from 'react';
 import { useRouter } from 'next/router';
-import { Button } from '@mui/material';
+import { Button, Breadcrumbs, Typography } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import { DragDropContext, Droppable, DropResult } from 'react-beautiful-dnd';
+import Link from 'next/link';
 import Column from '../column/Column';
-import PageHeading from '../pageHeading/PageHeading';
 import FlexBox from '../styled/FlexBox';
 import BoardPropsModel from './interfaces';
 import { useAppSelector, useAppDispatch } from '../../redux/store';
@@ -181,34 +181,49 @@ const Board: FC<BoardPropsModel> = (): ReactElement => {
 	return (
 		<>
 			<DragDropContext onDragEnd={handleDragEnd}>
-				<PageHeading
-					text={`Boards > ${currentBoard ? currentBoard.title : ''}`}
-				/>
-				<FlexBox justifyContent='flex-start' alignItems='flex-start' wrap='nowrap'>
-					<Droppable droppableId='all-columns' direction='horizontal' type='columns' >
-						{(provided) => (
-							<FlexBox
-								alignItems='stretch'
-								{...provided.droppableProps}
-								ref={provided.innerRef}
-								justifyContent='left' wrap='no-wrap'>
-								{(columns || []).map((column, index) => <Column
-									title={column.title}
-									id={column._id}
-									key={column._id}
-									index={index}
-									boardId={boardid}
-								/>)}
-								{provided.placeholder}
-							</FlexBox>
-						)}
-					</Droppable>
-					<Button color='info' onClick={handleModal}>
-						<FlexBox alignItems='center' justifyContent='center' gap='0'>
-							<AddIcon fontSize='small' />
+				<FlexBox column alignItems='left'>
+					<Breadcrumbs aria-label="breadcrumb" separator="›" sx={{ fontWeight: 700, fontSize: '20px' }}>
+						<Link href="/">Home</Link>
+						<Link href="/boards">Boards</Link>
+						<Typography sx={{ fontWeight: 700, fontSize: '20px' }} color="text.primary">{currentBoard ? currentBoard.title : ''}</Typography>
+					</Breadcrumbs>
+					<FlexBox justifyContent='flex-end'>
+						<Button color='secondary' aria-label="add-new" size="small" onClick={handleModal}>
+							<AddIcon fontSize='small' color='secondary' /> Add new Column
+						</Button>
+					</FlexBox>
+					<FlexBox
+						justifyContent='flex-start'
+						alignItems='flex-start'
+						wrap='nowrap'
+						width='max-content'
+					>
+						<Droppable droppableId='all-columns' direction='horizontal' type='columns' >
+							{(provided) => (
+								<FlexBox
+									width='max-content'
+									alignItems='stretch'
+									{...provided.droppableProps}
+									ref={provided.innerRef}
+									justifyContent='left' wrap='no-wrap'>
+									{(columns || []).map((column, index) => <Column
+										title={column.title}
+										id={column._id}
+										key={column._id}
+										index={index}
+										boardId={boardid}
+									/>)}
+									{provided.placeholder}
+								</FlexBox>
+							)}
+						</Droppable>
+						<Button color='info' onClick={handleModal}>
+							<FlexBox alignItems='center' justifyContent='center' gap='0'>
+								<AddIcon fontSize='small' />
 						Add new column
-						</FlexBox>
-					</Button>
+							</FlexBox>
+						</Button>
+					</FlexBox>
 				</FlexBox>
 			</DragDropContext>
 			<ModalWindow

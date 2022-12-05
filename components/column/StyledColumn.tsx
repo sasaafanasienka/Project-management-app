@@ -8,8 +8,9 @@ export interface StyledColumnPropsModel {
 }
 
 const StyledColumn = styled.div<StyledColumnPropsModel>`
-  /* width: 250px; */
-  flex: 0 0 320px;
+  width: 320px;
+  flex-grow: 0;
+  flex-shrink: 0;
   max-height: calc(100vh - 200px);
   border: 1px dashed ${theme.palette.secondary.light};
   border-radius: 5px;

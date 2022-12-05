@@ -17,4 +17,5 @@ export interface TaskDetailsPropsModel {
   users: string[];
   boardUsers: UserResponceModel[];
   userId: string;
+  isOwn: boolean;
 }

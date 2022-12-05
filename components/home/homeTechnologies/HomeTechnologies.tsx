@@ -6,6 +6,7 @@ import tsLogo from '../../../assets/images/typescript.png';
 import styledLogo from '../../../assets/images/styled.png';
 import muiLogo from '../../../assets/images/mui.png';
 import reduxLogo from '../../../assets/images/redux.png';
+import dndLogo from '../../../assets/images/dnd.png';
 import HomeListItem from '../homeListItem/HomeListItem';
 
 const HomeTechnologies: FC = (): ReactElement => (
@@ -45,6 +46,12 @@ const HomeTechnologies: FC = (): ReactElement => (
 			image={styledLogo}
 			title='styled-components'
 			alt='styled components logo'
+		/>
+		<HomeListItem
+			link='https://github.com/atlassian/react-beautiful-dnd'
+			image={dndLogo}
+			title='react-beautiful-dnd'
+			alt='react-beautiful-dnd'
 		/>
 	</HomeList>
 );
