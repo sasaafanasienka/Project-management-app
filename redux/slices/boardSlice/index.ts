@@ -23,7 +23,7 @@ export const createBoard = createAsyncThunk<
 >('boards/createBoard', async (body, { rejectWithValue, getState }) => {
 	const state = getState() as ReturnType<Store['getState']>;
 	const { token, id } = state.user.user;
-	const bodyWithOwner = Object.assign(body, { owner: id });
+	const bodyWithOwner = { ...body, owner: id, users: [...body.users, id] };
 	try {
 		const response = await fetch(`${BASE_URL}boards`, {
 			method: 'POST',

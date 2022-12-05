@@ -26,6 +26,7 @@ const Task: FC<TaskPropsModel> = ({
 		return [];
 	});
 	const usersAll = useAppSelector((state) => state.user.usersAll);
+
 	const boardUsers = usersAll.filter(
 		(user) => boardUsersIds?.includes(user._id),
 	);

@@ -23,8 +23,6 @@ const TaskDetails: FC<TaskDetailsPropsModel> = ({
 }): ReactElement => {
 	const owner = boardUsers.find((user) => user._id === userId) as UserResponceModel;
 
-	console.log(users);
-
 	const [taskOwner, setTaskOwner] = useState<UserResponceModel>(owner);
 	const [taskUsers, setTaskUsers] = useState<string[]>(users);
 	const [isTextAreaOpen, setIsTextAreaOpen] = useState(false);
