@@ -36,6 +36,7 @@ export const engLayout: LangLayoutModel = {
 	cancelBtn: 'Cancel',
 	deleteBtn: 'Delete',
 	updateBtn: 'Update',
+	createBtn: 'Create',
 	changeUser: 'Change User',
 	assignTo: 'Assigned To: ',
 	confirmation: 'Are you sure? That action cannot be undone',
@@ -90,6 +91,8 @@ export const engLayout: LangLayoutModel = {
 	filterAllBoards: 'All',
 	filterOwnBoards: 'Own boards',
 	filterGuestBoards: 'Guest boards',
+	pleaseEnterTitle: 'Please enter the title',
+	pleaseEnterDescr: 'Please enter the description',
 };
 
 export const rusLayout: LangLayoutModel = {
@@ -128,6 +131,7 @@ export const rusLayout: LangLayoutModel = {
 	cancelBtn: 'Отменить',
 	deleteBtn: 'Удалить',
 	updateBtn: 'Обновить',
+	createBtn: 'Создать',
 	changeUser: 'Сменить пользователя',
 	assignTo: 'Назначена: ',
 	confirmation: 'Вы уверены? Упущенного не вернуть назад',
@@ -182,4 +186,6 @@ export const rusLayout: LangLayoutModel = {
 	filterAllBoards: 'Все',
 	filterOwnBoards: 'Свои доски',
 	filterGuestBoards: 'Чужие доски',
+	pleaseEnterTitle: 'Пожалуйства введите название',
+	pleaseEnterDescr: 'Пожалуйства введите описание',
 };

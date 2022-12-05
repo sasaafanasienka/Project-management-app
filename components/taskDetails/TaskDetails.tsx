@@ -31,6 +31,7 @@ const TaskDetails: FC<TaskDetailsPropsModel> = ({
 		ownerText,
 		deleteBtn,
 		updateBtn,
+		cannotDelete,
 	} = useAppSelector((state) => state.lang.text);
 
 	const owner = usersAll.find((user) => user._id === userId) as UserResponceModel;
@@ -147,7 +148,7 @@ const TaskDetails: FC<TaskDetailsPropsModel> = ({
 							? <Button onClick={handleDelete} variant='outlined' autoFocus>
 								{deleteBtn}
 							</Button>
-							: <Typography>{'You can\'t delete a board that isn\'t your own'}</Typography>
+							: <Typography>{cannotDelete}</Typography>
 						}
 						<Button color='info' onClick={update} variant='contained'>
 							{updateBtn}

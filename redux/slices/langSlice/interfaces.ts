@@ -41,6 +41,7 @@ export interface LangLayoutModel {
   cancelBtn: string;
   deleteBtn: string;
   updateBtn: string;
+  createBtn: string;
   changeUser: string;
   assignTo: string;
   confirmation: string;
@@ -94,7 +95,9 @@ export interface LangLayoutModel {
   invitedUsersText: string,
   filterAllBoards: string,
 	filterOwnBoards: string,
-	filterGuestBoards: string,
+  filterGuestBoards: string,
+  pleaseEnterTitle: string,
+	pleaseEnterDescr: string,
 }
 
 export interface InitialLangStateModel {
