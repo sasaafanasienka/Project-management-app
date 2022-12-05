@@ -134,7 +134,7 @@ const TaskDetails: FC<TaskDetailsPropsModel> = ({
 							multiple
 							input={<OutlinedInput label={invitedUsersText} />}
 							value={taskUsers}
-							onChange={usersHandler}
+							onChange={(event) => setTaskUsers(event.target.value as string[])}
 						>
 							{boardUsers.map((user) => (
 								<MenuItem
