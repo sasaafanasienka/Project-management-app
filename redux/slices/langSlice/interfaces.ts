@@ -58,6 +58,11 @@ export interface LangLayoutModel {
   toastSuccessSignUp: string;
 	toastFailureSignUpHasAccount: string;
 	toastFailureSignUp: string;
+  toastProfileUpdatedSuccess: string;
+	toastProfileUpdatedFailureLogin: string;
+	toastProfileUpdatedFailure: string;
+  toastDeleteUserSuccess: string;
+	toastDeleteUserFailure: string;
 }
 
 export interface InitialLangStateModel {

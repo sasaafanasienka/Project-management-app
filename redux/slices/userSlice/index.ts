@@ -163,8 +163,8 @@ export const updateUser = createAsyncThunk('user/updateUser', async (body: NewUs
 			body: JSON.stringify(body),
 		});
 		if (!response.ok) {
-			const { statusCode, message } = await response.json();
-  			throw new Error(`${statusCode} ${message}`);
+			const { statusCode } = await response.json();
+  			throw new Error(`${statusCode}`);
 		}
 		return await response.json();
 	} catch (err) {

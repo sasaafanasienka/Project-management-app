@@ -53,6 +53,11 @@ export const engLayout: LangLayoutModel = {
 	toastSuccessSignUp: 'welcome! Please Log In to proceed!',
 	toastFailureSignUpHasAccount: 'You already have an account, please sign in',
 	toastFailureSignUp: 'Authorization error! Please try again',
+	toastProfileUpdatedSuccess: 'account has been updated. PLease sign in to proceed',
+	toastProfileUpdatedFailureLogin: 'Error! User with such login already exists',
+	toastProfileUpdatedFailure: 'Authorization error! Please try again',
+	toastDeleteUserSuccess: 'Account has been deleted',
+	toastDeleteUserFailure: 'A server error has occured',
 };
 
 export const rusLayout: LangLayoutModel = {
@@ -108,4 +113,9 @@ export const rusLayout: LangLayoutModel = {
 	toastSuccessSignUp: 'добро пожаловать! Пожалуйста, выполните вход в аккаунт!',
 	toastFailureSignUpHasAccount: 'У вас уже есть аккаунт, пожалуйста авторизируйтесь',
 	toastFailureSignUp: 'Ошибка авторизации! Пожалуйста, поробуйте снова',
+	toastProfileUpdatedSuccess: 'данные аккаунта обновлены. Пожалуйста, авторизируйтесь с новыми данными',
+	toastProfileUpdatedFailureLogin: 'Пользователь с таким аккаунтом уже существует',
+	toastProfileUpdatedFailure: 'Ошибка авторизации! Пожалуйста, поробуйте снова',
+	toastDeleteUserSuccess: 'Аккаунт был удален',
+	toastDeleteUserFailure: 'Ошибка сервера, пожалуйста попробуйте снова',
 };
