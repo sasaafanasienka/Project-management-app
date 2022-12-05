@@ -23,7 +23,9 @@ import {
 
 
 const Board: FC<BoardPropsModel> = (): ReactElement => {
-	const { navBoards, navHome } = useAppSelector((state) => state.lang.text);
+	const {
+		navBoards, navHome, addColumnBtn, createColumnHeader,
+	} = useAppSelector((state) => state.lang.text);
 
 	const [isModalOpened, setIsModalOpened] = useState<ModalWindowStateModel>(false);
 
@@ -36,15 +38,6 @@ const Board: FC<BoardPropsModel> = (): ReactElement => {
 
 	const currentBoard = boards.boards.find((el) => el._id === boardid);
 
-	// const [colsToDisplay, setColsToDisplay] = useState<ColumnModel[]>(columns);
-
-	// useEffect(() => {
-	// 	if (columns.length) {
-	// 		const newOrder = columns.slice().sort((a, b) => a.order - b.order);
-	// 		setColsToDisplay(newOrder);
-	// 	}
-	// }, [columns]);
-
 	const dispatch = useAppDispatch();
 
 	useEffect(() => {
@@ -53,15 +46,6 @@ const Board: FC<BoardPropsModel> = (): ReactElement => {
 			dispatch(getTasksInBoard(boardid as string));
 		}
 	}, [boardid, dispatch]);
-
-	// useEffect(() => {
-	// 	dispatch(getUserBoards())
-	// 		.then(
-	// 			() => {
-	// 				dispatch(getBoardById(boardid));
-	// 			},
-	// 		);
-	// }, [dispatch, boardid]);
 
 	const handleModal = (event, value: boolean = !isModalOpened) => {
 		setIsModalOpened(value);
@@ -187,13 +171,13 @@ const Board: FC<BoardPropsModel> = (): ReactElement => {
 			<DragDropContext onDragEnd={handleDragEnd}>
 				<FlexBox column alignItems='left'>
 					<Breadcrumbs aria-label="breadcrumb" separator="›" sx={{ fontWeight: 700, fontSize: '20px' }}>
-						<Link href="/">Home</Link>
-						<Link href="/boards">Boards</Link>
+						<Link href="/">{navHome}</Link>
+						<Link href="/boards">{navBoards}</Link>
 						<Typography sx={{ fontWeight: 700, fontSize: '20px' }} color="text.primary">{currentBoard ? currentBoard.title : ''}</Typography>
 					</Breadcrumbs>
 					<FlexBox justifyContent='flex-end'>
 						<Button color='secondary' aria-label="add-new" size="small" onClick={handleModal}>
-							<AddIcon fontSize='small' color='secondary' /> Add new Column
+							<AddIcon fontSize='small' color='secondary' /> {addColumnBtn}
 						</Button>
 					</FlexBox>
 					<FlexBox
@@ -224,14 +208,14 @@ const Board: FC<BoardPropsModel> = (): ReactElement => {
 						<Button color='info' onClick={handleModal}>
 							<FlexBox alignItems='center' justifyContent='center' gap='0'>
 								<AddIcon fontSize='small' />
-						Add new column
+								{addColumnBtn}
 							</FlexBox>
 						</Button>
 					</FlexBox>
 				</FlexBox>
 			</DragDropContext>
 			<ModalWindow
-				title={'Create new Column'}
+				title={createColumnHeader}
 				isOpened={isModalOpened}
 				closeFunc={handleModal}
 			>

@@ -18,7 +18,9 @@ import BoardFilterBar from './boardFilterBar/BoardFilterBar';
 import { FilterOptionsModel } from './boardFilterBar/interfaces';
 
 const Boards: FC = (): ReactElement => {
-	const { navBoards, navHome, addBoardBtn } = useAppSelector((state) => state.lang.text);
+	const {
+		navBoards, navHome, addBoardBtn, createBoardHeader,
+	} = useAppSelector((state) => state.lang.text);
 
 
 	const dispatch = useAppDispatch();
@@ -45,7 +47,6 @@ const Boards: FC = (): ReactElement => {
 	};
 
 	const handleFilterBoards = (option: FilterOptionsModel) => {
-		console.log(boards, boardsToDisplay);
 		switch (option) {
 		case FilterOptionsModel.all:
 			setBoardsToDisplay(boards);
@@ -87,7 +88,7 @@ const Boards: FC = (): ReactElement => {
 				<AddBoard onClick={handleModal} />
 			</FlexBox>
 			<ModalWindow
-				title={'Create new Board'}
+				title={createBoardHeader}
 				isOpened={isModalOpened}
 				closeFunc={handleModal}
 			>
