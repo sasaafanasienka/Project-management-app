@@ -26,12 +26,11 @@ const Layout: FC<LayoutPropsModel> = (props): ReactElement => {
 					{ (isBoardsLoading || isColumnsLoading || isTasksLoading || isUserLoading)
 						&& <Loader />
 					}
-
 					{ children }
 
 					<ToastContainer
 						position="bottom-right"
-						autoClose={3000}
+						autoClose={1800}
 						hideProgressBar={false}
 						newestOnTop={false}
 						closeOnClick

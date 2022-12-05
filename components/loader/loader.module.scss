@@ -8,6 +8,9 @@
     border-color: #4153AF #4153AF transparent;
     box-sizing: border-box;
     animation: rotation 1s linear infinite;
+    @media screen and (min-width: "1024px") {
+      margin-left: 150px;
+    }
   }
   .loader::after {
     content: '';  

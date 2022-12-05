@@ -13,16 +13,14 @@ import StyledColumn from './StyledColumn';
 import Task from '../task/Task';
 import ModalWindow from '../modal/ModalWindow';
 import { ColumnPropsModel } from './interfaces';
-import { ModalWindowStateModel } from '../modal/interfaces';
-import { ItemTypes } from '../board/interfaces';
 import StyledTaskList from './StyledTaskList';
 import StyledColumnTitle from './StyledColumnTitle';
 import UpdateTitleInput from './updateTitleInput/UpdateTitleInput';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { deleteColumn, updateColumn } from '../../redux/slices/columnSlice';
-import { createTask, getTasksInBoard, getTasksInColumn } from '../../redux/slices/tasksSlice';
+import { createTask, getTasksInBoard } from '../../redux/slices/tasksSlice';
 import NewTaskForm from '../newTaskForm/NewTaskForm';
-import { CreateTaskBodyModel, TaskModel } from '../../redux/slices/tasksSlice/interfaces';
+import { CreateTaskBodyModel } from '../../redux/slices/tasksSlice/interfaces';
 import { ModalNameModel } from '../../redux/slices/modalsSlice/interfaces';
 import { closeModals, openModal } from '../../redux/slices/modalsSlice';
 
@@ -40,20 +38,14 @@ const Column: FC<ColumnPropsModel> = (props): ReactElement => {
 		event.stopPropagation();
 		dispatch(openModal({ name, id }));
 	};
-	// const tasks = useAppSelector((state) => state.tasks.tasks.filter(
-	// 	(task) => task.columnId === id,
-	// ));
 
 	const columnTasks = useAppSelector((state) => state.tasks.boardTasks)[id] || [];
-
-	console.log(columnTasks || []);
 
 	const handleCloseModals = () => {
 		dispatch(closeModals());
 	};
 
 	useEffect(() => {
-		// dispatch(getTasksInColumn({ boardid: boardId, columnId: id }));
 		dispatch(getTasksInBoard({ boardId }));
 	}, [boardId, dispatch]);
 

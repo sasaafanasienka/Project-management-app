@@ -199,6 +199,9 @@ export const tasksSlice = createSlice({
 		},
 		pushWhileMoving: (state, action: PayloadAction<{task: TaskModel; destColumnId: string}>) => {
 			const { task, destColumnId } = action.payload;
+			if (!state?.boardTasks[destColumnId]) {
+				state.boardTasks[destColumnId] = [];
+			}
 			state.boardTasks[destColumnId].push(task);
 		},
 	},
