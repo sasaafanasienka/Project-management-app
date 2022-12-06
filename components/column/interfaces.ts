@@ -1,5 +1,3 @@
-import { TaskPropsModel } from '../task/interfaces';
-
 export interface ColumnPropsModel {
   title: string;
   index: number;

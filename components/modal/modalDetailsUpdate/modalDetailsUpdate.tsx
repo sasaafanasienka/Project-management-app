@@ -14,7 +14,7 @@ import { useAppSelector } from '../../../redux/store';
 import { UserResponceModel } from '../../../redux/slices/userSlice/interfaces';
 
 const ModalDetailsUpdate: FC<TaskDetailsPropsModel> = ({
-	children, title, description, users, onUpdate,
+	children, title, description, onUpdate,
 }): ReactElement => {
 	const {
 		noTitleText,

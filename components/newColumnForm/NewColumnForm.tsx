@@ -1,13 +1,11 @@
 import {
-	Button, FormControl, InputLabel, MenuItem, OutlinedInput, Select, SelectChangeEvent, TextField,
+	Button, TextField,
 } from '@mui/material';
 import React, { FC, ReactElement } from 'react';
 
 import { useForm } from 'react-hook-form';
-import { BoardModel } from '../../redux/slices/boardSlice/interfaces';
 import { ColumnModel } from '../../redux/slices/columnSlice/interfaces';
 import { useAppSelector } from '../../redux/store';
-import ModalUserTag from '../modal/modalUserTag/modalUserTag';
 import FlexBox from '../styled/FlexBox';
 import StyledNewBoardForm from './StyledNewColumnForm';
 

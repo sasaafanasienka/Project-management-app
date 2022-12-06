@@ -4,7 +4,7 @@ import {
 import React, { FC, ReactElement } from 'react';
 import { useForm } from 'react-hook-form';
 import { CreateTaskBodyModel } from '../../redux/slices/tasksSlice/interfaces';
-import { useAppDispatch, useAppSelector } from '../../redux/store';
+import { useAppSelector } from '../../redux/store';
 import ModalUserTag from '../modal/modalUserTag/modalUserTag';
 import FlexBox from '../styled/FlexBox';
 import { NewBoardFormProps } from './interfaces';
@@ -20,7 +20,6 @@ const NewTaskForm: FC<NewBoardFormProps> = ({ onSubmit, onClose, boardId }): Rea
 		cancelBtn,
 		createBtn,
 	} = useAppSelector((state) => state.lang.text);
-	const dispatch = useAppDispatch();
 
 	const boardUsersIds = useAppSelector((state) => {
 		if (state.boards) {

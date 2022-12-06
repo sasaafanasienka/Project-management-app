@@ -3,13 +3,13 @@ import { createSlice } from '@reduxjs/toolkit';
 import { InitialStateModalsModel, ModalNameModel } from './interfaces';
 
 const initialState: InitialStateModalsModel = {
-	deleteTask: null,
-	newTask: null,
-	detailsTask: null,
-	deleteColumn: null,
-	createColumn: null,
-	deleteBoard: null,
-	editBoard: null,
+	deleteTask: '',
+	newTask: '',
+	detailsTask: '',
+	deleteColumn: '',
+	createColumn: '',
+	deleteBoard: '',
+	editBoard: '',
 };
 
 export const modalsSlice = createSlice({
@@ -18,14 +18,18 @@ export const modalsSlice = createSlice({
 	reducers: {
 		closeModals: (state) => {
 			Object.keys(state).forEach(
-				(key: ModalNameModel) => state[key] = null,
+				(value: string) => {
+					state[value as keyof InitialStateModalsModel] = '';
+				},
 			);
 		},
 		openModal: (state, action) => {
 			Object.keys(state).forEach(
-				(key: ModalNameModel) => state[key] = action.payload.name === key
-					? action.payload.id
-					: null,
+				(value: string) => {
+					state[value as keyof InitialStateModalsModel] = action.payload.name === value
+						? action.payload.id
+						: '';
+				},
 			);
 		},
 	},

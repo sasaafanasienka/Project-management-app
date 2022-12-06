@@ -3,7 +3,6 @@ import {
 } from 'react';
 import { Tooltip } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
-import EditIcon from '@mui/icons-material/Edit';
 import InfoIcon from '@mui/icons-material/Info';
 import IconButton from '@mui/material/IconButton';
 import Button from '@mui/material/Button';

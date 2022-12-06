@@ -110,7 +110,6 @@ const Board: FC<BoardPropsModel> = (): ReactElement => {
 				}
 			} else {
 				const sourceColumnTasks = (tasks[source.droppableId] || []).slice();
-				const column = columns.filter((col) => col._id === source.droppableId);
 				const taskToUpdate = tasks[source.droppableId].filter((task) => task._id === draggableId);
 				const destinationColumnTasks = (tasks[destination.droppableId] || []).slice();
 				sourceColumnTasks.splice(source.index, 1);

@@ -5,7 +5,6 @@ import {
 	MenuItem,
 	OutlinedInput,
 	Select,
-	SelectChangeEvent,
 	TextareaAutosize,
 	Typography,
 } from '@mui/material';
@@ -23,7 +22,6 @@ const TaskDetails: FC<TaskDetailsPropsModel> = ({
 	title, description, users, handleDelete, handleUpdate, boardUsers, userId, isOwn,
 }): ReactElement => {
 	const usersAll = useAppSelector((state) => state.user.usersAll);
-	const boardUsersIds = boardUsers.map((item) => item._id);
 
 	const {
 		noTitleText,
@@ -53,8 +51,6 @@ const TaskDetails: FC<TaskDetailsPropsModel> = ({
 		}
 	};
 
-	console.log(taskUsers);
-
 	const handleTitleUpdate = () => {
 		setIsTextAreaTitleOpen(true);
 		if (textAreaTitleRef.current) {
@@ -72,12 +68,12 @@ const TaskDetails: FC<TaskDetailsPropsModel> = ({
 		handleUpdate(formData);
 	};
 
-	const usersHandler = (event: SelectChangeEvent<typeof taskOwner>) => {
-		const {
-			target: { value },
-		} = event;
-		setTaskUsers(value as unknown as string[]);
-	};
+	// const usersHandler = (event: SelectChangeEvent<typeof taskOwner>) => {
+	// const {
+	// target: { value },
+	// } = event;
+	// setTaskUsers(value as unknown as string[]);
+	// };
 
 	return (
 		<FlexBox column>

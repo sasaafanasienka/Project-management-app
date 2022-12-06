@@ -1,5 +1,5 @@
 import { Button, Link } from '@mui/material';
-import React, { Component, ErrorInfo } from 'react';
+import React, { Component } from 'react';
 import { ErrorBoundaryPropsModel, ErrorBoundaryStateModel } from './interfaces';
 import StyledErrorBoundary from './StyledErrorBoundary';
 
@@ -17,8 +17,7 @@ class ErrorBoundary extends Component<ErrorBoundaryPropsModel, ErrorBoundaryStat
 	}
 
 	// eslint-disable-next-line class-methods-use-this
-	public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-		console.error('Uncaught error:', error, errorInfo);
+	public componentDidCatch() {
 	}
 
 	public render() {

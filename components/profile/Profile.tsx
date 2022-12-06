@@ -30,7 +30,7 @@ const Profile: FC = (): ReactElement => {
 	const handleUpdateUser = (data: UserUpdateFormDataModel) => {
 		dispatch(updateUser(data))
 			.unwrap()
-			.then((responseData) => {
+			.then(() => {
 				setIsModalOpen(false);
 				dispatch(logOut());
 				router.push('/signin', undefined, { shallow: true });
@@ -41,12 +41,12 @@ const Profile: FC = (): ReactElement => {
 	const handleDeleteUser = () => {
 		dispatch(deleteUser())
 			.unwrap()
-			.then((responseData) => {
+			.then(() => {
 				setIsModalOpen(false);
 				dispatch(logOut());
 				router.push('/', undefined, { shallow: true });
 			})
-			.catch((err) => {
+			.catch(() => {
 			// toast.error(`An error has occured: ${err.message}`);
 				setIsModalOpen(false);
 			});

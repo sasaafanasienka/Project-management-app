@@ -16,8 +16,6 @@ const SignIn: FC = (): ReactElement => {
 	const headerMessage = useAppSelector((state) => state.lang.text.singInMessage);
 	const dispatch = useAppDispatch();
 	const router = useRouter();
-	const toastSuccess = useAppSelector((state) => state.lang.text.toastSuccessLogIn);
-	const toastFailure = useAppSelector((state) => state.lang.text.toastFailureLogIn);
 
 	const onSubmit = (data: UserUpdateFormDataModel) => {
 		dispatch(logInUser(data))

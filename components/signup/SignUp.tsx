@@ -14,11 +14,6 @@ const SignUp: FC = (): ReactElement => {
 	const linkTo = useAppSelector((state) => state.lang.text.singIn);
 	const headerText = useAppSelector((state) => state.lang.text.singUpGreet);
 	const headerMessage = useAppSelector((state) => state.lang.text.singUpMessage);
-	const toastSuccess = useAppSelector((state) => state.lang.text.toastSuccessSignUp);
-	const toastFailureHasAccaunt = useAppSelector(
-		(state) => state.lang.text.toastFailureSignUpHasAccount,
-	);
-	const toastFailure = useAppSelector((state) => state.lang.text.toastFailureSignUp);
 
 
 	const dispatch = useAppDispatch();
@@ -28,7 +23,7 @@ const SignUp: FC = (): ReactElement => {
 	const onSubmit = (data: UserUpdateFormDataModel) => {
 		dispatch(createUser(data))
 			.unwrap()
-			.then((resolveRes) => {
+			.then(() => {
 				new Promise((resolve) => {
 					setTimeout(() => resolve('resolved'), 500);
 				}).then(() => router.push('/signin', undefined, { shallow: true }));

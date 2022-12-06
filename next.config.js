@@ -7,17 +7,9 @@ const nextConfig = {
 		styledComponents: true,
 	},
 	images: {
-		remotePatterns: [
-			{
-				protocol: 'https',
-				hostname: 'rs.school',
-				port: '',
-			},
-			{
-				protocol: 'https',
-				hostname: 'avatars.githubusercontent.com',
-				port: '',
-			},
+		domains: [
+			'rs.school',
+			'avatars.githubusercontent.com',
 		],
 	},
 };

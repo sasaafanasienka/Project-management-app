@@ -10,11 +10,12 @@ export type ModalNameModel =
 export type ModalStateModel = string | null
 
 export interface InitialStateModalsModel {
-  newTask: ModalStateModel,
-  deleteTask: ModalStateModel,
-  detailsTask: ModalStateModel,
-  deleteColumn: ModalStateModel,
-  createColumn: ModalStateModel,
-  editBoard: ModalStateModel,
-  deleteBoard: ModalStateModel,
+  [key: string]: string
+  // 'newTask': string,
+  // 'deleteTask': string,
+  // 'detailsTask': string,
+  // 'deleteColumn': string,
+  // 'createColumn': string,
+  // 'editBoard': string,
+  // 'deleteBoard': string,
 }

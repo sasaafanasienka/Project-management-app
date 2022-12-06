@@ -15,7 +15,6 @@ import ModalWindow from '../modal/ModalWindow';
 import NewBoardForm from '../newBoardForm/NewBoardForm';
 import FlexBox from '../styled/FlexBox';
 import BoardFilterBar from './boardFilterBar/BoardFilterBar';
-import { FilterOptionsModel } from './boardFilterBar/interfaces';
 
 const Boards: FC = (): ReactElement => {
 	const {
@@ -40,21 +39,21 @@ const Boards: FC = (): ReactElement => {
 		if (formData) {
 			dispatch(createBoard(formData))
 				.unwrap()
-				.then(({ title }) => {
+				.then(() => {
 					handleModal();
 				});
 		}
 	};
 
-	const handleFilterBoards = (option: FilterOptionsModel) => {
+	const handleFilterBoards = (option: string) => {
 		switch (option) {
-		case FilterOptionsModel.all:
+		case 'all':
 			setBoardsToDisplay(boards);
 			break;
-		case FilterOptionsModel.own:
+		case 'own':
 			setBoardsToDisplay(boards.filter((board) => !board.invited));
 			break;
-		case FilterOptionsModel.guest:
+		case 'guest':
 			setBoardsToDisplay(boards.filter((board) => board.invited));
 			break;
 		default:

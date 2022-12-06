@@ -3,7 +3,7 @@ import {
 	FC, ReactElement, useState, MouseEvent,
 } from 'react';
 import { useAppSelector } from '../../../redux/store';
-import { BoardFilterBarProps, FilterOptionsModel } from './interfaces';
+import { BoardFilterBarProps } from './interfaces';
 import StyledSideLine from './StyledSideLine';
 
 const BoardFilterBar: FC<BoardFilterBarProps> = ({ onChange }): ReactElement => {
@@ -13,14 +13,14 @@ const BoardFilterBar: FC<BoardFilterBarProps> = ({ onChange }): ReactElement => 
 		filterGuestBoards,
 	} = useAppSelector((state) => state.lang.text);
 
-	const [alignment, setAlignment] = useState<FilterOptionsModel>(FilterOptionsModel.all);
+	const [alignment, setAlignment] = useState<string>('all');
 
 	const handleChange = (
 		event: MouseEvent<HTMLElement>,
-		newAlignment: FilterOptionsModel,
+		newAlignment: string,
 	) => {
 		onChange(newAlignment);
-		setAlignment(newAlignment || FilterOptionsModel.all);
+		setAlignment(newAlignment || 'all');
 	};
 
 	return (
@@ -32,11 +32,11 @@ const BoardFilterBar: FC<BoardFilterBarProps> = ({ onChange }): ReactElement => 
 			aria-label="Board owner filtering"
 			size='small'
 		>
-			<ToggleButton value={FilterOptionsModel.all}>{filterAllBoards}</ToggleButton>
-			<ToggleButton value={FilterOptionsModel.own}><StyledSideLine owned />
+			<ToggleButton value={'all'}>{filterAllBoards}</ToggleButton>
+			<ToggleButton value={'own'}><StyledSideLine owned />
 				{filterOwnBoards}
 			</ToggleButton>
-			<ToggleButton value={FilterOptionsModel.guest}>
+			<ToggleButton value={'guest'}>
 				<StyledSideLine />{filterGuestBoards}
 			</ToggleButton>
 		</ToggleButtonGroup>
